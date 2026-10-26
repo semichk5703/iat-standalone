@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+title: "iat: a small offline Implicit Association Test (terminal and SDL2)"
+message: "If you use this software, please cite it, and cite Greenwald et al. (1998, 2003) for the method."
+type: software
+authors:
+  - name: "<your name here>"
+license: MIT
+repository-code: "<repository URL here>"
+references:
+  - type: article
+    title: "Measuring individual differences in implicit cognition: The Implicit Association Test"
+    authors: [{family-names: Greenwald, given-names: A. G.}, {family-names: McGhee, given-names: D. E.}, {family-names: Schwartz, given-names: J. L. K.}]
+    journal: Journal of Personality and Social Psychology
+    year: 1998
+    volume: 74
+    issue: 6
+    doi: 10.1037/0022-3514.74.6.1464
+  - type: article
+    title: "Understanding and using the Implicit Association Test: I. An improved scoring algorithm"
+    authors: [{family-names: Greenwald, given-names: A. G.}, {family-names: Nosek, given-names: B. A.}, {family-names: Banaji, given-names: M. R.}]
+    journal: Journal of Personality and Social Psychology
+    year: 2003
+    volume: 85
+    issue: 2
+    doi: 10.1037/0022-3514.85.2.197
+  - type: software
+    title: minno-tasks
+    authors: [{family-names: Bar-Anan, given-names: Yoav}]
+    repository-code: https://github.com/baranan/minno-tasks
+    license: Apache-2.0

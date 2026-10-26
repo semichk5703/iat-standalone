@@ -1,0 +1,9 @@
+[submodule "upstream/minno-tasks"]
+	path = upstream/minno-tasks
+	url = https://github.com/baranan/minno-tasks
+[submodule "upstream/stb"]
+	path = upstream/stb
+	url = https://github.com/nothings/stb
+[submodule "upstream/font8x8"]
+	path = upstream/font8x8
+	url = https://github.com/dhepper/font8x8

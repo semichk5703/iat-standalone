@@ -1,0 +1,10 @@
+# Flowers/Insects word lists from Greenwald, McGhee & Schwartz (1998), JPSP 74(6), 1464-1480, Appendix A.
+# Edit freely: any four categories, comma-separated items. Lines with '#' are ignored.
+target_a: Flowers
+target_a_items: orchid, tulip, rose, daffodil, daisy, lilac, lily, violet
+target_b: Insects
+target_b_items: wasp, flea, roach, centipede, moth, bedbug, gnat, mosquito
+attr_a: Pleasant
+attr_a_items: joy, love, peace, wonderful, pleasure, glorious, laughter, happy
+attr_b: Unpleasant
+attr_b_items: agony, terrible, horrible, nasty, evil, awful, failure, hurt

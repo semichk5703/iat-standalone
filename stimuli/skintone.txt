@@ -1,0 +1,9 @@
+# Source: github.com/baranan/minno-tasks IAT/qualtrics/skinIATexample.js @ f8ceef0b9ec5 (Apache-2.0), image set A of the
+target_a: Dark Skinned People
+target_a_items: ../media/minno/tone0031b.jpg, ../media/minno/tone0051b.jpg, ../media/minno/tone0061b.jpg, ../media/minno/tone0081b.jpg, ../media/minno/tone0111b.jpg, ../media/minno/tone0121b.jpg
+target_b: Light Skinned People
+target_b_items: ../media/minno/tone0041a.jpg, ../media/minno/tone0071a.jpg, ../media/minno/tone0091a.jpg, ../media/minno/tone0101a.jpg, ../media/minno/tone0131a.jpg, ../media/minno/tone0141a.jpg
+attr_a: Bad
+attr_a_items: Agony, Terrible, Horrible, Nasty, Evil, Awful, Failure, Hurt
+attr_b: Good
+attr_b_items: Joy, Love, Peace, Wonderful, Pleasure, Glorious, Laughter, Happy

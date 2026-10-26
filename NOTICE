@@ -1,0 +1,26 @@
+Third-party material in this repository
+========================================
+Exact upstream commits are recorded as git submodules under upstream/ and in PROVENANCE.txt,
+which lists the sha256 of every vendored file next to the upstream path it is a copy of
+(./provenance.sh verify checks this).
+
+minno-tasks — Project Implicit's open task library.  Yoav Bar-Anan and contributors.
+  https://github.com/baranan/minno-tasks   Apache License 2.0 (upstream/minno-tasks/LICENSE)
+  Used for: IAT task definitions (IAT/qualtrics/*.js) converted into stimuli/*.txt; stimulus images
+  docs/images/*.jpg copied to media/minno/; quiat9.js and scorer/nogaScorer.js as the protocol reference.
+  Copyright of the photographs: the image files are distributed by minno-tasks under its Apache-2.0
+  license; this repository redistributes them unmodified on that basis. If you are a rights-holder
+  and believe a file should not be here, open an issue and it will be removed.
+
+stb_image.h — Sean Barrett and contributors.  https://github.com/nothings/stb
+  Public domain (Unlicense) or MIT, at your option (see the end of third_party/stb_image.h).
+
+font8x8 — Daniel Hepper, from IBM public-domain VGA fonts.  https://github.com/dhepper/font8x8
+  Public domain (third_party/font8x8_basic.h header).
+
+Word lists in stimuli/flowers-insects.txt are those published in Greenwald, McGhee & Schwartz (1998),
+Appendix A, reproduced as a citation of the published method.
+
+Project Implicit study-material stimulus sets fetched by fetch-media.ps1 are NOT in this repository.
+They are made available by Project Implicit "for academic research purposes" at
+https://www.projectimplicit.net/resources/study-materials/ with the request to cite Nosek et al. (2007).

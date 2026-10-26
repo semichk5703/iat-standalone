@@ -1,0 +1,10 @@
+# Source: github.com/baranan/minno-tasks IAT/qualtrics/exampleQIATreligion.js @ f8ceef0b9ec5 (Apache-2.0), Christian/Islam variant.
+# Upstream lists "Bible" under both categories and "Christianity" twice; corrected here: Bible -> Christian only, Mosque/Koran/Muslim/Islam -> Islam.
+target_a: Christian
+target_a_items: Church, Bible, Christian, Christianity, Cross, ../media/minno/christianity.jpg
+target_b: Islam
+target_b_items: Mosque, Koran, Muslim, Islam, Allah, ../media/minno/islam.jpg
+attr_a: Bad
+attr_a_items: Abuse, Grief, Poison, Sadness, Pain, Despise, Failure, Nasty
+attr_b: Good
+attr_b_items: Love, Cheer, Friend, Pleasure, Adore, Cheerful, Friendship, Joyful

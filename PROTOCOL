@@ -1,0 +1,36 @@
+Protocol check against Project Implicit's implementation
+=========================================================
+Reference: github.com/baranan/minno-tasks  IAT/qualtrics/quiat9.js (the task every example config loads)
+and scorer/nogaScorer.js (its scorer).  Both read 2026-10.  Papers: Greenwald, McGhee & Schwartz 1998
+(procedure); Greenwald, Nosek & Banaji 2003 (D algorithm).
+
+parameter                 quiat9.js / nogaScorer.js                       this bundle (core.h)
+------------------------  ----------------------------------------------  --------------------------------
+blocks                    7                                               7
+trials per block          20 / 20 / 20 / 40 / 28 / 20 / 40                same
+mini-blocks               nTrials/4 (combined) or /2; one trial per        same construction
+                          category each, shuffled, target/attr alternate
+pairing order             randomBlockOrder: true                          random; --order 1|2 to fix
+inter-trial blank         ITIDuration 250 ms                              250 ms
+error handling            errorCorrection: true -> red X, must press       same
+                          correct key; latency measured to correct key
+remindError               on-screen reminder text                         in block instructions
+scoring: trial filter     minRT 400 (drop), maxRT 10000 (drop)            same
+scoring: error trials     errorLatency 'latency' (kept as measured)       same
+scoring: parcels          one parcel ('first'): blocks 3+4 vs 6+7         same (primary D)
+scoring: SD               sample SD (n-1) over both conditions pooled     same
+scoring: direction        cond2 (incompatible) - cond1 (compatible)       mean reversed - mean congruent
+too-fast flag             fastRT 150, maxFastTrialsRate 0.1               same
+feedback cutoffs          +-0.15 / 0.35 / 0.65                            same
+stimulus sampling         minno 'random' mixer picks items                items cycled with random start;
+                                                                          not scoring-relevant
+Greenwald 2003 variant    not computed by PI                              printed alongside for reference
+
+Verification: test/rescore.py is an independent transcription of nogaScorer.js's arithmetic; make test
+runs it on the C scorer's CSV and the two agree to <1e-3.  Balance of trials per category/key per block
+was checked from the CSV (10/10, 5/5, 14/14).  A simulated participant with no latency difference scores
+|D| < 0.1 at IAT_TIMESCALE=10.
+
+Known, deliberate differences from the 2003 paper (where PI also differs): block 5 is 28 trials (paper
+suggests 40); a 400 ms floor drops trials (paper only flags subjects with >10% under 300 ms); single
+parcel rather than practice/test average.  These follow the live PI code since that is the mainstream.

@@ -1,0 +1,10 @@
+# Source: github.com/baranan/minno-tasks IAT/qualtrics/demosexuality0002.js @ f8ceef0b9ec5 (Apache-2.0), "general" condition;
+# Mixed word + picture categories, as in the original.
+target_a: Straight people
+target_a_items: Straight, Heterosexual, Straight People, ../media/minno/06_hetero.jpg
+target_b: Gay people
+target_b_items: Gay People, Homosexual, Gay, Lesbian, ../media/minno/07_lesbian.jpg, ../media/minno/05_gay.jpg
+attr_a: Good
+attr_a_items: Fabulous, Glorious, Pleasing, Beautiful, Fantastic, Happy, Lovely, Terrific
+attr_b: Bad
+attr_b_items: Abuse, Grief, Poison, Sadness, Pain, Despise, Failure, Nasty
