@@ -50,12 +50,33 @@ if ($Only -in "all","pi") {
     }
     $gdown = Get-Command gdown -ErrorAction SilentlyContinue
     if (-not $gdown) { Write-Host "   gdown not found (pip install gdown); opening folders in your browser instead - use Drive's 'Download all' into media\project-implicit\<name>" }
+    $log = "media\project-implicit\fetch.log"
+    New-Item -ItemType Directory -Force -Path media\project-implicit | Out-Null
+    "fetch-media.ps1 run $(Get-Date -Format o)" | Set-Content $log
+    $failed = @()
     foreach ($name in $sets.Keys) {
         $url = "https://drive.google.com/drive/folders/$($sets[$name])"
         $dest = "media\project-implicit\$name"
         New-Item -ItemType Directory -Force -Path $dest | Out-Null
-        if ($gdown) { Write-Host "   $name"; & gdown --folder --quiet -O $dest $url }
-        else { Start-Process $url; Start-Sleep -Seconds 2 }
+        if (-not $gdown) { Start-Process $url; Start-Sleep -Seconds 2; continue }
+        # gdown's full output (it names each file and the reason a download failed) goes to the log;
+        # failures are retried, since Google Drive refuses individual files intermittently
+        # ("Too many users have viewed or downloaded this file recently" / quota / virus-scan prompt).
+        $ok = $false
+        for ($attempt = 1; $attempt -le 3 -and -not $ok; $attempt++) {
+            Write-Host "   $name (attempt $attempt)"
+            "`n== $name attempt $attempt  $url" | Add-Content $log
+            $out = & gdown --folder --continue -O $dest $url 2>&1 | Tee-Object -FilePath $log -Append
+            if ($LASTEXITCODE -eq 0 -and -not ($out -match "Failed to download")) { $ok = $true }
+            else { Start-Sleep -Seconds (20 * $attempt) }
+        }
+        if (-not $ok) { $failed += $name; Write-Host "   FAILED $name - see $log; fetch by hand: $url" }
+    }
+    if ($failed.Count) {
+        Write-Host ""
+        Write-Host "Some files could not be fetched. The log has gdown's reason per file: $log"
+        Write-Host "Open the folder URL above in a browser and use Drive's 'Download all' into the set's folder."
+        Write-Host "(Thumbs.db entries are Windows thumbnail caches left in the Drive folder; ignore them.)"
     }
     @"
 Project Implicit stimulus sets, downloaded from https://www.projectimplicit.net/resources/study-materials/
