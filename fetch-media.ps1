@@ -73,8 +73,8 @@ if ($Only -in "all","pi") {
         # stderr line of a native command run with 2>&1 into a terminating error.
         $so = Join-Path $env:TEMP "fetch-out.txt"
         $se = Join-Path $env:TEMP "fetch-err.txt"
-        $args = "fetch-drive-missing.py `"$url`" `"$dest`""
-        $p = Start-Process -FilePath $python.Source -ArgumentList $args -NoNewWindow -Wait -PassThru -RedirectStandardOutput $so -RedirectStandardError $se
+        $argLine = "fetch-drive-missing.py `"$url`" `"$dest`""
+        $p = Start-Process -FilePath $python.Source -ArgumentList $argLine -NoNewWindow -Wait -PassThru -RedirectStandardOutput $so -RedirectStandardError $se
         $out = (Get-Content $so -Raw -ErrorAction SilentlyContinue) + (Get-Content $se -Raw -ErrorAction SilentlyContinue)
         "`n== $name  $url" | Add-Content $log; $out | Add-Content $log
         Write-Host (($out -replace "`r", "`n") -split "`n" | Where-Object { $_.Trim() } | ForEach-Object { "      $_" } | Out-String)
