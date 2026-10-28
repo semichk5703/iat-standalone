@@ -66,9 +66,17 @@ if ($Only -in "all","pi") {
         for ($attempt = 1; $attempt -le 3 -and -not $ok; $attempt++) {
             Write-Host "   $name (attempt $attempt)"
             "`n== $name attempt $attempt  $url" | Add-Content $log
-            $out = & gdown --folder --continue -O $dest $url 2>&1 | Tee-Object -FilePath $log -Append
-            if ($LASTEXITCODE -eq 0 -and -not ($out -match "Failed to download")) { $ok = $true }
-            else { Start-Sleep -Seconds (20 * $attempt) }
+            # Start-Process with file redirection: under $ErrorActionPreference=Stop, PowerShell 5 turns any
+            # stderr line of a native command run with 2>&1 into a terminating error (gdown's
+            # "Using cookies from ..." notice was enough), so the streams are captured to files instead.
+            $so = Join-Path $env:TEMP "gdown-out.txt"; $se = Join-Path $env:TEMP "gdown-err.txt"
+            $p = Start-Process -FilePath $gdown.Source -ArgumentList @("--folder","--continue","-O",$dest,$url) `
+                 -NoNewWindow -Wait -PassThru -RedirectStandardOutput $so -RedirectStandardError $se
+            $out = (Get-Content $so -Raw -ErrorAction SilentlyContinue) + (Get-Content $se -Raw -ErrorAction SilentlyContinue)
+            $out | Add-Content $log
+            Write-Host ($out -split "`n" | Where-Object { $_ -match "Failed|Error|quota|Too many|Access denied|Cannot" } | ForEach-Object { "      $_" })
+            if ($p.ExitCode -eq 0 -and -not ($out -match "Failed to download")) { $ok = $true }
+            else { Write-Host "      gdown exit $($p.ExitCode); retrying after $(20 * $attempt) s"; Start-Sleep -Seconds (20 * $attempt) }
         }
         if (-not $ok) { $failed += $name; Write-Host "   FAILED $name - see $log; fetch by hand: $url" }
     }
