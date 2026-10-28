@@ -46,10 +46,10 @@ class DriveFolderSync:
         if not files:
             print(f'listing returned no files for {self.folder} (private, empty, or Drive refused the listing)'); return 1
 
+        # Thumbs.db is a Windows thumbnail cache someone left in the Drive folder, not a stimulus: ignored entirely
+        files = [f for f in files if os.path.basename(f.local_path) != 'Thumbs.db']
         failed = []
         for f in files:
-            if os.path.basename(f.local_path) == 'Thumbs.db':
-                continue                                   # Windows thumbnail cache left in the Drive folder
             if os.path.exists(f.local_path) and os.path.getsize(f.local_path) > 0:
                 continue
             print(f'fetching {f.local_path}')
