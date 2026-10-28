@@ -12,8 +12,9 @@
 #     they ask that you cite Nosek et al. (2007), Eur. Rev. Soc. Psych. 18, 36-88.  Google Drive folders
 #     have no stable direct-download URL, so this script uses gdown (pip install gdown) when present and
 #     otherwise opens each folder in your browser for you to use Drive's "Download all".
+#     Re-running only fetches files still missing (see fetch-drive-missing.py).
 # Output: .\media\minno\  and  .\media\project-implicit\<set>\ — copy the media\ folder next to the iat binary.
-param([string]$Only = "all", [switch]$Force)   # -Force: re-fetch sets whose folder already has files
+param([string]$Only = "all")
 $ErrorActionPreference = "Stop"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 New-Item -ItemType Directory -Force -Path media | Out-Null
@@ -48,50 +49,37 @@ if ($Only -in "all","pi") {
         "asian-white-landmarks" = "1Hk-uzguS1aKBs9q-4gVzsE4nH68wvBVa"
         "child-race"            = "1Nj2JFe9E_yiefHYbajYXRiMnfje2ReWT"
     }
-    $gdown = Get-Command gdown -ErrorAction SilentlyContinue
-    if (-not $gdown) { Write-Host "   gdown not found (pip install gdown); opening folders in your browser instead - use Drive's 'Download all' into media\project-implicit\<name>" }
+    # Downloads go through fetch-drive-missing.py (gdown's Python API): one listing request per set, then
+    # only files not already on disk, so re-running after a rate limit or an interrupted run costs Drive
+    # almost nothing. Each failure is printed with the file name and gdown's reason.
+    $python = Get-Command python -ErrorAction SilentlyContinue
+    $haveGdown = $python -and ((& $python.Source -c "import gdown" 2>$null; $LASTEXITCODE) -eq 0)
+    if (-not $haveGdown) { Write-Host "   python + gdown not found (pip install gdown); opening folders in your browser instead - use Drive's 'Download all' into media\project-implicit\<name>" }
     $log = "media\project-implicit\fetch.log"
     New-Item -ItemType Directory -Force -Path media\project-implicit | Out-Null
-    "fetch-media.ps1 run $(Get-Date -Format o)" | Set-Content $log
+    "fetch-media.ps1 run $(Get-Date -Format o)" | Add-Content $log
     $failed = @()
     foreach ($name in $sets.Keys) {
         $url = "https://drive.google.com/drive/folders/$($sets[$name])"
         $dest = "media\project-implicit\$name"
-        New-Item -ItemType Directory -Force -Path $dest | Out-Null
-        # Skip sets already on disk: gdown must query Drive per file even when it then skips the file,
-        # so re-running over fetched sets burns Drive's per-file rate limit for nothing.
-        $have = @(Get-ChildItem $dest -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -ne "Thumbs.db" })
-        if ($have.Count -gt 0 -and -not $Force) { Write-Host "   $name: $($have.Count) files already present, skipping (use -Force to re-fetch)"; continue }
-        if (-not $gdown) { Start-Process $url; Start-Sleep -Seconds 2; continue }
-        # gdown's full output (it names each file and the reason a download failed) goes to the log;
-        # failures are retried, since Google Drive refuses individual files intermittently
-        # ("Too many users have viewed or downloaded this file recently" / quota / virus-scan prompt).
-        $ok = $false
-        for ($attempt = 1; $attempt -le 2 -and -not $ok; $attempt++) {
-            Write-Host "   $name (attempt $attempt)"
-            "`n== $name attempt $attempt  $url" | Add-Content $log
-            # Start-Process with file redirection: under $ErrorActionPreference=Stop, PowerShell 5 turns any
-            # stderr line of a native command run with 2>&1 into a terminating error (gdown's
-            # "Using cookies from ..." notice was enough), so the streams are captured to files instead.
-            $so = Join-Path $env:TEMP "gdown-out.txt"; $se = Join-Path $env:TEMP "gdown-err.txt"
-            $p = Start-Process -FilePath $gdown.Source -ArgumentList @("--folder","--continue","-O",$dest,$url) `
-                 -NoNewWindow -Wait -PassThru -RedirectStandardOutput $so -RedirectStandardError $se
-            $out = (Get-Content $so -Raw -ErrorAction SilentlyContinue) + (Get-Content $se -Raw -ErrorAction SilentlyContinue)
-            $out | Add-Content $log
-            # gdown's output verbatim (carriage-return progress lines split so nothing is spliced together)
-            Write-Host (($out -replace "`r", "`n") -split "`n" | Where-Object { $_.Trim() } | ForEach-Object { "      $_" } | Out-String)
-            if ($p.ExitCode -eq 0 -and -not ($out -match "Failed to download")) { $ok = $true }
-            else { Write-Host "      gdown exit $($p.ExitCode); retrying once after 60 s"; Start-Sleep -Seconds 60 }
-        }
-        if (-not $ok) { $failed += $name; Write-Host "   FAILED $name - see $log; fetch by hand: $url" }
+        if (-not $haveGdown) { Start-Process $url; Start-Sleep -Seconds 2; continue }
+        Write-Host "   $name"
+        # Start-Process with file redirection: under $ErrorActionPreference=Stop, PowerShell 5 turns any
+        # stderr line of a native command run with 2>&1 into a terminating error.
+        $so = Join-Path $env:TEMP "fetch-out.txt"; $se = Join-Path $env:TEMP "fetch-err.txt"
+        $p = Start-Process -FilePath $python.Source -ArgumentList @("-I", "fetch-drive-missing.py", $url, $dest) `
+             -NoNewWindow -Wait -PassThru -RedirectStandardOutput $so -RedirectStandardError $se
+        $out = (Get-Content $so -Raw -ErrorAction SilentlyContinue) + (Get-Content $se -Raw -ErrorAction SilentlyContinue)
+        "`n== $name  $url" | Add-Content $log; $out | Add-Content $log
+        Write-Host (($out -replace "`r", "`n") -split "`n" | Where-Object { $_.Trim() } | ForEach-Object { "      $_" } | Out-String)
+        if ($p.ExitCode -ne 0) { $failed += $name }
     }
     if ($failed.Count) {
         Write-Host ""
-        Write-Host "Some files could not be fetched. The log has gdown's reason per file: $log"
-        Write-Host "'Failed to retrieve file url' from gdown usually means Google Drive is rate-limiting these files"
-        Write-Host "(it clears in roughly a day) - re-run later; sets already on disk are skipped and cost no requests."
-        Write-Host "Or open the folder URL above in a browser and use Drive's 'Download all' into the set's folder."
-        Write-Host "(Thumbs.db entries are Windows thumbnail caches left in the Drive folder; ignore them.)"
+        Write-Host "Incomplete sets: $($failed -join ', ')   (full output: $log)"
+        Write-Host "'Failed to retrieve file url' / 'Too many users' means Google Drive is rate-limiting these files;"
+        Write-Host "it clears in hours to a day. Re-run then: files already on disk are not requested again."
+        Write-Host "Or open the set's folder URL in a browser and use Drive's 'Download all' into its folder."
     }
     @"
 Project Implicit stimulus sets, downloaded from https://www.projectimplicit.net/resources/study-materials/
