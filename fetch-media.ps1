@@ -53,7 +53,11 @@ if ($Only -in "all","pi") {
     # only files not already on disk, so re-running after a rate limit or an interrupted run costs Drive
     # almost nothing. Each failure is printed with the file name and gdown's reason.
     $python = Get-Command python -ErrorAction SilentlyContinue
-    $haveGdown = $python -and ((& $python.Source -c "import gdown" 2>$null; $LASTEXITCODE) -eq 0)
+    $haveGdown = $false
+    if ($python) {
+        $probe = Start-Process -FilePath $python.Source -ArgumentList @("-c", "import gdown") -NoNewWindow -Wait -PassThru
+        $haveGdown = ($probe.ExitCode -eq 0)
+    }
     if (-not $haveGdown) { Write-Host "   python + gdown not found (pip install gdown); opening folders in your browser instead - use Drive's 'Download all' into media\project-implicit\<name>" }
     $log = "media\project-implicit\fetch.log"
     New-Item -ItemType Directory -Force -Path media\project-implicit | Out-Null
@@ -66,9 +70,9 @@ if ($Only -in "all","pi") {
         Write-Host "   $name"
         # Start-Process with file redirection: under $ErrorActionPreference=Stop, PowerShell 5 turns any
         # stderr line of a native command run with 2>&1 into a terminating error.
-        $so = Join-Path $env:TEMP "fetch-out.txt"; $se = Join-Path $env:TEMP "fetch-err.txt"
-        $p = Start-Process -FilePath $python.Source -ArgumentList @("-I", "fetch-drive-missing.py", $url, $dest) `
-             -NoNewWindow -Wait -PassThru -RedirectStandardOutput $so -RedirectStandardError $se
+        $so = Join-Path $env:TEMP "fetch-out.txt"
+        $se = Join-Path $env:TEMP "fetch-err.txt"
+        $p = Start-Process -FilePath $python.Source -ArgumentList @("fetch-drive-missing.py", $url, $dest) -NoNewWindow -Wait -PassThru -RedirectStandardOutput $so -RedirectStandardError $se
         $out = (Get-Content $so -Raw -ErrorAction SilentlyContinue) + (Get-Content $se -Raw -ErrorAction SilentlyContinue)
         "`n== $name  $url" | Add-Content $log; $out | Add-Content $log
         Write-Host (($out -replace "`r", "`n") -split "`n" | Where-Object { $_.Trim() } | ForEach-Object { "      $_" } | Out-String)
