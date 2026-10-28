@@ -1,0 +1,913 @@
+fetch-media.ps1 run 2026-10-28T18:14:08.6928248-04:00
+
+== race-faces attempt 1  https://drive.google.com/drive/folders/1DO9wj31RgoXB7d03kBNPu8_RKVq58Lyx
+Processing file 1Aq0J8wnTBZFrn8zaF0W-Nw-zT7nLUpzP bf14_nc.jpg
+Processing file 1gFFRUiLCRdBd2Y5yxSsd8yYwhk-uENIy bf23_nc.jpg
+Processing file 18dXQTHspUCQIAJgWUlGt9CN35wwXoAs1 bf56_nc.jpg
+Processing file 1tL2O1OUHFiOmmG-ybf2bugSOaQWmahnV bm14_nc.jpg
+Processing file 16MAiQlAlaleHLvbpRxpvgur10Sm2asyD bm23_nc.jpg
+Processing file 14GtLI671C0nlW-0GIQLLigTb9ApohXZK bm56_nc.jpg
+Processing file 10Zj5lxPguz9I7j_nLx4viMDW8w64n6J0 Thumbs.db
+Processing file 1cN1vu0bOBL0115-YszdMi3rroV8Z507r wf2_nc.jpg
+Processing file 12LKajMmcx-YtZQ_DTOwNVnZ1P4nNx8fo wf3_nc.jpg
+Processing file 1e2b-dc5glCMC1MtM7GtNJnUns-KtSD3c wf6_nc.jpg
+Processing file 1x6iD3_RGr3vUjQlWtd5giAdL2_AzxcYm wm1_nc.jpg
+Processing file 1asprlcjfhh1i1zu-boJKiHIfQGnR3xQt wm4_nc.jpg
+Processing file 1A-DRb1ErDz986jrQ-4kx5Y7TGXkmjBfU wm6_nc.jpg
+warning: `--folder` is no longer required for folder URLs and will be removed in a future release
+Retrieving folder contents
+Retrieving folder contents completed
+Building directory structure
+Building directory structure completed
+Failed to download media\project-implicit\race-faces\bf14_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1Aq0J8wnTBZFrn8zaF0W-Nw-zT7nLUpzP
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bf23_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1gFFRUiLCRdBd2Y5yxSsd8yYwhk-uENIy
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bf56_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=18dXQTHspUCQIAJgWUlGt9CN35wwXoAs1
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bm14_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1tL2O1OUHFiOmmG-ybf2bugSOaQWmahnV
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bm23_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=16MAiQlAlaleHLvbpRxpvgur10Sm2asyD
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bm56_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=14GtLI671C0nlW-0GIQLLigTb9ApohXZK
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\Thumbs.db: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=10Zj5lxPguz9I7j_nLx4viMDW8w64n6J0
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wf2_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1cN1vu0bOBL0115-YszdMi3rroV8Z507r
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wf3_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=12LKajMmcx-YtZQ_DTOwNVnZ1P4nNx8fo
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wf6_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1e2b-dc5glCMC1MtM7GtNJnUns-KtSD3c
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wm1_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1x6iD3_RGr3vUjQlWtd5giAdL2_AzxcYm
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wm4_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1asprlcjfhh1i1zu-boJKiHIfQGnR3xQt
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wm6_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1A-DRb1ErDz986jrQ-4kx5Y7TGXkmjBfU
+
+but Gdown can't. Please check connections and permissions.
+Failed to download the following files:
+- media\project-implicit\race-faces\bf14_nc.jpg
+- media\project-implicit\race-faces\bf23_nc.jpg
+- media\project-implicit\race-faces\bf56_nc.jpg
+- media\project-implicit\race-faces\bm14_nc.jpg
+- media\project-implicit\race-faces\bm23_nc.jpg
+- media\project-implicit\race-faces\bm56_nc.jpg
+- media\project-implicit\race-faces\Thumbs.db
+- media\project-implicit\race-faces\wf2_nc.jpg
+- media\project-implicit\race-faces\wf3_nc.jpg
+- media\project-implicit\race-faces\wf6_nc.jpg
+- media\project-implicit\race-faces\wm1_nc.jpg
+- media\project-implicit\race-faces\wm4_nc.jpg
+- media\project-implicit\race-faces\wm6_nc.jpg
+
+
+== race-faces attempt 2  https://drive.google.com/drive/folders/1DO9wj31RgoXB7d03kBNPu8_RKVq58Lyx
+Processing file 1Aq0J8wnTBZFrn8zaF0W-Nw-zT7nLUpzP bf14_nc.jpg
+Processing file 1gFFRUiLCRdBd2Y5yxSsd8yYwhk-uENIy bf23_nc.jpg
+Processing file 18dXQTHspUCQIAJgWUlGt9CN35wwXoAs1 bf56_nc.jpg
+Processing file 1tL2O1OUHFiOmmG-ybf2bugSOaQWmahnV bm14_nc.jpg
+Processing file 16MAiQlAlaleHLvbpRxpvgur10Sm2asyD bm23_nc.jpg
+Processing file 14GtLI671C0nlW-0GIQLLigTb9ApohXZK bm56_nc.jpg
+Processing file 10Zj5lxPguz9I7j_nLx4viMDW8w64n6J0 Thumbs.db
+Processing file 1cN1vu0bOBL0115-YszdMi3rroV8Z507r wf2_nc.jpg
+Processing file 12LKajMmcx-YtZQ_DTOwNVnZ1P4nNx8fo wf3_nc.jpg
+Processing file 1e2b-dc5glCMC1MtM7GtNJnUns-KtSD3c wf6_nc.jpg
+Processing file 1x6iD3_RGr3vUjQlWtd5giAdL2_AzxcYm wm1_nc.jpg
+Processing file 1asprlcjfhh1i1zu-boJKiHIfQGnR3xQt wm4_nc.jpg
+Processing file 1A-DRb1ErDz986jrQ-4kx5Y7TGXkmjBfU wm6_nc.jpg
+Using cookies from C:\Users\gplguest\.cache/gdown/cookies.txt
+warning: `--folder` is no longer required for folder URLs and will be removed in a future release
+Retrieving folder contents
+Retrieving folder contents completed
+Building directory structure
+Building directory structure completed
+Failed to download media\project-implicit\race-faces\bf14_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1Aq0J8wnTBZFrn8zaF0W-Nw-zT7nLUpzP
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bf23_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1gFFRUiLCRdBd2Y5yxSsd8yYwhk-uENIy
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bf56_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=18dXQTHspUCQIAJgWUlGt9CN35wwXoAs1
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bm14_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1tL2O1OUHFiOmmG-ybf2bugSOaQWmahnV
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bm23_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=16MAiQlAlaleHLvbpRxpvgur10Sm2asyD
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bm56_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=14GtLI671C0nlW-0GIQLLigTb9ApohXZK
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\Thumbs.db: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=10Zj5lxPguz9I7j_nLx4viMDW8w64n6J0
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wf2_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1cN1vu0bOBL0115-YszdMi3rroV8Z507r
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wf3_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=12LKajMmcx-YtZQ_DTOwNVnZ1P4nNx8fo
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wf6_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1e2b-dc5glCMC1MtM7GtNJnUns-KtSD3c
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wm1_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1x6iD3_RGr3vUjQlWtd5giAdL2_AzxcYm
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wm4_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1asprlcjfhh1i1zu-boJKiHIfQGnR3xQt
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wm6_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1A-DRb1ErDz986jrQ-4kx5Y7TGXkmjBfU
+
+but Gdown can't. Please check connections and permissions.
+Failed to download the following files:
+- media\project-implicit\race-faces\bf14_nc.jpg
+- media\project-implicit\race-faces\bf23_nc.jpg
+- media\project-implicit\race-faces\bf56_nc.jpg
+- media\project-implicit\race-faces\bm14_nc.jpg
+- media\project-implicit\race-faces\bm23_nc.jpg
+- media\project-implicit\race-faces\bm56_nc.jpg
+- media\project-implicit\race-faces\Thumbs.db
+- media\project-implicit\race-faces\wf2_nc.jpg
+- media\project-implicit\race-faces\wf3_nc.jpg
+- media\project-implicit\race-faces\wf6_nc.jpg
+- media\project-implicit\race-faces\wm1_nc.jpg
+- media\project-implicit\race-faces\wm4_nc.jpg
+- media\project-implicit\race-faces\wm6_nc.jpg
+
+
+== race-faces attempt 3  https://drive.google.com/drive/folders/1DO9wj31RgoXB7d03kBNPu8_RKVq58Lyx
+Processing file 1Aq0J8wnTBZFrn8zaF0W-Nw-zT7nLUpzP bf14_nc.jpg
+Processing file 1gFFRUiLCRdBd2Y5yxSsd8yYwhk-uENIy bf23_nc.jpg
+Processing file 18dXQTHspUCQIAJgWUlGt9CN35wwXoAs1 bf56_nc.jpg
+Processing file 1tL2O1OUHFiOmmG-ybf2bugSOaQWmahnV bm14_nc.jpg
+Processing file 16MAiQlAlaleHLvbpRxpvgur10Sm2asyD bm23_nc.jpg
+Processing file 14GtLI671C0nlW-0GIQLLigTb9ApohXZK bm56_nc.jpg
+Processing file 10Zj5lxPguz9I7j_nLx4viMDW8w64n6J0 Thumbs.db
+Processing file 1cN1vu0bOBL0115-YszdMi3rroV8Z507r wf2_nc.jpg
+Processing file 12LKajMmcx-YtZQ_DTOwNVnZ1P4nNx8fo wf3_nc.jpg
+Processing file 1e2b-dc5glCMC1MtM7GtNJnUns-KtSD3c wf6_nc.jpg
+Processing file 1x6iD3_RGr3vUjQlWtd5giAdL2_AzxcYm wm1_nc.jpg
+Processing file 1asprlcjfhh1i1zu-boJKiHIfQGnR3xQt wm4_nc.jpg
+Processing file 1A-DRb1ErDz986jrQ-4kx5Y7TGXkmjBfU wm6_nc.jpg
+Using cookies from C:\Users\gplguest\.cache/gdown/cookies.txt
+warning: `--folder` is no longer required for folder URLs and will be removed in a future release
+Retrieving folder contents
+Retrieving folder contents completed
+Building directory structure
+Building directory structure completed
+Failed to download media\project-implicit\race-faces\bf14_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1Aq0J8wnTBZFrn8zaF0W-Nw-zT7nLUpzP
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bf23_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1gFFRUiLCRdBd2Y5yxSsd8yYwhk-uENIy
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bf56_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=18dXQTHspUCQIAJgWUlGt9CN35wwXoAs1
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bm14_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1tL2O1OUHFiOmmG-ybf2bugSOaQWmahnV
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bm23_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=16MAiQlAlaleHLvbpRxpvgur10Sm2asyD
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\bm56_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=14GtLI671C0nlW-0GIQLLigTb9ApohXZK
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\Thumbs.db: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=10Zj5lxPguz9I7j_nLx4viMDW8w64n6J0
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wf2_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1cN1vu0bOBL0115-YszdMi3rroV8Z507r
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wf3_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=12LKajMmcx-YtZQ_DTOwNVnZ1P4nNx8fo
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wf6_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1e2b-dc5glCMC1MtM7GtNJnUns-KtSD3c
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wm1_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1x6iD3_RGr3vUjQlWtd5giAdL2_AzxcYm
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wm4_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1asprlcjfhh1i1zu-boJKiHIfQGnR3xQt
+
+but Gdown can't. Please check connections and permissions.
+Failed to download media\project-implicit\race-faces\wm6_nc.jpg: Failed to retrieve file url:
+
+	Cannot retrieve the public link of the file. You may need to change
+	the permission to 'Anyone with the link', or have had many accesses.
+	Check FAQ in https://github.com/wkentaro/gdown?tab=readme-ov-file#faq.
+
+You may still be able to access the file from the browser:
+
+	https://drive.google.com/uc?id=1A-DRb1ErDz986jrQ-4kx5Y7TGXkmjBfU
+
+but Gdown can't. Please check connections and permissions.
+Failed to download the following files:
+- media\project-implicit\race-faces\bf14_nc.jpg
+- media\project-implicit\race-faces\bf23_nc.jpg
+- media\project-implicit\race-faces\bf56_nc.jpg
+- media\project-implicit\race-faces\bm14_nc.jpg
+- media\project-implicit\race-faces\bm23_nc.jpg
+- media\project-implicit\race-faces\bm56_nc.jpg
+- media\project-implicit\race-faces\Thumbs.db
+- media\project-implicit\race-faces\wf2_nc.jpg
+- media\project-implicit\race-faces\wf3_nc.jpg
+- media\project-implicit\race-faces\wf6_nc.jpg
+- media\project-implicit\race-faces\wm1_nc.jpg
+- media\project-implicit\race-faces\wm4_nc.jpg
+- media\project-implicit\race-faces\wm6_nc.jpg
+
+
+== age-faces attempt 1  https://drive.google.com/drive/folders/1Zj494ShalPWhloGnu_p6uRgUJklpk8qR
+fetch-media.ps1 run 2026-10-28T18:26:41.2167363-04:00
+fetch-media.ps1 run 2026-10-28T18:30:04.0984856-04:00
+
+== race-faces  https://drive.google.com/drive/folders/1DO9wj31RgoXB7d03kBNPu8_RKVq58Lyx
+13/13 files present in media\project-implicit\race-faces; 0 failed this run
+
+
+== age-faces  https://drive.google.com/drive/folders/1Zj494ShalPWhloGnu_p6uRgUJklpk8qR
+13/13 files present in media\project-implicit\age-faces; 0 failed this run
+
+
+== weight-faces  https://drive.google.com/drive/folders/1eQ99B_X4ULzuBpQ_5mU9l59cD2VFLLbn
+20/20 files present in media\project-implicit\weight-faces; 0 failed this run
+
+
+== skin-tone  https://drive.google.com/drive/folders/1-2AfwG80LSM6PrNHUbPJmhJ9WEL6Eb2t
+25/25 files present in media\project-implicit\skin-tone; 0 failed this run
+
+
+== disability-drawings  https://drive.google.com/drive/folders/1aH3Wu6ecCsZv8OYoCTpEAbjCySgCaMP0
+12/12 files present in media\project-implicit\disability-drawings; 0 failed this run
+
+
+== sexuality-figurines  https://drive.google.com/drive/folders/1LznT60HZvz7GwmzBsennL0-jJ1IGwU30
+fetching media\project-implicit\sexuality-figurines\13_hetero.jpg
+  ok  5687 bytes (direct)
+fetching media\project-implicit\sexuality-figurines\14_gay.jpg
+  ok  5781 bytes (direct)
+fetching media\project-implicit\sexuality-figurines\15_lesbian.jpg
+  ok  5283 bytes (direct)
+6/7 files present in media\project-implicit\sexuality-figurines; 0 failed this run
+
+
+== religion  https://drive.google.com/drive/folders/1Nu5FuzuQta4_G1-kPGfMxbQ4HKCVPR0B
+fetching media\project-implicit\religion\jewish01.jpg
+  ok  10011 bytes (direct)
+fetching media\project-implicit\religion\jewish02.jpg
+  ok  9973 bytes (direct)
+fetching media\project-implicit\religion\jewish03.jpg
+  ok  10068 bytes (direct)
+fetching media\project-implicit\religion\jewish04.jpg
+  ok  10188 bytes (direct)
+fetching media\project-implicit\religion\jewish05.jpg
+  ok  10215 bytes (direct)
+fetching media\project-implicit\religion\religicon01.jpg
+  ok  10070 bytes (direct)
+fetching media\project-implicit\religion\religicon02.jpg
+  ok  10023 bytes (direct)
+fetching media\project-implicit\religion\religicon03.jpg
+  ok  10056 bytes (direct)
+fetching media\project-implicit\religion\religicon04.jpg
+  ok  10133 bytes (direct)
+fetching media\project-implicit\religion\religicon05.jpg
+  ok  10083 bytes (direct)
+10/10 files present in media\project-implicit\religion; 0 failed this run
+
+
+== weapons-original  https://drive.google.com/drive/folders/1u_o497ewIhOpodGamA6TxBZiISjID2aD
+fetching media\project-implicit\weapons-original\bf14.jpg
+  ok  8610 bytes (direct)
+fetching media\project-implicit\weapons-original\bf23.jpg
+  ok  8931 bytes (direct)
+fetching media\project-implicit\weapons-original\bf56.jpg
+  ok  8292 bytes (direct)
+fetching media\project-implicit\weapons-original\bm14.jpg
+  ok  8490 bytes (direct)
+fetching media\project-implicit\weapons-original\bm23.jpg
+  ok  8680 bytes (direct)
+fetching media\project-implicit\weapons-original\bm56.jpg
+  ok  8637 bytes (direct)
+fetching media\project-implicit\weapons-original\Hbottle.jpg
+  ok  5201 bytes (direct)
+fetching media\project-implicit\weapons-original\Hcamera.jpg
+  ok  7363 bytes (direct)
+fetching media\project-implicit\weapons-original\Hcoke.jpg
+  ok  6533 bytes (direct)
+fetching media\project-implicit\weapons-original\Hice_cream.jpg
+  ok  6358 bytes (direct)
+fetching media\project-implicit\weapons-original\Hphone.jpg
+  ok  7238 bytes (direct)
+fetching media\project-implicit\weapons-original\Hwalkman.jpg
+  ok  6688 bytes (direct)
+fetching media\project-implicit\weapons-original\Hwallet.jpg
+  ok  6563 bytes (direct)
+fetching media\project-implicit\weapons-original\Waxe.jpg
+  ok  4258 bytes (direct)
+fetching media\project-implicit\weapons-original\Wcannon.jpg
+  ok  7165 bytes (direct)
+fetching media\project-implicit\weapons-original\wf2.jpg
+  ok  8550 bytes (direct)
+fetching media\project-implicit\weapons-original\wf3.jpg
+  ok  8536 bytes (direct)
+fetching media\project-implicit\weapons-original\wf6.jpg
+  ok  8719 bytes (direct)
+fetching media\project-implicit\weapons-original\Wgrenade.jpg
+  ok  7080 bytes (direct)
+fetching media\project-implicit\weapons-original\wm1.jpg
+  ok  8298 bytes (direct)
+fetching media\project-implicit\weapons-original\wm4.jpg
+  ok  7494 bytes (direct)
+fetching media\project-implicit\weapons-original\wm6.jpg
+  ok  7658 bytes (direct)
+fetching media\project-implicit\weapons-original\Wmace.jpg
+  ok  5024 bytes (direct)
+fetching media\project-implicit\weapons-original\Wrevolver.jpg
+  ok  4961 bytes (direct)
+fetching media\project-implicit\weapons-original\Wrifle.jpg
+  ok  5118 bytes (direct)
+fetching media\project-implicit\weapons-original\Wsword.jpg
+  ok  3702 bytes (direct)
+26/26 files present in media\project-implicit\weapons-original; 0 failed this run
+
+
+== weapons-new  https://drive.google.com/drive/folders/1rCul6saF9A1xn5FaGSr0v5FgTyeCX7Ty
+fetching media\project-implicit\weapons-new\bf14.jpg
+  ok  8610 bytes (direct)
+fetching media\project-implicit\weapons-new\bf23.jpg
+  ok  8931 bytes (direct)
+fetching media\project-implicit\weapons-new\bf56.jpg
+  ok  8292 bytes (direct)
+fetching media\project-implicit\weapons-new\bm14.jpg
+  ok  8490 bytes (direct)
+fetching media\project-implicit\weapons-new\bm23.jpg
+  ok  8680 bytes (direct)
+fetching media\project-implicit\weapons-new\bm56.jpg
+  ok  8637 bytes (direct)
+fetching media\project-implicit\weapons-new\hbackpack.jpg
+  ok  11410 bytes (direct)
+fetching media\project-implicit\weapons-new\hkeychain.jpg
+  ok  11044 bytes (direct)
+fetching media\project-implicit\weapons-new\hnotebook.jpg
+  ok  10719 bytes (direct)
+fetching media\project-implicit\weapons-new\htoothbrush.jpg
+  ok  5480 bytes (direct)
+fetching media\project-implicit\weapons-new\humbrella.jpg
+  ok  11855 bytes (direct)
+fetching media\project-implicit\weapons-new\hwallet.jpg
+  ok  12022 bytes (direct)
+fetching media\project-implicit\weapons-new\wautomaticrifle.jpg
+  ok  10883 bytes (direct)
+fetching media\project-implicit\weapons-new\wbrassknuckles.jpg
+  ok  12496 bytes (direct)
+fetching media\project-implicit\weapons-new\wdynamite.jpg
+  ok  14147 bytes (direct)
+fetching media\project-implicit\weapons-new\weaponsbreakdown.jpg
+  ok  109969 bytes (direct)
+fetching media\project-implicit\weapons-new\wf2.jpg
+  ok  8550 bytes (direct)
+fetching media\project-implicit\weapons-new\wf3.jpg
+  ok  8536 bytes (direct)
+fetching media\project-implicit\weapons-new\wf6.jpg
+  ok  8719 bytes (direct)
+fetching media\project-implicit\weapons-new\whandgun.jpg
+  ok  10044 bytes (direct)
+fetching media\project-implicit\weapons-new\wknife.jpg
+  ok  10765 bytes (direct)
+fetching media\project-implicit\weapons-new\wm1.jpg
+  ok  8298 bytes (direct)
+fetching media\project-implicit\weapons-new\wm4.jpg
+  ok  7494 bytes (direct)
+fetching media\project-implicit\weapons-new\wm6.jpg
+  ok  7658 bytes (direct)
+fetching media\project-implicit\weapons-new\wshotgun.jpg
+  ok  9182 bytes (direct)
+25/25 files present in media\project-implicit\weapons-new; 0 failed this run
+
+
+== presidents  https://drive.google.com/drive/folders/17hvKdDq1F4a3OybJBlizldcZYkUX1bI5
+fetching media\project-implicit\presidents\bush1.jpg
+  ok  10128 bytes (direct)
+fetching media\project-implicit\presidents\bush2.jpg
+  ok  10211 bytes (direct)
+fetching media\project-implicit\presidents\bush3.jpg
+  ok  10238 bytes (direct)
+fetching media\project-implicit\presidents\bush4.jpg
+  ok  9891 bytes (direct)
+fetching media\project-implicit\presidents\bush5.jpg
+  ok  8325 bytes (direct)
+fetching media\project-implicit\presidents\bush6.jpg
+  ok  7538 bytes (direct)
+fetching media\project-implicit\presidents\clinton1.jpg
+  ok  9772 bytes (direct)
+fetching media\project-implicit\presidents\clinton2.jpg
+  ok  9927 bytes (direct)
+fetching media\project-implicit\presidents\clinton3.jpg
+  ok  9955 bytes (direct)
+fetching media\project-implicit\presidents\clinton4.jpg
+  ok  9754 bytes (direct)
+fetching media\project-implicit\presidents\clinton5.jpg
+  ok  9972 bytes (direct)
+fetching media\project-implicit\presidents\clinton6.jpg
+  ok  9758 bytes (direct)
+fetching media\project-implicit\presidents\jefferson1.jpg
+  ok  10106 bytes (direct)
+fetching media\project-implicit\presidents\jefferson2.jpg
+  ok  10207 bytes (direct)
+fetching media\project-implicit\presidents\jefferson3.jpg
+  ok  10172 bytes (direct)
+fetching media\project-implicit\presidents\jefferson4.jpg
+  ok  9135 bytes (direct)
+fetching media\project-implicit\presidents\jefferson5.jpg
+  ok  10034 bytes (direct)
+fetching media\project-implicit\presidents\jefferson6.jpg
+  ok  10033 bytes (direct)
+fetching media\project-implicit\presidents\kennedy1.jpg
+  ok  10021 bytes (direct)
+fetching media\project-implicit\presidents\kennedy2.jpg
+  ok  9951 bytes (direct)
+fetching media\project-implicit\presidents\kennedy3.jpg
+  ok  10100 bytes (direct)
+fetching media\project-implicit\presidents\kennedy4.jpg
+  ok  10047 bytes (direct)
+fetching media\project-implicit\presidents\kennedy5.jpg
+  ok  9986 bytes (direct)
+fetching media\project-implicit\presidents\kennedy6.jpg
+  ok  10123 bytes (direct)
+fetching media\project-implicit\presidents\lincolnp1.jpg
+  ok  10091 bytes (direct)
+fetching media\project-implicit\presidents\lincolnp2.jpg
+  ok  10112 bytes (direct)
+fetching media\project-implicit\presidents\lincolnp3.jpg
+  ok  9816 bytes (direct)
+fetching media\project-implicit\presidents\lincolnp4.jpg
+  ok  9883 bytes (direct)
+fetching media\project-implicit\presidents\lincolnp5.jpg
+  ok  9984 bytes (direct)
+fetching media\project-implicit\presidents\lincolnp6.jpg
+  ok  10209 bytes (direct)
+fetching media\project-implicit\presidents\nixon1.jpg
+  ok  9961 bytes (direct)
+fetching media\project-implicit\presidents\nixon2.jpg
+  ok  9657 bytes (direct)
+fetching media\project-implicit\presidents\nixon3.jpg
+  ok  10112 bytes (direct)
+fetching media\project-implicit\presidents\nixon4.jpg
+  ok  10189 bytes (direct)
+fetching media\project-implicit\presidents\nixon5.jpg
+  ok  10094 bytes (direct)
+fetching media\project-implicit\presidents\nixon6.jpg
+  ok  10090 bytes (direct)
+fetching media\project-implicit\presidents\reagan1.jpg
+  ok  10020 bytes (direct)
+fetching media\project-implicit\presidents\reagan2.jpg
+  ok  9912 bytes (direct)
+fetching media\project-implicit\presidents\reagan3.jpg
+  ok  10196 bytes (direct)
+fetching media\project-implicit\presidents\reagan4.jpg
+  ok  10045 bytes (direct)
+fetching media\project-implicit\presidents\reagan5.jpg
+  ok  10139 bytes (direct)
+fetching media\project-implicit\presidents\reagan6.jpg
+  ok  9687 bytes (direct)
+fetching media\project-implicit\presidents\recent10.jpg
+  ok  10225 bytes (direct)
+fetching media\project-implicit\presidents\recent11.jpg
+  ok  10218 bytes (direct)
+fetching media\project-implicit\presidents\recent12.jpg
+  ok  9932 bytes (direct)
+fetching media\project-implicit\presidents\recent3.jpg
+  ok  9586 bytes (direct)
+fetching media\project-implicit\presidents\recent4.jpg
+  ok  10113 bytes (direct)
+fetching media\project-implicit\presidents\recent5.jpg
+  ok  9741 bytes (direct)
+fetching media\project-implicit\presidents\recent6.jpg
+  ok  10239 bytes (direct)
+fetching media\project-implicit\presidents\recent7.jpg
+  ok  9485 bytes (direct)
+fetching media\project-implicit\presidents\recent8.jpg
+  ok  9809 bytes (direct)
+fetching media\project-implicit\presidents\recent9.jpg
+  ok  9782 bytes (direct)
+fetching media\project-implicit\presidents\roosevelt1.jpg
+  ok  10129 bytes (direct)
+fetching media\project-implicit\presidents\roosevelt2.jpg
+  ok  10093 bytes (direct)
+fetching media\project-implicit\presidents\roosevelt3.jpg
+  ok  10126 bytes (direct)
+fetching media\project-implicit\presidents\roosevelt4.jpg
+  ok  9906 bytes (direct)
+fetching media\project-implicit\presidents\roosevelt5.jpg
+  ok  10077 bytes (direct)
+fetching media\project-implicit\presidents\roosevelt6.jpg
+  ok  10057 bytes (direct)
+58/58 files present in media\project-implicit\presidents; 0 failed this run
+
+
+== asian-white-landmarks  https://drive.google.com/drive/folders/1Hk-uzguS1aKBs9q-4gVzsE4nH68wvBVa
+fetching media\project-implicit\asian-white-landmarks\AFE021.jpg
+  ok  3081 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AFE071.jpg
+  ok  4444 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AFE081.jpg
+  ok  2473 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AFE831.jpg
+  ok  3590 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AFE851.jpg
+  ok  3381 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AFE871.jpg
+  ok  3299 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AME0012.jpg
+  ok  3811 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AME0016.jpg
+  ok  5598 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AME002.jpg
+  ok  8912 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AME003.jpg
+  ok  4924 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AME006.jpg
+  ok  5491 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AME009.jpg
+  ok  2414 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AME011.jpg
+  ok  2125 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AME021.jpg
+  ok  2195 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AME041.jpg
+  ok  2278 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AME821.jpg
+  ok  2146 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AME831.jpg
+  ok  2835 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\AME871.jpg
+  ok  2742 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\FOR001.jpg
+  ok  6727 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\FOR002.jpg
+  ok  5367 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\FOR003.jpg
+  ok  3007 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\FOR004.jpg
+  ok  5578 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\FOR005.jpg
+  ok  5229 bytes (direct)
+fetching media\project-implicit\asian-white-landmarks\FOR006.jpg
+  ok  4540 bytes (direct)
+24/24 files present in media\project-implicit\asian-white-landmarks; 0 failed this run
+
+
+== child-race  https://drive.google.com/drive/folders/1Nj2JFe9E_yiefHYbajYXRiMnfje2ReWT
+fetching media\project-implicit\child-race\BF_13.jpg
+  ok  4574 bytes (direct)
+fetching media\project-implicit\child-race\BF_14.jpg
+  ok  5162 bytes (direct)
+fetching media\project-implicit\child-race\BF_15.jpg
+  ok  5725 bytes (direct)
+fetching media\project-implicit\child-race\BF_16.jpg
+  ok  5701 bytes (direct)
+fetching media\project-implicit\child-race\BM_09.jpg
+  ok  4515 bytes (direct)
+fetching media\project-implicit\child-race\BM_10.jpg
+  ok  4368 bytes (direct)
+fetching media\project-implicit\child-race\BM_11.jpg
+  ok  4640 bytes (direct)
+fetching media\project-implicit\child-race\BM_12.jpg
+  ok  4566 bytes (direct)
+fetching media\project-implicit\child-race\WF_05.jpg
+  ok  5023 bytes (direct)
+fetching media\project-implicit\child-race\WF_06.jpg
+  ok  5695 bytes (direct)
+fetching media\project-implicit\child-race\WF_07.jpg
+  ok  4700 bytes (direct)
+fetching media\project-implicit\child-race\WF_08.jpg
+  ok  5127 bytes (direct)
+fetching media\project-implicit\child-race\WM_01.jpg
+  ok  4844 bytes (direct)
+fetching media\project-implicit\child-race\WM_02.jpg
+  ok  4455 bytes (direct)
+fetching media\project-implicit\child-race\WM_03.jpg
+  ok  4278 bytes (direct)
+fetching media\project-implicit\child-race\WM_04.jpg
+  ok  5053 bytes (direct)
+16/16 files present in media\project-implicit\child-race; 0 failed this run
+

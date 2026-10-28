@@ -11,7 +11,8 @@
 #     stimulus sets, hosted as Google Drive folders, "made available for academic research purposes";
 #     they ask that you cite Nosek et al. (2007), Eur. Rev. Soc. Psych. 18, 36-88.  Google Drive folders
 #     have no stable direct-download URL, so this script uses gdown (pip install gdown) when present and
-#     otherwise opens each folder in your browser for you to use Drive's "Download all".
+#     otherwise prints each folder's URL for you to use Drive's "Download all".
+#     Re-running only fetches files still missing (see fetch-drive-missing.py).
 # Output: .\media\minno\  and  .\media\project-implicit\<set>\ — copy the media\ folder next to the iat binary.
 param([string]$Only = "all")
 $ErrorActionPreference = "Stop"
@@ -48,14 +49,43 @@ if ($Only -in "all","pi") {
         "asian-white-landmarks" = "1Hk-uzguS1aKBs9q-4gVzsE4nH68wvBVa"
         "child-race"            = "1Nj2JFe9E_yiefHYbajYXRiMnfje2ReWT"
     }
-    $gdown = Get-Command gdown -ErrorAction SilentlyContinue
-    if (-not $gdown) { Write-Host "   gdown not found (pip install gdown); opening folders in your browser instead - use Drive's 'Download all' into media\project-implicit\<name>" }
+    # Downloads go through fetch-drive-missing.py (gdown's Python API): one listing request per set, then
+    # only files not already on disk, so re-running after a rate limit or an interrupted run costs Drive
+    # almost nothing. Each failure is printed with the file name and gdown's reason.
+    $python = Get-Command python -ErrorAction SilentlyContinue
+    $haveGdown = $false
+    if ($python) {
+        # -ArgumentList is joined with spaces and NOT quoted, so arguments containing spaces must carry their own quotes
+        $probe = Start-Process -FilePath $python.Source -ArgumentList '-c "import gdown"' -NoNewWindow -Wait -PassThru
+        $haveGdown = ($probe.ExitCode -eq 0)
+    }
+    if (-not $haveGdown) { Write-Host "   python + gdown not found (pip install gdown). Folder URLs are listed below; open each in a browser and use Drive's 'Download all' into media\project-implicit\<name>" }
+    $log = "media\project-implicit\fetch.log"
+    New-Item -ItemType Directory -Force -Path media\project-implicit | Out-Null
+    "fetch-media.ps1 run $(Get-Date -Format o)" | Add-Content $log
+    $failed = @()
     foreach ($name in $sets.Keys) {
         $url = "https://drive.google.com/drive/folders/$($sets[$name])"
         $dest = "media\project-implicit\$name"
-        New-Item -ItemType Directory -Force -Path $dest | Out-Null
-        if ($gdown) { Write-Host "   $name"; & gdown --folder --quiet -O $dest $url }
-        else { Start-Process $url; Start-Sleep -Seconds 2 }
+        if (-not $haveGdown) { Write-Host "   $name  $url"; continue }
+        Write-Host "   $name"
+        # Start-Process with file redirection: under $ErrorActionPreference=Stop, PowerShell 5 turns any
+        # stderr line of a native command run with 2>&1 into a terminating error.
+        $so = Join-Path $env:TEMP "fetch-out.txt"
+        $se = Join-Path $env:TEMP "fetch-err.txt"
+        $argLine = "fetch-drive-missing.py `"$url`" `"$dest`""
+        $p = Start-Process -FilePath $python.Source -ArgumentList $argLine -NoNewWindow -Wait -PassThru -RedirectStandardOutput $so -RedirectStandardError $se
+        $out = (Get-Content $so -Raw -ErrorAction SilentlyContinue) + (Get-Content $se -Raw -ErrorAction SilentlyContinue)
+        "`n== $name  $url" | Add-Content $log; $out | Add-Content $log
+        Write-Host (($out -replace "`r", "`n") -split "`n" | Where-Object { $_.Trim() } | ForEach-Object { "      $_" } | Out-String)
+        if ($p.ExitCode -ne 0) { $failed += $name }
+    }
+    if ($failed.Count) {
+        Write-Host ""
+        Write-Host "Incomplete sets: $($failed -join ', ')   (full output: $log)"
+        Write-Host "'Failed to retrieve file url' / 'Too many users' means Google Drive is rate-limiting these files;"
+        Write-Host "it clears in hours to a day. Re-run then: files already on disk are not requested again."
+        Write-Host "Or open the set's folder URL in a browser and use Drive's 'Download all' into its folder."
     }
     @"
 Project Implicit stimulus sets, downloaded from https://www.projectimplicit.net/resources/study-materials/
