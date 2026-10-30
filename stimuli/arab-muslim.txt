@@ -5,6 +5,8 @@ target_a_items: Hakim, Sharif, Yousef, Wahib, Akbar, Muhsin, Salim, Karim, Habib
 target_b: Other People
 target_b_items: Ernesto, Matthais, Maarten, Philippe, Guillame, Benoit, Takuya, Kazuki, Chaiyo, Marcelo
 attr_a: Bad
-attr_a_items: Abuse, Grief, Poison, Sadness, Pain, Despise, Failure, Nasty
+attr_a_items: Abuse, Grief, Poison, Sadness, Pain, Despise, Failure, Nasty, Angry, Detest, Horrible, Negative, Ugly, Dirty, Gross, Evil, Rotten, Annoy, Disaster, Horrific, Scorn, Awful, Disgust, Hate, Humiliate, Selfish, Tragic, Bothersome, Hatred, Hurtful, Sickening, Yucky
+attr_a_sample: 8
 attr_b: Good
-attr_b_items: Love, Cheer, Friend, Pleasure, Adore, Cheerful, Friendship, Joyful
+attr_b_items: Love, Cheer, Friend, Pleasure, Adore, Cheerful, Friendship, Joyful, Smiling, Cherish, Excellent, Glad, Joyous, Spectacular, Appealing, Delight, Excitement, Laughing, Attractive, Delightful, Fabulous, Glorious, Pleasing, Beautiful, Fantastic, Happy, Lovely, Terrific, Celebrate, Enjoy, Magnificent, Triumph
+attr_b_sample: 8

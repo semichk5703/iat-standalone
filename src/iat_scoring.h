@@ -31,7 +31,10 @@ typedef struct {
 
 static score_t scoring_compute(const procedure_result_t *result);
 
-/* Project Implicit's feedback wording for |D|: "little or no" / "slight" / "moderate" / "strong". */
+/* Project Implicit's feedback bands for |D|: "little or no" / "slight" / "moderate" / "strong".
+   Not part of the D measure and not in Greenwald et al. (2003): they are the cut-offs in
+   minno-tasks IAT/qualtrics/quiat9.js, messageDef (cut 0.15 / 0.35 / 0.65), the same ones the
+   implicit.harvard.edu results page describes in prose ("slightly / moderately / strongly faster"). */
 static const char *scoring_strength_label(double d);
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -130,7 +133,7 @@ static score_t scoring_compute(const procedure_result_t *result)
 
 static const char *scoring_strength_label(double d)
 {
-    double magnitude = fabs(d);
+    double magnitude = fabs(d);          /* quiat9.js messageDef cuts: -0.65 -0.35 -0.15 0.15 0.35 0.65 */
     if (magnitude < 0.15) return "little or no";
     if (magnitude < 0.35) return "slight";
     if (magnitude < 0.65) return "moderate";

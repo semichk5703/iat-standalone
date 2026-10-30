@@ -54,17 +54,35 @@ static int app_parse_options(app_options_t *options, int argc, char **argv)
     return 1;
 }
 
-static void app_show_welcome(void)
+/* The welcome screen implicit.harvard.edu shows before the IAT (transcribed from the live Race task,
+   2026-10): the four groups and their items, then "There are seven parts...". */
+static void app_show_welcome(const stimulus_set_t *set)
 {
-    const char *lines[] = {
-        "Implicit Association Test",
-        "",
-        "You will sort words or pictures into categories using the E and I keys.",
-        "Keep your index fingers on E and I.",
-        "",
-        "Press SPACE to start, Q to quit.",
-    };
-    frontend_show_message(lines, 6);
+    static char group_lines[CATEGORY_COUNT][4 * STIMULI_MAX_TEXT];
+    const char *lines[CATEGORY_COUNT + 6];
+    int line_count = 0;
+    int c, i;
+
+    lines[line_count++] = "Next, you will use the 'E' and 'I' computer keys to categorize items into groups";
+    lines[line_count++] = "as fast as you can. These are the four groups and the items that belong to each:";
+    lines[line_count++] = "";
+    for (c = 0; c < CATEGORY_COUNT; c++) {
+        const category_t *category = &set->categories[c];
+        char *line = group_lines[c];
+        int used = snprintf(line, sizeof group_lines[c], "%s:  ", category->name);
+        if (category->items[0].is_picture) {
+            snprintf(line + used, sizeof group_lines[c] - used, "[pictures]");
+        } else {
+            for (i = 0; i < category->item_count && used < (int)sizeof group_lines[c] - 1; i++) {
+                used += snprintf(line + used, sizeof group_lines[c] - used, "%s%s", i ? ", " : "", category->items[i].text);
+            }
+        }
+        lines[line_count++] = line;
+    }
+    lines[line_count++] = "";
+    lines[line_count++] = "There are seven parts. The instructions change for each part. Pay attention!";
+    lines[line_count++] = "Press the space bar to continue.";
+    frontend_show_message(lines, line_count);
 }
 
 static void app_write_csv(FILE *out, const stimulus_set_t *set, const procedure_result_t *result, const score_t *score)
@@ -116,12 +134,13 @@ static int iat_app_main(int argc, char **argv)
     }
     stimuli_load(&set, options.stimuli_path);
     srand(options.seed);
+    stimuli_randomize_session(&set);
     if (options.pairing_order != 1 && options.pairing_order != 2) {
         options.pairing_order = 1 + procedure_random_below(2);
     }
 
     frontend_open(&set);
-    app_show_welcome();
+    app_show_welcome(&set);
     if (!procedure_wait_for_continue() || !procedure_run(&result, &set, options.pairing_order)) {
         frontend_close();
         puts("aborted");

@@ -46,10 +46,19 @@ static double procedure_time_scale = 1.0;
 
 /* ---------------------------------------------------------------------------------------------- */
 
+/* Which of Project Implicit's instruction templates (quiat9.js inst*) a block shows. */
+typedef enum {
+    INSTRUCTIONS_CATEGORIES_PRACTICE,
+    INSTRUCTIONS_ATTRIBUTES_PRACTICE,
+    INSTRUCTIONS_FIRST_COMBINED,
+    INSTRUCTIONS_SECOND_COMBINED,     /* "This is the same as the previous part." */
+    INSTRUCTIONS_SWITCH_CATEGORIES
+} instructions_kind_t;
+
 typedef struct {
     int trial_count;
     key_assignment_t keys;
-    const char *description;    /* shown in the block's instructions */
+    instructions_kind_t instructions;
 } block_t;
 
 static double procedure_now_ms(void)
@@ -95,13 +104,13 @@ static void procedure_define_blocks(block_t blocks[PROCEDURE_BLOCK_COUNT], int p
     category_id_t second = pairing_order == 2 ? CATEGORY_TARGET_A : CATEGORY_TARGET_B;
     key_assignment_t attributes_only = { { CATEGORY_ATTRIBUTE_A }, 1, { CATEGORY_ATTRIBUTE_B }, 1 };
     block_t defined[PROCEDURE_BLOCK_COUNT] = {
-        { 20, procedure_keys(first, second, 0), "sort the two target categories" },
-        { 20, attributes_only,                  "sort the two attribute categories" },
-        { 20, procedure_keys(first, second, 1), "combined practice" },
-        { 40, procedure_keys(first, second, 1), "combined test" },
-        { 28, procedure_keys(second, first, 0), "targets switch sides - practice the new sides" },
-        { 20, procedure_keys(second, first, 1), "reversed combined practice" },
-        { 40, procedure_keys(second, first, 1), "reversed combined test" },
+        { 20, procedure_keys(first, second, 0), INSTRUCTIONS_CATEGORIES_PRACTICE },
+        { 20, attributes_only,                  INSTRUCTIONS_ATTRIBUTES_PRACTICE },
+        { 20, procedure_keys(first, second, 1), INSTRUCTIONS_FIRST_COMBINED },
+        { 40, procedure_keys(first, second, 1), INSTRUCTIONS_SECOND_COMBINED },
+        { 28, procedure_keys(second, first, 0), INSTRUCTIONS_SWITCH_CATEGORIES },
+        { 20, procedure_keys(second, first, 1), INSTRUCTIONS_FIRST_COMBINED },
+        { 40, procedure_keys(second, first, 1), INSTRUCTIONS_SECOND_COMBINED },
     };
     memcpy(blocks, defined, sizeof defined);
 }
@@ -142,29 +151,63 @@ static void procedure_sequence_categories(category_id_t sequence[], const block_
     }
 }
 
+/* Block instructions, worded as the templates in minno-tasks IAT/qualtrics/quiat9.js
+   (instCategoriesPractice, instAttributePractice, instFirstCombined, instSecondCombined,
+   instSwitchCategories), which is what implicit.harvard.edu shows; HTML markup dropped. */
 static void procedure_show_block_instructions(const stimulus_set_t *set, const block_t *block, int block_index)
 {
     const category_t *categories = set->categories;
     const key_assignment_t *keys = &block->keys;
-    char title[128];
-    char left_line[3 * STIMULI_MAX_TEXT];
-    char right_line[3 * STIMULI_MAX_TEXT];
-    const char *lines[7];
+    const char *left = categories[keys->left[0]].name;
+    const char *right = categories[keys->right[0]].name;
+    const char *left_attribute = keys->left_count > 1 ? categories[keys->left[1]].name : "";
+    const char *right_attribute = keys->right_count > 1 ? categories[keys->right[1]].name : "";
+    static char title[64];
+    static char left_line[3 * STIMULI_MAX_TEXT];
+    static char right_line[3 * STIMULI_MAX_TEXT];
+    const char *lines[10];
+    int line_count = 0;
 
-    snprintf(title, sizeof title, "Part %d of %d - %s", block_index + 1, PROCEDURE_BLOCK_COUNT, block->description);
-    snprintf(left_line, sizeof left_line, "LEFT (E): %s%s%s", categories[keys->left[0]].name,
-             keys->left_count > 1 ? " + " : "", keys->left_count > 1 ? categories[keys->left[1]].name : "");
-    snprintf(right_line, sizeof right_line, "RIGHT (I): %s%s%s", categories[keys->right[0]].name,
-             keys->right_count > 1 ? " + " : "", keys->right_count > 1 ? categories[keys->right[1]].name : "");
-
-    lines[0] = title;
-    lines[1] = left_line;
-    lines[2] = right_line;
-    lines[3] = "";
-    lines[4] = "Go as fast as you can while making few errors.";
-    lines[5] = "A red X means wrong key: press the other key to continue.";
-    lines[6] = "Press SPACE to begin.";
-    frontend_show_message(lines, 7);
+    snprintf(title, sizeof title, "Part %d of %d", block_index + 1, PROCEDURE_BLOCK_COUNT);
+    lines[line_count++] = title;
+    lines[line_count++] = "";
+    switch (block->instructions) {
+    case INSTRUCTIONS_CATEGORIES_PRACTICE:
+    case INSTRUCTIONS_ATTRIBUTES_PRACTICE:
+        snprintf(left_line, sizeof left_line, "Put a left finger on the E key for items that belong to the category %s.", left);
+        snprintf(right_line, sizeof right_line, "Put a right finger on the I key for items that belong to the category %s.", right);
+        lines[line_count++] = left_line;
+        lines[line_count++] = right_line;
+        if (block->instructions == INSTRUCTIONS_CATEGORIES_PRACTICE) {
+            lines[line_count++] = "Items will appear one at a time.";
+        }
+        lines[line_count++] = "If you make a mistake, a red X will appear. Press the other key to continue.";
+        break;
+    case INSTRUCTIONS_FIRST_COMBINED:
+    case INSTRUCTIONS_SECOND_COMBINED:
+        if (block->instructions == INSTRUCTIONS_SECOND_COMBINED) {
+            lines[line_count++] = "This is the same as the previous part.";
+        }
+        snprintf(left_line, sizeof left_line, "Use the E key for %s and for %s.", left, left_attribute);
+        snprintf(right_line, sizeof right_line, "Use the I key for %s and for %s.", right, right_attribute);
+        lines[line_count++] = left_line;
+        lines[line_count++] = right_line;
+        lines[line_count++] = "Each item belongs to only one category.";
+        if (block->instructions == INSTRUCTIONS_FIRST_COMBINED) {
+            lines[line_count++] = "If you make a mistake, a red X will appear. Press the other key to continue.";
+        }
+        break;
+    case INSTRUCTIONS_SWITCH_CATEGORIES:
+        lines[line_count++] = "Watch out, the labels have changed position!";
+        snprintf(left_line, sizeof left_line, "Put the left finger on the E key for %s.", left);
+        snprintf(right_line, sizeof right_line, "Put the right finger on the I key for %s.", right);
+        lines[line_count++] = left_line;
+        lines[line_count++] = right_line;
+        break;
+    }
+    lines[line_count++] = "Go as fast as you can while being accurate.";
+    lines[line_count++] = "Press the space bar when you are ready to start.";
+    frontend_show_message(lines, line_count);
 }
 
 /* Wait for KEY_CONTINUE; returns 0 on KEY_QUIT. */

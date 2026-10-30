@@ -109,13 +109,51 @@ static void frontend_close(void)
     terminal_move_to(1, 1);
 }
 
+/* Word-wrap one line into pieces no wider than the terminal; returns the number of pieces. */
+static int terminal_wrap(const char *text, int max_width, char pieces[][256], int max_pieces)
+{
+    int piece_count = 0;
+    while (*text && piece_count < max_pieces) {
+        const char *end = text;
+        const char *last_space = NULL;
+        int width = 0;
+        while (*end && width < max_width) {
+            if (*end == ' ') {
+                last_space = end;
+            }
+            if (((unsigned char)*end & 0xC0) != 0x80) {
+                width++;
+            }
+            end++;
+        }
+        if (*end && last_space) {
+            end = last_space;                   /* break at the last space that fits */
+        }
+        snprintf(pieces[piece_count++], 256, "%.*s", (int)(end - text), text);
+        text = end;
+        while (*text == ' ') {
+            text++;
+        }
+    }
+    return piece_count;
+}
+
 static void frontend_show_message(const char **lines, int line_count)
 {
-    int first_row = terminal_rows / 2 - line_count / 2;
-    int i;
+    static char wrapped[40][256];
+    int wrapped_count = 0;
+    int first_row, i;
+    for (i = 0; i < line_count && wrapped_count < 40; i++) {
+        if (!lines[i][0]) {
+            wrapped[wrapped_count++][0] = '\0';
+        } else {
+            wrapped_count += terminal_wrap(lines[i], terminal_columns - 2, wrapped + wrapped_count, 40 - wrapped_count);
+        }
+    }
+    first_row = terminal_rows / 2 - wrapped_count / 2;
     terminal_clear_screen();
-    for (i = 0; i < line_count; i++) {
-        terminal_print_centered(first_row + i, lines[i]);
+    for (i = 0; i < wrapped_count; i++) {
+        terminal_print_centered(first_row + i < 1 ? 1 : first_row + i, wrapped[i]);
     }
     fflush(stdout);
 }

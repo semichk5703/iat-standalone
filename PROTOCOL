@@ -23,7 +23,17 @@ pairing order             random per sitting; --order 1998 counterbalanced betwe
 inter-trial interval      250 ms blank                1998: 150 ms; 2003 studies: 250 ms   ITIDuration: 250
 error feedback            red X; must press correct   2003 pp. 199-200 ("built-in error    errorCorrection: true,
                           key; latency to correct key penalty" variant)                    remindError: true
-instruction wording       quiat9 templates            —                                    instCategoriesPractice etc.
+instruction wording       quiat9 templates verbatim   —                                    instCategoriesPractice /
+                          (block 1 categories, 2                                           AttributePractice / First-
+                          attributes, 3+6 first-                                           Combined / SecondCombined /
+                          combined, 4+7 second-                                            SwitchCategories
+                          combined, 5 switch)
+attribute words           random 8 of the 32-word     —                                    demoRace0005.js: posWords/
+                          lists per session                                                negWords API.shuffle()d, [0..7]
+category labels           one label variant per       —                                    demoRace0005.js conditions
+                          session (race: Black/White                                       (live site shows both forms)
+                          people or African/European
+                          Americans)
 
 Scoring (D measure)
 -------------------

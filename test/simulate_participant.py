@@ -13,7 +13,9 @@ d = os.path.dirname(stimfile) or '.'
 stim = {}
 for line in open(stimfile, encoding='utf-8'):
     if ':' in line and not line.startswith('#'):
-        k, v = line.split(':', 1); stim[k.strip()] = [x.strip() for x in v.split(',') if x.strip()]
+        k, v = line.split(':', 1)
+        if k.strip().endswith('_sample'): continue
+        stim[k.strip()] = [x.strip() for x in v.split(',') if x.strip()]
 cats = ['target_a', 'target_b', 'attr_a', 'attr_b']
 label_cat = {}
 for ci, c in enumerate(cats):
@@ -23,7 +25,7 @@ for ci, c in enumerate(cats):
                 label_cat[os.path.basename(p)] = ci
         else:
             label_cat[it] = ci
-names = {stim[c][0]: ci for ci, c in enumerate(cats)}
+names = {v.strip(): ci for ci, c in enumerate(cats) for v in stim[c][0].split('|')}
 
 pid, fd = pty.fork()
 if pid == 0:
@@ -46,11 +48,22 @@ deadline = time.time() + 600 / scale
 while time.time() < deadline:
     if not rd(): break
     txt = strip(buf)
-    if 'Press SPACE' in txt:
-        m = re.search(r'LEFT \(E\): ([^\n]+)', txt)
-        if m:
-            left = {names[n.strip()] for n in m.group(1).split(' + ')}
-            part = int(re.search(r'Part (\d)', txt).group(1))
+    if 'Press the space bar' in txt or 'Press SPACE' in txt:
+        # Which categories answer to E: the lines that mention the E key, in Project Implicit's wording
+        # ("...on the E key for ... X." / "Use the E key for X and for Y.")
+        # (the terminal wraps long lines, so sentences are reassembled from the whole screen first)
+        flat = re.sub(r'\s+', ' ', txt.replace('\n', ' '))
+        e_sentences = [p for p in flat.split('.') if 'E key' in p]
+        found = set()
+        for n, ci in sorted(names.items(), key=lambda kv: -len(kv[0])):   # longest first: "American" is inside "Asian American"
+            for i, p in enumerate(e_sentences):
+                if re.search(r'\b' + re.escape(n) + r'\b', p):
+                    found.add(ci)
+                    e_sentences[i] = p.replace(n, ' ')
+        m = re.search(r'Part (\d) of', txt)
+        if found and m:
+            left = found
+            part = int(m.group(1))
             print('part', part, 'left', sorted(left), file=sys.stderr)
         buf = b''
         time.sleep(0.05); rd(0.05); buf = b''      # let the program finish drawing + flushing keys

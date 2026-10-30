@@ -6,6 +6,12 @@
  *     target_b / attr_a / attr_b likewise
  * An item ending in .jpg/.png/.gif is a picture; its path is relative to the stimuli file and may be a
  * shell glob.  Everything else is a word, shown verbatim (UTF-8).
+ *
+ * Two optional per-session randomisations, as Project Implicit's demonstration tasks do them
+ * (minno-tasks IAT/qualtrics/demoRace0005.js: posWords/negWords are API.shuffle()d and the first 8
+ * used; the category labels vary by condition):
+ *     target_a: Black people | African Americans      alternative labels; one index is chosen per session
+ *     attr_a_sample: 8                                show a random 8 of the listed items this session
  */
 #ifndef IAT_STIMULI_H
 #define IAT_STIMULI_H
@@ -34,10 +40,15 @@ typedef struct {
     int is_picture;
 } stimulus_item_t;
 
+#define STIMULI_MAX_NAME_VARIANTS 4
+
 typedef struct {
-    char name[STIMULI_MAX_TEXT];   /* category label shown in headers and instructions */
+    char name[STIMULI_MAX_TEXT];   /* category label shown in headers and instructions (the chosen variant) */
+    char name_variants[STIMULI_MAX_NAME_VARIANTS][STIMULI_MAX_TEXT];
+    int name_variant_count;
     stimulus_item_t items[STIMULI_MAX_ITEMS];
     int item_count;
+    int sample_count;              /* 0: show all items; n: a random n of them per session */
 } category_t;
 
 typedef struct {
@@ -47,6 +58,9 @@ typedef struct {
 
 /* Load a stimuli file.  Exits with a message on a malformed file; abnormal input is a user error here. */
 static void stimuli_load(stimulus_set_t *set, const char *path);
+
+/* Apply the per-session randomisations (label variant, item samples). Call after srand(). */
+static void stimuli_randomize_session(stimulus_set_t *set);
 
 /* The short label of an item: the word itself, or a picture's file name without directories. */
 static const char *stimulus_item_label(const stimulus_item_t *item);
@@ -135,6 +149,21 @@ static void stimuli_parse_items(stimulus_set_t *set, category_t *category, char 
     }
 }
 
+/* "Black people | African Americans": alternatives separated by '|'; the first is the default name. */
+static void stimuli_parse_name_variants(category_t *category, char *value)
+{
+    char *variant = strtok(value, "|");
+    category->name_variant_count = 0;
+    while (variant && category->name_variant_count < STIMULI_MAX_NAME_VARIANTS) {
+        stimuli_trim(variant);
+        strncpy(category->name_variants[category->name_variant_count++], variant, STIMULI_MAX_TEXT - 1);
+        variant = strtok(NULL, "|");
+    }
+    if (category->name_variant_count) {
+        strcpy(category->name, category->name_variants[0]);
+    }
+}
+
 /* An item listed under two categories has no correct key, so the file is rejected rather than scored. */
 static void stimuli_check_disjoint(const stimulus_set_t *set)
 {
@@ -186,7 +215,9 @@ static void stimuli_load(stimulus_set_t *set, const char *path)
             const char *category_key = STIMULI_CATEGORY_KEYS[c];
             size_t key_length = strlen(category_key);
             if (!strcmp(key, category_key)) {
-                strncpy(set->categories[c].name, value, STIMULI_MAX_TEXT - 1);
+                stimuli_parse_name_variants(&set->categories[c], value);
+            } else if (!strncmp(key, category_key, key_length) && !strcmp(key + key_length, "_sample")) {
+                set->categories[c].sample_count = atoi(value);
             } else if (!strncmp(key, category_key, key_length) && !strcmp(key + key_length, "_items")) {
                 stimuli_parse_items(set, &set->categories[c], value, directory);
             }
@@ -201,6 +232,48 @@ static void stimuli_load(stimulus_set_t *set, const char *path)
         }
     }
     stimuli_check_disjoint(set);
+}
+
+static int stimuli_random_below(int count)
+{
+    return (int)((double)rand() / ((double)RAND_MAX + 1) * count);
+}
+
+/* Keep a random sample_count of the items (partial Fisher-Yates shuffle, then truncate). */
+static void stimuli_sample_items(category_t *category)
+{
+    int i;
+    if (category->sample_count <= 0 || category->sample_count >= category->item_count) {
+        return;
+    }
+    for (i = 0; i < category->sample_count; i++) {
+        int j = i + stimuli_random_below(category->item_count - i);
+        stimulus_item_t swapped = category->items[i];
+        category->items[i] = category->items[j];
+        category->items[j] = swapped;
+    }
+    category->item_count = category->sample_count;
+}
+
+static void stimuli_randomize_session(stimulus_set_t *set)
+{
+    int most_variants = 0;
+    int chosen_variant;
+    int c;
+    for (c = 0; c < CATEGORY_COUNT; c++) {
+        if (set->categories[c].name_variant_count > most_variants) {
+            most_variants = set->categories[c].name_variant_count;
+        }
+    }
+    /* One index for every category, so paired labels ("African Americans"/"European Americans") agree. */
+    chosen_variant = stimuli_random_below(most_variants);
+    for (c = 0; c < CATEGORY_COUNT; c++) {
+        category_t *category = &set->categories[c];
+        if (chosen_variant < category->name_variant_count) {
+            strcpy(category->name, category->name_variants[chosen_variant]);
+        }
+        stimuli_sample_items(category);
+    }
 }
 
 #endif
