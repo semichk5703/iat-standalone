@@ -11,7 +11,7 @@ written module for module in parallel (`src/iat_*.h` and `web/iat_*.js`) and `ma
 |----------------------|-----------------------------|------------------|---------|
 | `iat` (terminal)     | a C compiler; libc          | words            | any terminal, serial console, Linux framebuffer |
 | `iat-sdl` (window)   | a C compiler; SDL2          | words + pictures | X11, Wayland, Windows, or a framebuffer via `SDL_VIDEODRIVER=kmsdrm` |
-| web page             | a browser                   | words + pictures | desktop and phone browsers; keyboard or touch |
+| web page             | a browser                   | words + pictures | desktop browsers; phones untested (see below); keyboard or touch |
 
 Eighteen ready-made task sets are included (race, age, weight, skin tone, disability, religion,
 sexuality, weapons, presidents, Asian-American, Native American, gender–career, gender–science,
@@ -45,6 +45,14 @@ If `sdl2-config` is missing: `make SDL_CFLAGS="$(pkg-config --cflags sdl2)" SDL_
   `stimuli/` show up on reload, so this is the form for working on it.
 
 Results download from the last screen as the same CSV the programs write.
+
+**What has been tested, and what has not.** The terminal and window programs, the served page and the
+single file have been run end to end by scripted participants (`make test`, and headless Chromium for
+the web page, opened both from a server and straight from disk). **Phones have not been tested at
+all**: the touch layout has only been exercised with a desktop browser's simulated touch. Expect
+differences in how a phone opens a local file: Firefox on Android should open `iat.html`; iOS does
+not run scripts in a locally opened HTML file, so on an iPhone the page needs to be put on a web host
+and opened from there. Reports from real devices are welcome.
 
 **Options**, the same in all three forms:
 
