@@ -1,24 +1,50 @@
-"""Independent re-scoring of results.csv, written from Project Implicit's scorer so the C implementation
-can be checked against it: upstream/minno-time/src/js/extensions/dscore/parcelMng.js (pipScorer, used by
-minno-tasks IAT/iat10.js) and its port upstream/minno-tasks/scorer/nogaScorer.js, which agree.
-    python3 test/rescore_project_implicit.py results.csv        -> prints D and compares with the '#' line iat wrote."""
-import csv, math, re, sys
-rows = []; meta = {}
-for line in open(sys.argv[1]):
-    if line.startswith('#'):
-        meta = dict(kv.split('=') for kv in line[1:].split()); continue
-    rows.append(line)
-trials = list(csv.DictReader(rows))
-order = int(meta['order'])
-congruent = {3, 4} if order == 1 else {6, 7}        # blocks where target_a pairs with attr_a
-reversed_ = {6, 7} if order == 1 else {3, 4}
-# nogaScorer: minRT 400 (dropped), maxRT 10000 (dropped), errorLatency 'latency' (error trials kept as-is)
-keep = [t for t in trials if 400 <= float(t['rt_ms']) <= 10000 and int(t['block']) in congruent | reversed_]
-c = [float(t['rt_ms']) for t in keep if int(t['block']) in congruent]
-r = [float(t['rt_ms']) for t in keep if int(t['block']) in reversed_]
-mean = lambda x: sum(x) / len(x)
-allv = c + r; m = mean(allv)
-sd = math.sqrt(sum((v - m) ** 2 for v in allv) / (len(allv) - 1))     # calcSD: sample SD over both conditions
-D = (mean(r) - mean(c)) / sd                                          # cond2 (incompatible) - cond1 (compatible)
-print(f"rescore: D = {D:+.4f}   iat wrote D = {float(meta['D']):+.4f}   diff = {abs(D-float(meta['D'])):.2e}")
-sys.exit(0 if abs(D - float(meta['D'])) < 1e-3 else 1)
+"""Independent re-scoring of results.csv from Project Implicit's scorer, so the C implementation can be
+checked against it: upstream/minno-tasks/scorer/nogaScorer.js with the settings of IAT/iat11.js (the code
+the live Race IAT loads; byte-identical to the copies served, per PROTOCOL).
+    python3 test/rescore_project_implicit.py results.csv     -> prints D and compares with the '#' line."""
+import csv, math, sys
+
+
+class NogaScorerCheck:
+    """nogaScorer.js computeD with iat11 settings: parcels 'first' (blocks 3,6) and 'second' (4,7),
+    minRT 400 / maxRT 10000 dropped, errorLatency 'latency', sample SD, D = mean of parcel D's."""
+
+    MIN_RT, MAX_RT, FAST_RT = 400, 10000, 300
+
+    def __init__(self, path):
+        rows, self.meta = [], {}
+        for line in open(path):
+            if line.startswith('#'):
+                self.meta = dict(kv.split('=') for kv in line[1:].split())
+            else:
+                rows.append(line)
+        self.trials = list(csv.DictReader(rows))
+        order = int(self.meta['order'])
+        # (first-pairing block, reversed block) per parcel, 1-based as in the CSV
+        self.parcels = [(3, 6), (4, 7)] if order == 1 else [(6, 3), (7, 4)]
+
+    def parcel_d(self, first_block, reversed_block):
+        kept = [t for t in self.trials if self.MIN_RT <= float(t['rt_ms']) <= self.MAX_RT]
+        first = [float(t['rt_ms']) for t in kept if int(t['block']) == first_block]
+        reversed_ = [float(t['rt_ms']) for t in kept if int(t['block']) == reversed_block]
+        both = first + reversed_
+        mean = lambda values: sum(values) / len(values)
+        sd = math.sqrt(sum((v - mean(both)) ** 2 for v in both) / (len(both) - 1))   # calcSD / calcPooledSD
+        return (mean(reversed_) - mean(first)) / sd                                     # cond2 - cond1
+
+    def fast_fraction(self):
+        combined = [t for t in self.trials if int(t['block']) in (3, 4, 6, 7)]
+        up_to_max = [t for t in combined if float(t['rt_ms']) <= self.MAX_RT]
+        return sum(float(t['rt_ms']) < self.FAST_RT for t in combined) / len(up_to_max)
+
+    def run(self):
+        d = sum(self.parcel_d(f, r) for f, r in self.parcels) / len(self.parcels)          # scoreAll mean
+        written = float(self.meta['D'])
+        fast, written_fast = self.fast_fraction(), float(self.meta['fast'])
+        print(f"rescore: D = {d:+.4f}   iat wrote D = {written:+.4f}   diff = {abs(d - written):.2e}"
+              f"   fast {fast:.4f} vs {written_fast:.4f}")
+        return 0 if abs(d - written) < 1e-3 and abs(fast - written_fast) < 1e-3 else 1
+
+
+if __name__ == '__main__':
+    sys.exit(NogaScorerCheck(sys.argv[1]).run())

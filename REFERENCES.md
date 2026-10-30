@@ -29,10 +29,10 @@ were checked against the author-posted PDFs (`references/fetch_papers.sh`).
   https://doi.org/10.1080/10463280701489053 — the citation Project Implicit asks for with its materials.
 
 ## Reference implementation
-- *minno-tasks*, https://github.com/baranan/minno-tasks — `IAT/iat10.js` (the task),
+- *minno-tasks*, https://github.com/baranan/minno-tasks — `IAT/iat11.js` (the task) and
+  `scorer/nogaScorer.js` (its scorer), both confirmed byte-identical to what the live site serves;
   `docs/studies/datapipe.iat.examples/demo.iats/` (the demo site's task configs),
   `docs/studies/raceiat/raceiat_instructions.jst` (the pre-IAT instructions page).
-- *minno-time*, https://github.com/minnojs/minno-time — `src/js/extensions/dscore/parcelMng.js`, the scorer.
 - Pinned commits: PROVENANCE.txt. Parameter-by-parameter comparison: [PROTOCOL](PROTOCOL).
 
 ## On interpretation (worth reading before drawing conclusions from a score)

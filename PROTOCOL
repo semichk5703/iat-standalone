@@ -1,24 +1,37 @@
 Protocol provenance
 ===================
 Each parameter is traced to (a) the paper it comes from, page-checked against the author-posted PDFs
-(references/fetch_papers.sh), and (b) the code implicit.harvard.edu runs, pinned as submodules:
-  upstream/minno-tasks  IAT/iat10.js                                 the IAT task
-                        docs/studies/datapipe.iat.examples/demo.iats/  the demo site's task configs (race.js ...)
-                        docs/studies/raceiat/raceiat_instructions.jst  the pre-IAT instructions page
-  upstream/minno-time   src/js/extensions/dscore/parcelMng.js          the D scorer (pipScorer) iat10.js uses
-IAT/qualtrics/quiat9.js is the Qualtrics variant of iat10.js; every parameter below is the same in both
-except the block-5 wording.  Citations: references/papers.bib.
+(references/), and (b) the code implicit.harvard.edu runs, pinned in upstream/minno-tasks:
+  IAT/iat11.js                                   the IAT task the live Race IAT loads
+  scorer/nogaScorer.js, scorer/feedbacker.js     its scorer and feedback rules
+  docs/studies/datapipe.iat.examples/demo.iats/  the demo site's task configs (race.js ...)
+  docs/studies/raceiat/raceiat_instructions.jst  the pre-IAT instructions page
+
+Observed on the live site (a browser HAR of the Race IAT, 2026-10-30): the study demo.us/demo.race.0006
+loads cdn.jsdelivr.net/gh/baranan/minno-tasks@0.*/IAT/iat11.js and .../scorer/nogaScorer.js, and the
+copies served were byte-identical to upstream/minno-tasks at the pinned commit.  Its site-hosted files
+(not redistributed here) and their sha256:
+  user/demo.us/demo.race.0006/raceiat.js        2fecdcfa9c469e71f013d2933f4e2ecc5191630d647a0a40a32b9c50635e1e96
+  user/demo.us/demo.race.0006/mgr.js            12c122b0b47c01667973fe580e0a7843b721b60bc1b82c02e46b814dfe62f4d3
+  user/demo.us/demo.race.0006/instiat_race.jst  339019080349c16ee98015023e05075582809b5a3ccb9a1ae5f364693b6c8872
+  user/demo.us/demo.race.0006/realstart.jst     2ddd06fc7c8fed43ea032f3416f405c1d76944c384588a429321bfe731ebbe40
+raceiat.js has the same faces as demo.iats/race.js and no parameter overrides; mgr.js has the same
+label sets and the same 32+32 attribute words; instiat_race.jst has the same text as
+raceiat_instructions.jst.  IAT/iat10.js and IAT/qualtrics/quiat9.js (Qualtrics) are earlier variants:
+same procedure, but a single-parcel D with a 150 ms fast flag (printed here as D_single_parcel).
+Citations: references/papers.bib.
 
 Procedure
 ---------
-parameter             this repo                      paper                                      iat10.js / demo.iats
+parameter             this repo                      paper                                      iat11.js / demo.iats
 --------------------  -----------------------------  -----------------------------------------  -----------------------------
 block layout          7 blocks, 20/20/20/40/28/20/40 Greenwald, Nosek & Banaji 2003, Table 1     blockCategories/Attributes/
                                                      (p. 198): 20/20/20/40/20/20/40             FirstCombined 20, Second-
                                                      (1998 used 50-trial blocks, p. 1467)       Combined 40, Switch 28
 block 5 length 28     28                             Nosek, Greenwald & Banaji 2005, Study 4    blockSwitch_nTrials: 28
-                                                     (pp. 176-178): lengthening it from 20 to   (28 itself is minno's choice)
-                                                     40 cut the pairing-order effect, r .15->.03
+                                                     (pp. 176-178): lengthening it from 20 to   (28 itself is Project
+                                                     40 cut the pairing-order effect, r .15->.03 Implicit's choice; counted
+                                                                                                as 28 on the live site)
 trial order           mini-blocks of one trial per   — (implementation)                         getMiniMixer2 / getMiniMixer4
                       category; targets/attributes
                       alternate
@@ -35,7 +48,7 @@ category labels       one label set per session      —                        
                       (race: African/European                                                   African/European Americans or
                       Americans or Black/White                                                  Black/White people
                       people)
-block instructions    iat10 templates, verbatim      —                                          instCategoriesPractice, inst-
+block instructions    iat11 templates, verbatim      —                                          instCategoriesPractice, inst-
                                                                                                 AttributePractice, instFirst-
                                                                                                 Combined, instSecondCombined,
                                                                                                 instSwitchCategories
@@ -47,27 +60,33 @@ opening screen        "In this study you will        — ; not in minno-tasks: t
 
 Scoring (D measure) — Greenwald, Nosek & Banaji 2003, Table 4 (p. 213), "improved algorithm"
 -------------------
-step (Table 4)        this repo                      paper                                      parcelMng.js + iat10 settings
+step (Table 4)        this repo                      paper                                      iat11.js + nogaScorer.js
 --------------------  -----------------------------  -----------------------------------------  -----------------------------
-1  blocks             3, 4, 6, 7                     B3, B4, B6, B7                             cond 'compatible'/'incompatible'
-2  long latencies     drop >= 10,000 ms (> in code)  drop >= 10,000 ms (p. 201)                 maxRT 10000, kept if <= max
-2  fast respondents   warn if > 10% <= 150 ms        drop respondent if > 10% < 300 ms (p. 204) fastRT 150, maxFastTrialsRate .1
+1  blocks             3, 4, 6, 7                     B3, B4, B6, B7                             parcels 'first' (3,6) and
+                                                                                                'second' (4,7)
+2  long latencies     drop > 10,000 ms               drop >= 10,000 ms (p. 201)                 maxRT 10000, kept if <= max
 4  short latencies    drop < 400 ms                  delete < 400 ms (Study 5, p. 207)          minRT 400
-7  errors             kept at measured latency       "built-in penalty" variant for procedures  errorLatency use 'latency'
+7  errors             kept at measured latency       "built-in penalty" variant for procedures  errorScoring 'latency'
                                                      requiring a correct response (p. 206)
-6  SD                 sample SD (n-1)                pooled SD per block pair, B3+B6, B4+B7     one pooled SD over all four
-10-12 D               primary: one parcel over all   average of (B6-B3)/SD36 and (B7-B4)/SD47   parcelValue ['first']: one
-                      four blocks; D_2003: the       — printed as D_2003                        parcel, (mean2-mean1)/SD
-                      paper's two-parcel average
-sign                  D > 0: faster when target_a    direction arbitrary (step 10)              cond1 - cond2 with iat10's
+6  SD                 sample SD (n-1) per parcel     pooled SD per block pair, B3+B6, B4+B7     calcPooledSD per parcel
+10-12 D               mean of (B6-B3)/SD36 and       same                                       scoreAll: mean of parcel D's
+                      (B7-B4)/SD47
+sign                  D > 0: faster when target_a    direction arbitrary (step 10)              cond2 - cond1 with iat11's
                       shares a key with attr_a                                                  condition labels
-feedback bands        0.15 / 0.35 / 0.65             — (not in 2003)                            iat10.js messageDef cuts; the
+too fast              no result if > 10% of combined drop respondent if > 10% of trials         fastRT 300,
+                      trials < 300 ms                < 300 ms (step 2, p. 204)                  maxFastTrialsRateFB 0.1
+too many errors       no result if > 40% of combined —                                          maxErrorRateFB 0.4
+                      trials had an error
+not enough trials     no result if < 4 scored        —                                          minTotalScoredTrialsFB 4
+withheld wording      "There were too many fast      —                                          iat11 tooFast / manyErrors /
+                      trials to determine..." etc.                                              notEnough; feedbacker.js order
+feedback bands        0.15 / 0.35 / 0.65             — (not in 2003)                            iat11 messageDef cuts; the
                                                                                                 site's raceinfo.html describes
                                                                                                 the same bands
 
 Verification
 ------------
-test/rescore_project_implicit.py   re-implements parcelMng.js; agrees with the C scorer to < 1e-3
-test/rescore_greenwald_2003.py     re-implements Table 4 (two parcels); agrees with D_2003
+test/rescore_project_implicit.py   re-implements nogaScorer.js with iat11 settings; agrees with the C scorer
+test/rescore_greenwald_2003.py     re-implements Table 4; agrees
 test/web_scoring_check.mjs         web scorer vs the C scorer's CSV
 make test                          all of the above over every stimulus set, both C frontends

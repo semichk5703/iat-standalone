@@ -4,7 +4,7 @@
 import { StimulusSet, CATEGORY_TARGET_A, CATEGORY_TARGET_B, CATEGORY_ATTRIBUTE_A, CATEGORY_ATTRIBUTE_B } from './iat_stimuli.js';
 import { Random } from './iat_random.js';
 import { Procedure } from './iat_procedure.js';
-import { scoringCompute, scoringStrengthLabel, SCORING_FAST_FRACTION_LIMIT, SCORING_FAST_MS } from './iat_scoring.js';
+import { scoringCompute, scoringStrengthLabel } from './iat_scoring.js';
 import { DomFrontend } from './iat_frontend_dom.js';
 
 export class IatApp {
@@ -45,13 +45,16 @@ export class IatApp {
 
     resultLines(set, score, trials) {
         const names = set.categories.map(c => c.name);
-        const lines = [
-            `D-score = ${score.d >= 0 ? '+' : ''}${score.d.toFixed(3)}   (Greenwald-2003 two-parcel D = ${score.d2003.toFixed(3)})`,
+        const signed = v => (v >= 0 ? '+' : '') + v.toFixed(3);
+        const lines = [`D-score = ${signed(score.d)}   (practice ${signed(score.dPractice)}, test ${signed(score.dTest)}; single-parcel ${signed(score.dSingleParcel)})`];
+        if (score.feedbackMessage) {
+            lines.push(score.feedbackMessage);       // implicit.harvard.edu shows only this message
+            return lines;
+        }
+        lines.push(
             `${scoringStrengthLabel(score.d)} association of ${names[CATEGORY_TARGET_A]}+${names[CATEGORY_ATTRIBUTE_A]} / ${names[CATEGORY_TARGET_B]}+${names[CATEGORY_ATTRIBUTE_B]}` +
                 (score.d > 0 ? ' (faster with this pairing)' : score.d < 0 ? ' (faster with the reverse pairing)' : ''),
-            `Mean latency ms: first pairing ${score.meanFirstMs.toFixed(0)} | reversed ${score.meanReversedMs.toFixed(0)} | pairing order ${this.pairingOrder}`,
-        ];
-        if (score.fastFraction > SCORING_FAST_FRACTION_LIMIT) lines.push(`WARNING: ${(100 * score.fastFraction).toFixed(0)}% of responses < ${SCORING_FAST_MS} ms - too fast, result unreliable.`);
+            `Mean latency ms: first pairing ${score.meanFirstMs.toFixed(0)} | reversed ${score.meanReversedMs.toFixed(0)} | pairing order ${this.pairingOrder}`);
         // Greenwald, Brendl et al. 2019, p. 18: test-retest "nearer to .50 and often lower" for sensitive attitudes
         lines.push('', 'A single IAT is a snapshot (test-retest about r = .5 or lower), not a measurement of a person.');
         return lines;
@@ -62,7 +65,7 @@ export class IatApp {
         const rows = trials.map(t => [t.blockIndex + 1, set.categories[t.category].name, set.categories[t.category].items[t.itemIndex].label,
                                       t.correctKey, t.errorCount, t.latencyMs.toFixed(1)].join(','));
         return ['block,category,item,correct_key,errors,rt_ms', ...rows,
-                `# D=${score.d.toFixed(4)} D_2003=${score.d2003.toFixed(4)} d_practice=${score.dPractice.toFixed(4)} d_test=${score.dTest.toFixed(4)} order=${this.pairingOrder}`].join('\n') + '\n';
+                `# D=${score.d.toFixed(4)} d_practice=${score.dPractice.toFixed(4)} d_test=${score.dTest.toFixed(4)} D_single_parcel=${score.dSingleParcel.toFixed(4)} fast=${score.fastFraction.toFixed(4)} errors=${score.errorFraction.toFixed(4)} order=${this.pairingOrder}`].join('\n') + '\n';
     }
 
     async run() {

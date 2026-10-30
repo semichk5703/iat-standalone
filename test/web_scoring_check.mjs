@@ -8,8 +8,8 @@ import { Random } from '../web/iat_random.js';
 const lines = readFileSync(process.argv[2], 'utf8').trim().split('\n');
 const meta = Object.fromEntries(lines.filter(l => l.startsWith('#')).pop().slice(1).trim().split(' ').map(kv => kv.split('=')));
 const trials = lines.slice(1).filter(l => !l.startsWith('#')).map(l => {
-    const [block, , , , , rt] = l.split(',');
-    return { blockIndex: parseInt(block, 10) - 1, latencyMs: parseFloat(rt) };
+    const [block, , , , errors, rt] = l.split(',');
+    return { blockIndex: parseInt(block, 10) - 1, latencyMs: parseFloat(rt), errorCount: parseInt(errors, 10) };
 });
 const score = scoringCompute(trials, parseInt(meta.order, 10));
 const diff = Math.abs(score.d - parseFloat(meta.D));

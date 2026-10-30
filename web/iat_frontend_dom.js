@@ -1,5 +1,5 @@
 // iat_frontend_dom.js — browser frontend (parallel to src/iat_sdl.c): keyboard E/I, or touch zones on
-// phones (iat10.js's touch mode: left/right green areas answer, the lower area continues).
+// phones (iat11.js's touch mode: left/right green areas answer, the lower area continues).
 
 import { KEY_LEFT, KEY_RIGHT, KEY_CONTINUE, KEY_QUIT } from './iat_procedure.js';
 

@@ -11,7 +11,7 @@ export const KEY_CONTINUE = ' ';
 export const KEY_QUIT = 'q';
 
 export const PROCEDURE_BLOCK_COUNT = 7;
-export const PROCEDURE_INTER_TRIAL_MS = 250;      // iat10.js ITIDuration
+export const PROCEDURE_INTER_TRIAL_MS = 250;      // iat11.js ITIDuration
 
 const INSTRUCTIONS_CATEGORIES_PRACTICE = 'categories';
 const INSTRUCTIONS_ATTRIBUTES_PRACTICE = 'attributes';
@@ -40,7 +40,7 @@ export function procedureDefineBlocks(pairingOrder) {
     ];
 }
 
-/** Trial order as iat10.js builds it (getMiniMixer2/getMiniMixer4): mini-blocks of one trial per category, each shuffled, targets and
+/** Trial order as iat11.js builds it (getMiniMixer2/getMiniMixer4): mini-blocks of one trial per category, each shuffled, targets and
  *  attributes alternating in combined blocks, so left and right responses stay balanced. */
 export function procedureSequenceCategories(block, random) {
     const sequence = [];
@@ -57,7 +57,7 @@ export function procedureSequenceCategories(block, random) {
     return sequence;
 }
 
-/** Block instructions worded as iat10.js's templates (what implicit.harvard.edu shows). */
+/** Block instructions worded as iat11.js's templates (what implicit.harvard.edu shows). */
 export function procedureInstructionLines(set, block, blockIndex, touch) {
     const names = set.categories.map(c => c.name);
     const left = names[block.keys.left[0]], right = names[block.keys.right[0]];

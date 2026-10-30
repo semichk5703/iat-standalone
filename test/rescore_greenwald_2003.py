@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Independent D-score from a results.csv, following Greenwald, Nosek & Banaji (2003), Table 4,
 "improved" algorithm, built-in error penalty variant (the one used when respondents must correct
-errors, as on Project Implicit / minno-tasks iat10).  Steps, as in the paper:
+errors, as on Project Implicit / minno-tasks iat11).  Steps, as in the paper:
   1. use data from blocks 3,4,6,7
   2. drop trials with latency > 10,000 ms
   3. flag respondents with > 10% of trials under 300 ms (minno: 150 ms; both are reported)
@@ -12,7 +12,7 @@ errors, as on Project Implicit / minno-tasks iat10).  Steps, as in the paper:
   8. divide each by its pooled SD
   9. D = average of the two
 Project Implicit additionally drops trials under 400 ms before steps 5-6; applied here too (minRT=400).
-Usage: test/rescore_greenwald_2003.py results.csv -> prints D and compares with D_2003 on the '#' line the program wrote.
+Usage: test/rescore_greenwald_2003.py results.csv -> prints D and compares with D on the '#' line the program wrote (iat11 scores this two-parcel D).
 (test/rescore_project_implicit.py checks the primary, Project Implicit single-parcel D.)"""
 import csv, math, sys, statistics
 
@@ -43,6 +43,6 @@ if __name__ == '__main__':
           f'{sum(rt < 150 for rt in all_rt) / len(all_rt):.1%} < 150 ms (minno)')
     if tail:
         print('program', tail[0][2:])
-        prog = float(tail[0].split('D_2003=')[1].split()[0])
+        prog = float(tail[0].split('D=')[1].split()[0])
         print('agree' if abs(prog - D) < 1e-3 else 'MISMATCH')
         sys.exit(0 if abs(prog - D) < 1e-3 else 1)

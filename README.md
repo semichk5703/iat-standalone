@@ -2,7 +2,7 @@
 
 A self-contained implementation of the Implicit Association Test (Greenwald, McGhee & Schwartz, 1998)
 in its seven-block form, scored with the D measure (Greenwald, Nosek & Banaji, 2003), following the code
-implicit.harvard.edu runs (minno-tasks `IAT/iat10.js`, scored by minno-time's `parcelMng.js`). Two
+implicit.harvard.edu runs (minno-tasks `IAT/iat11.js`, scored by its `scorer/nogaScorer.js`). Two
 frontends share one core, and `web/` is a browser and phone port of it:
 
 | binary    | dependency | stimuli          | where it runs                                  |
@@ -48,8 +48,10 @@ area continues; `&touch=1` forces it).  Results download as the same CSV.
 
 ## What the score means
 
-`D = (mean latency, reversed pairing − mean latency, first-listed pairing) / pooled SD`, over the four
-combined blocks. **D > 0** means you were faster when *target_a* shared a key with *attr_a* (as named in
+For each half of the combined blocks (practice: parts 3 and 6; test: parts 4 and 7),
+`(mean latency, reversed pairing − mean latency, first-listed pairing) / pooled SD`; D is the mean of
+the two, as on implicit.harvard.edu. As there, no result is given if more than 10% of responses were
+under 300 ms or more than 40% had errors; the numbers still go to the CSV. **D > 0** means you were faster when *target_a* shared a key with *attr_a* (as named in
 the stimuli file). Project Implicit's feedback bands: |D| < 0.15 little or none, < 0.35 slight,
 < 0.65 moderate, otherwise strong.
 
@@ -61,13 +63,14 @@ the measure characterises groups much better than it does individuals (see
 ## Fidelity to the mainstream implementation
 
 [PROTOCOL](PROTOCOL) traces every parameter to the paper it comes from (page-checked) and to the code
-implicit.harvard.edu runs: [minno-tasks](https://github.com/baranan/minno-tasks) `IAT/iat10.js` and the
-demo site's task configs in `docs/studies/datapipe.iat.examples/demo.iats/`, scored by
-[minno-time](https://github.com/minnojs/minno-time)'s `parcelMng.js`. That covers block lengths
+implicit.harvard.edu runs: [minno-tasks](https://github.com/baranan/minno-tasks) `IAT/iat11.js`, the
+demo site's task configs in `docs/studies/datapipe.iat.examples/demo.iats/`, and `scorer/nogaScorer.js`.
+A browser capture of the live Race IAT confirmed the site serves exactly these files. That covers block lengths
 (20/20/20/40/28/20/40), balanced mini-block trial order, the 250 ms inter-trial interval, must-correct
-errors, the 400 ms–10 s trial filter, single-parcel D with sample SD, the too-fast flag, instruction wording,
-8-of-32 attribute-word sampling, per-session label sets, and feedback cut-offs; the Greenwald-2003
-two-parcel D is printed alongside. Where Project Implicit departs from a paper, PROTOCOL says so.
+errors, the 400 ms–10 s trial filter, the two-parcel D of Greenwald et al. (2003, Table 4), when a
+result is withheld (too fast, too many errors, too few trials) and the site's wording for it,
+instruction wording, 8-of-32 attribute-word sampling, per-session label sets, and feedback cut-offs.
+Where Project Implicit departs from a paper, PROTOCOL says so.
 `make test` drives a scripted participant through every task set on both frontends at 100× speed and
 re-scores the output with independent re-implementations (`test/rescore_project_implicit.py`,
 `test/rescore_greenwald_2003.py`, `test/web_scoring_check.mjs`); they agree with the C scorer to < 10⁻³.
@@ -102,7 +105,7 @@ Every file copied from another repository is checked against a git submodule pin
     tools/provenance.sh verify        # compares third_party/ and media/minno/ byte-for-byte with upstream/
     tools/provenance.sh manifest      # regenerates PROVENANCE.txt (commit hashes + sha256 of every file)
 
-See [NOTICE](NOTICE) for licenses (minno-tasks and minno-time: Apache-2.0; stb_image: public
+See [NOTICE](NOTICE) for licenses (minno-tasks: Apache-2.0; stb_image: public
 domain/MIT; font8x8: public domain; papers and Project Implicit study materials: their own terms) and
 [LICENSE](LICENSE) for this repository's own code (MIT).
 
@@ -123,11 +126,11 @@ domain/MIT; font8x8: public domain; papers and Project Implicit study materials:
     tools/provenance.sh         verify / sync / manifest  ->  PROVENANCE.txt
     tools/fetch_media.ps1, tools/fetch_drive_missing.py   Windows: fetch Project Implicit study materials
     test/simulate_participant.py        pty-driven scripted participant (make test)
-    test/rescore_project_implicit.py    independent re-implementation of minno-time parcelMng.js
+    test/rescore_project_implicit.py    independent re-implementation of nogaScorer.js (iat11 settings)
     test/rescore_greenwald_2003.py      independent re-implementation of 2003 Table 4
     references/            papers.bib, fetch_papers.sh, and the papers (PDF, git-lfs)
     third_party/           stb_image.h, font8x8_basic.h (copies of upstream/)
-    upstream/              git submodules: minno-tasks, minno-time, stb, font8x8
+    upstream/              git submodules: minno-tasks, stb, font8x8
     web/                   browser/mobile port, parallel module for module; test/web_scoring_check.mjs
     PROTOCOL, REFERENCES.md, NOTICE, LICENSE, CITATION.cff
 

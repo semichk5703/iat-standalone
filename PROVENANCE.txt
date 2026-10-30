@@ -2,7 +2,6 @@
 # Upstream repositories (git submodules under upstream/), pinned commits:
   8e279d2d864e79128e96188a6b9526cfa3fbfef9 upstream/font8x8 (heads/master)
   f8ceef0b9ec5fcad878e14de2f9720baa8caeef4 upstream/minno-tasks (0.7.3-4-gf8ceef0)
-  aa8f8ca54b7bf416aaa0aacb51d618faf63279d6 upstream/minno-time (v0.3.42-4-gaa8f8ca)
   2c980bb59875b0d32144a71867fbdebb2f77cd20 upstream/stb (2c980bb)
 # sha256 of every vendored file, and the upstream path it is a byte-for-byte copy of:
 594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3  third_party/stb_image.h  <- upstream/stb/stb_image.h

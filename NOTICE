@@ -7,15 +7,11 @@ which lists the sha256 of every vendored file next to the upstream path it is a 
 minno-tasks — Project Implicit's open task library.  Yoav Bar-Anan and contributors.
   https://github.com/baranan/minno-tasks   Apache License 2.0 (upstream/minno-tasks/LICENSE)
   Used for: task configs converted into stimuli/*.txt; docs/images/ copied to media/minno/;
-  IAT/iat10.js, docs/studies/datapipe.iat.examples/demo.iats/ and docs/studies/raceiat/ as the
-  protocol reference.
+  IAT/iat11.js, scorer/nogaScorer.js, docs/studies/datapipe.iat.examples/demo.iats/ and
+  docs/studies/raceiat/ as the protocol reference.
   Copyright of the photographs: the image files are distributed by minno-tasks under its Apache-2.0
   license; this repository redistributes them unmodified on that basis. If you are a rights-holder
   and believe a file should not be here, open an issue and it will be removed.
-
-minno-time — the Minno task player.  https://github.com/minnojs/minno-time
-  Apache License 2.0 (upstream/minno-time/LICENSE).  Used only as the scoring reference
-  (src/js/extensions/dscore/parcelMng.js); no code is copied.
 
 stb_image.h — Sean Barrett and contributors.  https://github.com/nothings/stb
   Public domain (Unlicense) or MIT, at your option (see the end of third_party/stb_image.h).

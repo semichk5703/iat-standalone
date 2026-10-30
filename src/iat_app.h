@@ -122,15 +122,22 @@ static void app_write_csv(FILE *out, const stimulus_set_t *set, const procedure_
                 stimulus_item_label(&category->items[trial->item_index]), trial->correct_key,
                 trial->error_count, trial->latency_ms);
     }
-    fprintf(out, "# D=%.4f D_2003=%.4f d_practice=%.4f d_test=%.4f order=%d\n",
-            score->d, score->d_2003, score->d_practice, score->d_test, result->pairing_order);
+    fprintf(out, "# D=%.4f d_practice=%.4f d_test=%.4f D_single_parcel=%.4f fast=%.4f errors=%.4f order=%d\n",
+            score->d, score->d_practice, score->d_test, score->d_single_parcel,
+            score->fast_fraction, score->error_fraction, result->pairing_order);
 }
 
 static void app_print_score(const stimulus_set_t *set, const procedure_result_t *result, const score_t *score)
 {
     const category_t *c = set->categories;
-    printf("\nD-score = %+.3f   (Greenwald-2003 two-parcel D = %+.3f: practice %+.3f, test %+.3f)\n",
-           score->d, score->d_2003, score->d_practice, score->d_test);
+    const char *withheld = scoring_feedback_message(score->feedback);
+    printf("\nD-score = %+.3f   (practice %+.3f, test %+.3f; single-parcel %+.3f)\n",
+           score->d, score->d_practice, score->d_test, score->d_single_parcel);
+    if (withheld) {
+        /* implicit.harvard.edu shows only this message; the numbers above stay in the CSV for analysis */
+        printf("%s\n", withheld);
+        return;
+    }
     printf("%s association of %s+%s / %s+%s %s\n", scoring_strength_label(score->d),
            c[CATEGORY_TARGET_A].name, c[CATEGORY_ATTRIBUTE_A].name,
            c[CATEGORY_TARGET_B].name, c[CATEGORY_ATTRIBUTE_B].name,
@@ -138,10 +145,6 @@ static void app_print_score(const stimulus_set_t *set, const procedure_result_t 
     printf("Mean latency ms: %s+%s blocks %.0f | reversed blocks %.0f | pairing order %d\n",
            c[CATEGORY_TARGET_A].name, c[CATEGORY_ATTRIBUTE_A].name,
            score->mean_first_ms, score->mean_reversed_ms, result->pairing_order);
-    if (score->fast_fraction > SCORING_FAST_FRACTION_LIMIT) {
-        printf("WARNING: %.0f%% of responses < %d ms - too fast, result unreliable.\n",
-               100 * score->fast_fraction, SCORING_FAST_MS);
-    }
 }
 
 static int iat_app_main(int argc, char **argv)

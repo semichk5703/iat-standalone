@@ -1,7 +1,7 @@
 /* iat_procedure.h — the seven-block IAT procedure: block definitions, trial sequencing, timing.
  *
  * The seven-block layout of Greenwald, Nosek & Banaji (2003, Table 1), with the parameters of the code
- * implicit.harvard.edu runs: minno-tasks IAT/iat10.js, loaded by docs/studies/datapipe.iat.examples/
+ * implicit.harvard.edu runs: minno-tasks IAT/iat11.js, loaded by docs/studies/datapipe.iat.examples/
  * demo.iats/<task>.js (block lengths 20/20/20/40/28/20/40, balanced mini-blocks, 250 ms inter-trial interval,
  * must-correct errors).  PROTOCOL has the parameter-by-parameter provenance.
  */
@@ -34,7 +34,7 @@ typedef struct {
     int pairing_order;          /* 1: target_a+attr_a share a key first; 2: the reverse */
 } procedure_result_t;
 
-/* Milliseconds of blank screen between trials (iat10.js ITIDuration). */
+/* Milliseconds of blank screen between trials (iat11.js ITIDuration). */
 #define PROCEDURE_INTER_TRIAL_MS 250
 
 /* Run all seven blocks through the frontend.  pairing_order is 1 or 2.
@@ -47,7 +47,7 @@ static double procedure_time_scale = 1.0;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-/* Which of Project Implicit's instruction templates (iat10.js inst*) a block shows. */
+/* Which of Project Implicit's instruction templates (iat11.js inst*) a block shows. */
 typedef enum {
     INSTRUCTIONS_CATEGORIES_PRACTICE,
     INSTRUCTIONS_ATTRIBUTES_PRACTICE,
@@ -127,7 +127,7 @@ static int procedure_key_is_left(const key_assignment_t *keys, category_id_t cat
     return 0;
 }
 
-/* Trial order as iat10.js builds it (getMiniMixer2/getMiniMixer4): mini-blocks of one trial per category, each mini-block shuffled,
+/* Trial order as iat11.js builds it (getMiniMixer2/getMiniMixer4): mini-blocks of one trial per category, each mini-block shuffled,
    targets and attributes alternating in combined blocks, so left and right responses stay balanced. */
 static void procedure_sequence_categories(category_id_t sequence[], const block_t *block)
 {
@@ -152,7 +152,7 @@ static void procedure_sequence_categories(category_id_t sequence[], const block_
     }
 }
 
-/* Block instructions, worded as the templates in minno-tasks IAT/iat10.js (instCategoriesPractice,
+/* Block instructions, worded as the templates in minno-tasks IAT/iat11.js (instCategoriesPractice,
    instAttributePractice, instFirstCombined, instSecondCombined, instSwitchCategories), which is what
    implicit.harvard.edu shows; HTML markup dropped. */
 static void procedure_show_block_instructions(const stimulus_set_t *set, const block_t *block, int block_index)
