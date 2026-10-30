@@ -2,19 +2,28 @@
 
 A self-contained implementation of the Implicit Association Test (Greenwald, McGhee & Schwartz, 1998)
 in its seven-block form, scored with the D measure (Greenwald, Nosek & Banaji, 2003), following the code
-implicit.harvard.edu runs (minno-tasks `IAT/iat11.js`, scored by its `scorer/nogaScorer.js`). Two
-frontends share one core, and `web/` is a browser and phone port of it:
+implicit.harvard.edu runs (minno-tasks `IAT/iat11.js`, scored by its `scorer/nogaScorer.js`).
 
-| binary    | dependency | stimuli          | where it runs                                  |
-|-----------|------------|------------------|------------------------------------------------|
-| `iat`     | libc only  | words            | any terminal, serial console, Linux framebuffer |
-| `iat-sdl` | SDL2 only  | words + pictures | X11, Wayland, Windows, or `SDL_VIDEODRIVER=kmsdrm` framebuffer |
+It comes in three forms with the same procedure, scoring, stimuli files and results files; each is
+written module for module in parallel (`src/iat_*.h` and `web/iat_*.js`) and `make test` checks they agree:
+
+| form                 | needs                       | stimuli          | runs on |
+|----------------------|-----------------------------|------------------|---------|
+| `iat` (terminal)     | a C compiler; libc          | words            | any terminal, serial console, Linux framebuffer |
+| `iat-sdl` (window)   | a C compiler; SDL2          | words + pictures | X11, Wayland, Windows, or a framebuffer via `SDL_VIDEODRIVER=kmsdrm` |
+| web page             | a browser                   | words + pictures | desktop and phone browsers; keyboard or touch |
 
 Eighteen ready-made task sets are included (race, age, weight, skin tone, disability, religion,
 sexuality, weapons, presidents, Asian-American, Native American, gender–career, gender–science,
 Arab-Muslim, and others), taken from Project Implicit's open task library with full provenance.
 
-## Build and run
+## Run
+
+Keys everywhere: **E** = left, **I** = right, **Space** = continue, **Q**/Esc = quit. On a touch screen
+the web page uses Project Implicit's touch layout instead: green areas at the left and right edges
+answer, the area along the bottom continues.
+
+**Terminal and window** (`iat`, `iat-sdl`):
 
     git clone --recurse-submodules <this repo>     # submodules are only needed for tools/provenance.sh verify
     make                                            # or: make iat   (no SDL needed)
@@ -25,26 +34,29 @@ Guix: `guix shell gcc-toolchain make pkg-config sdl2-compat -- make`.
 Debian/Ubuntu: `apt install build-essential libsdl2-dev`.
 If `sdl2-config` is missing: `make SDL_CFLAGS="$(pkg-config --cflags sdl2)" SDL_LIBS="$(pkg-config --libs sdl2)"`.
 
-Keys: **E** = left, **I** = right, **Space** = continue, **Q**/Esc = quit.
+**Web page**, two ways:
 
-| option / env           | meaning |
-|------------------------|---------|
-| `--order 1\|2`          | which pairing comes first (default: random, as Project Implicit; alternate across sittings if you repeat) |
-| `--out FILE`           | results file (default `results.csv`); see "Results files" below |
-| `--seed N`             | replay: every choice comes from a generator seeded with N (default: every choice from the OS, `getrandom()`) |
-| `--no-intro`           | skip the opening screen (transcribed from the live site; not in minno-tasks) |
-| `IAT_FULLSCREEN=1`     | `iat-sdl` fullscreen (default 800×600 window) |
-| `IAT_SCALE=n`          | `iat-sdl` font pixel size (default 3) |
+- *One file, no server* (`make web-single`, or `python3 tools/build_single_html.py`): writes
+  `dist/iat.html`, about 2 MB, with the code, all eighteen sets and their pictures inside. Copy it
+  anywhere and open it in a browser; it starts with a menu of the sets. This is the form to carry to
+  another computer or a phone.
+- *Served from the repository* (`python3 -m http.server 8000 --bind 127.0.0.1` in the repository root):
+  open `http://127.0.0.1:8000/web/index.html?stimuli=../stimuli/race.txt`. Edits to `web/` or
+  `stimuli/` show up on reload, so this is the form for working on it.
 
-## Web and mobile
+Results download from the last screen as the same CSV the programs write.
 
-`web/` is the same program for a browser, module for module (`iat_stimuli.js`, `iat_procedure.js`,
-`iat_scoring.js`, `iat_app.js`, `iat_frontend_dom.js`), reading the same `stimuli/*.txt` files.
-Serve the repository root (`python3 -m http.server`) and open
-`web/index.html?stimuli=../stimuli/race.txt`; `&order=1|2`, `&seed=N`, `&intro=0` as for the binaries (without a seed, every choice comes from `crypto.getRandomValues`).  On a
-touch screen it switches to Project Implicit's touch layout (left/right green areas answer, the lower
-area continues; `&touch=1` forces it).  Results download as the same CSV.
-`node test/web_scoring_check.mjs results.csv` checks the web scorer against a CSV from the C build.
+**Options**, the same in all three forms:
+
+| command line   | web page (URL)  | meaning |
+|----------------|-----------------|---------|
+| `STIMULI_FILE` | `?stimuli=PATH` | which set to run (single file without it: a menu) |
+| `--order 1\|2` | `&order=1\|2`   | which pairing comes first (default: random, as Project Implicit; alternate across sittings if you repeat) |
+| `--seed N`     | `&seed=N`       | replay: every choice comes from a generator seeded with N (default: every choice from the operating system: `getrandom()` / `crypto.getRandomValues`) |
+| `--no-intro`   | `&intro=0`      | skip the opening screen (transcribed from the live site; not in minno-tasks) |
+| `--out FILE`   | (download link) | results file (default `results.csv`); see "Results files" below |
+| —              | `&touch=1`      | force the touch layout (it switches on by itself on touch screens) |
+| `IAT_FULLSCREEN=1`, `IAT_SCALE=n` | — | `iat-sdl` fullscreen (default 800×600 window); font pixel size (default 3) |
 
 ## What the score means
 
@@ -135,13 +147,16 @@ domain/MIT; font8x8: public domain; papers and Project Implicit study materials:
 
 ## Layout
 
-    src/iat_app.h          command line, session flow, CSV and score output   (entry: iat_app_main)
+    src/iat_app.h          command line, session flow, results file and score output (entry: iat_app_main)
     src/iat_procedure.h    the seven blocks, trial sequencing, timing          (entry: procedure_run)
     src/iat_scoring.h      the D measure                                      (entry: scoring_compute)
     src/iat_stimuli.h      the four categories and the stimuli file format    (entry: stimuli_load)
     src/iat_frontend.h     the eight display/keyboard calls a frontend implements
     src/iat_terminal.c     terminal frontend (termios + ANSI)
     src/iat_sdl.c          SDL2 frontend (pictures; retained scene redrawn per frame)
+    web/iat_*.js           the web form, module for module parallel to src/ (plus iat_resources.js:
+                           fetched from a server, or embedded in the single file)
+    web/index.html         the web page
     stimuli/               18 task sets
     media/minno/           minno-tasks docs/images (git-lfs)
     media/project-implicit/  Project Implicit study materials (git-lfs; tools/fetch_media.ps1)
@@ -149,14 +164,15 @@ domain/MIT; font8x8: public domain; papers and Project Implicit study materials:
     tools/regen_stimuli.sh      rebuild the 13 converted sets from the submodule
     tools/provenance.sh         verify / sync / manifest  ->  PROVENANCE.txt
     tools/rescore_csv.py        score results files from their trials; convert earlier builds' files
+    tools/build_single_html.py   dist/iat.html: the web form as one self-contained file (make web-single)
     tools/fetch_media.ps1, tools/fetch_drive_missing.py   Windows: fetch Project Implicit study materials
     test/simulate_participant.py        pty-driven scripted participant (make test)
     test/rescore_project_implicit.py    independent re-implementation of nogaScorer.js (iat11 settings)
     test/rescore_greenwald_2003.py      independent re-implementation of 2003 Table 4
+    test/web_scoring_check.mjs   web scorer vs the C scorer's results file
     references/            papers.bib, fetch_papers.sh, and the papers (PDF, git-lfs)
     third_party/           stb_image.h, font8x8_basic.h (copies of upstream/)
     upstream/              git submodules: minno-tasks, stb, font8x8
-    web/                   browser/mobile port, parallel module for module; test/web_scoring_check.mjs
     PROTOCOL, REFERENCES.md, NOTICE, LICENSE, CITATION.cff
 
 Naming: `module_verb_object` functions, `thing_t` types, one statement per line; each header opens
