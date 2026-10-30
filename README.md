@@ -124,6 +124,7 @@ domain/MIT; font8x8: public domain; papers and Project Implicit study materials:
     tools/minno_to_stimuli.py   minno-tasks config -> stimuli file
     tools/regen_stimuli.sh      rebuild the 13 converted sets from the submodule
     tools/provenance.sh         verify / sync / manifest  ->  PROVENANCE.txt
+    tools/rescore_csv.py        re-score results CSVs from any earlier build with the current scoring
     tools/fetch_media.ps1, tools/fetch_drive_missing.py   Windows: fetch Project Implicit study materials
     test/simulate_participant.py        pty-driven scripted participant (make test)
     test/rescore_project_implicit.py    independent re-implementation of nogaScorer.js (iat11 settings)
