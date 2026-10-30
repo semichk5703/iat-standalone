@@ -12,8 +12,8 @@ errors, as on Project Implicit / minno-tasks iat10).  Steps, as in the paper:
   8. divide each by its pooled SD
   9. D = average of the two
 Project Implicit additionally drops trials under 400 ms before steps 5-6; applied here too (minRT=400).
-Usage: test/rescore_2003.py results.csv -> prints D and compares with D_2003 on the '#' line the program wrote.
-(test/rescore.py checks the primary, Project Implicit single-parcel D.)"""
+Usage: test/rescore_greenwald_2003.py results.csv -> prints D and compares with D_2003 on the '#' line the program wrote.
+(test/rescore_project_implicit.py checks the primary, Project Implicit single-parcel D.)"""
 import csv, math, sys, statistics
 
 MIN_RT, MAX_RT = 400, 10000

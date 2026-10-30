@@ -1,6 +1,6 @@
 """Independent re-scoring of results.csv, written straight from minno-tasks/scorer/nogaScorer.js
 (Project Implicit's scorer) so the C implementation can be checked against it.
-    python3 test/rescore.py results.csv        -> prints D and compares with the '#' line iat wrote."""
+    python3 test/rescore_project_implicit.py results.csv        -> prints D and compares with the '#' line iat wrote."""
 import csv, math, re, sys
 rows = []; meta = {}
 for line in open(sys.argv[1]):

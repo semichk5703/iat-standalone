@@ -2,7 +2,7 @@ Third-party material in this repository
 ========================================
 Exact upstream commits are recorded as git submodules under upstream/ and in PROVENANCE.txt,
 which lists the sha256 of every vendored file next to the upstream path it is a copy of
-(./provenance.sh verify checks this).
+(tools/provenance.sh verify checks this).
 
 minno-tasks — Project Implicit's open task library.  Yoav Bar-Anan and contributors.
   https://github.com/baranan/minno-tasks   Apache License 2.0 (upstream/minno-tasks/LICENSE)
@@ -21,6 +21,6 @@ font8x8 — Daniel Hepper, from IBM public-domain VGA fonts.  https://github.com
 Word lists in stimuli/flowers-insects.txt are those published in Greenwald, McGhee & Schwartz (1998),
 Appendix A, reproduced as a citation of the published method.
 
-Project Implicit study-material stimulus sets fetched by fetch-media.ps1 are NOT in this repository.
+Project Implicit study-material stimulus sets fetched by tools/fetch_media.ps1 are NOT in this repository.
 They are made available by Project Implicit "for academic research purposes" at
 https://www.projectimplicit.net/resources/study-materials/ with the request to cite Nosek et al. (2007).

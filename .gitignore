@@ -3,3 +3,5 @@ iat-sdl
 results.csv
 *.o
 __pycache__/
+media/project-implicit/fetch.log
+references/*.pdf

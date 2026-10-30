@@ -1,36 +1,66 @@
-Protocol check against Project Implicit's implementation
-=========================================================
-Reference: github.com/baranan/minno-tasks  IAT/qualtrics/quiat9.js (the task every example config loads)
-and scorer/nogaScorer.js (its scorer).  Both read 2026-10.  Papers: Greenwald, McGhee & Schwartz 1998
-(procedure); Greenwald, Nosek & Banaji 2003 (D algorithm).
+Protocol provenance
+===================
+Every parameter below is traced to (a) the primary paper and (b) the live reference implementation:
+minno-tasks IAT/qualtrics/quiat9.js and scorer/nogaScorer.js (pinned commit in PROVENANCE.txt).
+quiat9.js is what implicit.harvard.edu/implicit/takeatest.html serves: its instruction templates
+match a transcript of the live Race IAT word for word, including the 28-trial block 5.
+Full citations: references/papers.bib.  PDFs: references/fetch_papers.sh.
 
-parameter                 quiat9.js / nogaScorer.js                       this bundle (core.h)
-------------------------  ----------------------------------------------  --------------------------------
-blocks                    7                                               7
-trials per block          20 / 20 / 20 / 40 / 28 / 20 / 40                same
-mini-blocks               nTrials/4 (combined) or /2; one trial per        same construction
-                          category each, shuffled, target/attr alternate
-pairing order             randomBlockOrder: true                          random; --order 1|2 to fix
-inter-trial blank         ITIDuration 250 ms                              250 ms
-error handling            errorCorrection: true -> red X, must press       same
-                          correct key; latency measured to correct key
-remindError               on-screen reminder text                         in block instructions
-scoring: trial filter     minRT 400 (drop), maxRT 10000 (drop)            same
-scoring: error trials     errorLatency 'latency' (kept as measured)       same
-scoring: parcels          one parcel ('first'): blocks 3+4 vs 6+7         same (primary D)
-scoring: SD               sample SD (n-1) over both conditions pooled     same
-scoring: direction        cond2 (incompatible) - cond1 (compatible)       mean reversed - mean congruent
-too-fast flag             fastRT 150, maxFastTrialsRate 0.1               same
-feedback cutoffs          +-0.15 / 0.35 / 0.65                            same
-stimulus sampling         minno 'random' mixer picks items                items cycled with random start;
-                                                                          not scoring-relevant
-Greenwald 2003 variant    not computed by PI                              printed alongside for reference
+Procedure
+---------
+parameter                 value in this repo          primary source                       quiat9.js
+------------------------  --------------------------  -----------------------------------  ---------------------------
+block structure           7 blocks                    Greenwald et al. 1998, Table 1       7 (nBlocks)
+trials per block          20/20/20/40/28/20/40        1998 Table 1 (20/20/20/40/20/20/40); blockCategories_nTrials 20,
+                                                      block 5 lengthened to reduce order   blockAttributes 20, First-
+                                                      effects: Nosek et al. 2005, p. 170   Combined 20+40, Switch 28,
+                                                                                           SecondCombined 20+40
+trial sequencing          mini-blocks: one trial per  (implementation detail, not in the   getMiniMixer2/4: nMiniBlocks
+                          category, targets and       papers; 1998 only says "alternating") = nTrials/4, shuffled
+                          attributes alternate
+pairing order             random per sitting; --order 1998 counterbalanced between         randomBlockOrder: true
+                          1|2 to fix                  subjects
+inter-trial interval      250 ms blank                1998: 150 ms; 2003 studies: 250 ms   ITIDuration: 250
+error feedback            red X; must press correct   2003 pp. 199-200 ("built-in error    errorCorrection: true,
+                          key; latency to correct key penalty" variant)                    remindError: true
+instruction wording       quiat9 templates verbatim   —                                    instCategoriesPractice /
+                          (block 1 categories, 2                                           AttributePractice / First-
+                          attributes, 3+6 first-                                           Combined / SecondCombined /
+                          combined, 4+7 second-                                            SwitchCategories
+                          combined, 5 switch)
+attribute words           random 8 of the 32-word     —                                    demoRace0005.js: posWords/
+                          lists per session                                                negWords API.shuffle()d, [0..7]
+category labels           one label variant per       —                                    demoRace0005.js conditions
+                          session (race: Black/White                                       (live site shows both forms)
+                          people or African/European
+                          Americans)
 
-Verification: test/rescore.py is an independent transcription of nogaScorer.js's arithmetic; make test
-runs it on the C scorer's CSV and the two agree to <1e-3.  Balance of trials per category/key per block
-was checked from the CSV (10/10, 5/5, 14/14).  A simulated participant with no latency difference scores
-|D| < 0.1 at IAT_TIMESCALE=10.
+Scoring (D measure)
+-------------------
+step                      value in this repo          primary source                       nogaScorer.js
+------------------------  --------------------------  -----------------------------------  ---------------------------
+blocks scored             3,4 vs 6,7                  2003 Table 4, step 1                 condVar cong, parcel 'first'
+long-latency deletion     > 10,000 ms dropped         2003 Table 4, step 2                 maxRT 10000
+short-latency deletion    < 400 ms dropped            not in 2003 (which only excludes     minRT 400
+                                                      subjects); Project Implicit practice
+too-fast subject flag     > 10% of trials < 150 ms    2003 Table 4, step 3 uses 300 ms;    fastRT 150,
+                          warns                       PI uses 150                          maxFastTrialsRate 0.1
+error trials              kept with measured latency  2003 built-in penalty variant        errorLatency 'latency'
+                          (no replacement)            (Table 4 note; pp. 199-200)
+standard deviation        sample SD (n-1), pooled     2003 Table 4, step 5                 calcSD, calcPooledSD
+                          over both pairings
+parcels                   primary D: one parcel over  2003 Table 4 steps 5-9: two parcels  one parcel ('first');
+                          all four blocks;            (3 vs 6, 4 vs 7) averaged — printed  scoreAll averages parcels
+                          D_2003 also printed         as D_2003
+sign                      mean(reversed) - mean(first 2003: incompatible minus compatible  cond2 - cond1
+                          pairing)
+feedback bands            0.15 / 0.35 / 0.65          Project Implicit convention (not in  messageDef cuts
+                                                      2003)
 
-Known, deliberate differences from the 2003 paper (where PI also differs): block 5 is 28 trials (paper
-suggests 40); a 400 ms floor drops trials (paper only flags subjects with >10% under 300 ms); single
-parcel rather than practice/test average.  These follow the live PI code since that is the mainstream.
+Verification
+------------
+test/rescore_project_implicit.py        re-implements nogaScorer.js from its source; agrees with the C scorer to < 1e-3.
+test/rescore_greenwald_2003.py   re-implements 2003 Table 4 steps 1-9 (with PI's 400 ms floor); agrees for D_2003.
+make test              runs both on every stimulus set, both frontends, at 100x speed.
+Trial balance per category and key per block was checked from the CSV (10/10, 5/5, 14/14).
+A scripted participant with no latency difference scores |D| < 0.1.

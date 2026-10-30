@@ -1,7 +1,7 @@
-# fetch-media.ps1 — download IAT stimulus media on Windows (PowerShell 5+), for copying to the offline machine.
+# tools/fetch_media.ps1 — download IAT stimulus media on Windows (PowerShell 5+), for copying to the offline machine.
 #
-#   powershell -ExecutionPolicy Bypass -File fetch-media.ps1            # everything
-#   powershell -ExecutionPolicy Bypass -File fetch-media.ps1 -Only pi   # only Project Implicit sets
+#   powershell -ExecutionPolicy Bypass -File tools/fetch_media.ps1            # everything
+#   powershell -ExecutionPolicy Bypass -File tools/fetch_media.ps1 -Only pi   # only Project Implicit sets
 #
 # Two sources:
 #  1. minno-tasks (Project Implicit's open task library, Apache-2.0): a plain git-archive download.
@@ -12,7 +12,7 @@
 #     they ask that you cite Nosek et al. (2007), Eur. Rev. Soc. Psych. 18, 36-88.  Google Drive folders
 #     have no stable direct-download URL, so this script uses gdown (pip install gdown) when present and
 #     otherwise prints each folder's URL for you to use Drive's "Download all".
-#     Re-running only fetches files still missing (see fetch-drive-missing.py).
+#     Re-running only fetches files still missing (see tools/fetch_drive_missing.py).
 # Output: .\media\minno\  and  .\media\project-implicit\<set>\ — copy the media\ folder next to the iat binary.
 param([string]$Only = "all")
 $ErrorActionPreference = "Stop"
@@ -49,7 +49,7 @@ if ($Only -in "all","pi") {
         "asian-white-landmarks" = "1Hk-uzguS1aKBs9q-4gVzsE4nH68wvBVa"
         "child-race"            = "1Nj2JFe9E_yiefHYbajYXRiMnfje2ReWT"
     }
-    # Downloads go through fetch-drive-missing.py (gdown's Python API): one listing request per set, then
+    # Downloads go through tools/fetch_drive_missing.py (gdown's Python API): one listing request per set, then
     # only files not already on disk, so re-running after a rate limit or an interrupted run costs Drive
     # almost nothing. Each failure is printed with the file name and gdown's reason.
     $python = Get-Command python -ErrorAction SilentlyContinue
@@ -62,7 +62,7 @@ if ($Only -in "all","pi") {
     if (-not $haveGdown) { Write-Host "   python + gdown not found (pip install gdown). Folder URLs are listed below; open each in a browser and use Drive's 'Download all' into media\project-implicit\<name>" }
     $log = "media\project-implicit\fetch.log"
     New-Item -ItemType Directory -Force -Path media\project-implicit | Out-Null
-    "fetch-media.ps1 run $(Get-Date -Format o)" | Add-Content $log
+    "tools/fetch_media.ps1 run $(Get-Date -Format o)" | Add-Content $log
     $failed = @()
     foreach ($name in $sets.Keys) {
         $url = "https://drive.google.com/drive/folders/$($sets[$name])"
@@ -73,7 +73,7 @@ if ($Only -in "all","pi") {
         # stderr line of a native command run with 2>&1 into a terminating error.
         $so = Join-Path $env:TEMP "fetch-out.txt"
         $se = Join-Path $env:TEMP "fetch-err.txt"
-        $argLine = "fetch-drive-missing.py `"$url`" `"$dest`""
+        $argLine = "tools/fetch_drive_missing.py `"$url`" `"$dest`""
         $p = Start-Process -FilePath $python.Source -ArgumentList $argLine -NoNewWindow -Wait -PassThru -RedirectStandardOutput $so -RedirectStandardError $se
         $out = (Get-Content $so -Raw -ErrorAction SilentlyContinue) + (Get-Content $se -Raw -ErrorAction SilentlyContinue)
         "`n== $name  $url" | Add-Content $log; $out | Add-Content $log
