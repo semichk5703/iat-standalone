@@ -1,6 +1,6 @@
 /* iat_frontend.h — the display and keyboard interface a frontend implements.
  *
- * The procedure (iat_procedure.h) drives the test through these eight calls and nothing else, so a
+ * The procedure (iat_procedure.h) and app (iat_app.h) drive the test through these calls and nothing else, so a
  * frontend for another toolkit (framebuffer, web, ...) is exactly these functions.  Two are provided:
  * iat_terminal.c (ANSI escapes) and iat_sdl.c (SDL2, pictures).
  */
@@ -25,11 +25,46 @@ typedef struct {
     int right_count;
 } key_assignment_t;
 
+/* The pre-IAT overview (minno-tasks docs/studies/raceiat/raceiat_instructions.jst): a heading, a lead
+   sentence, a table with one row per group (its name, then its words or its pictures), a closing
+   sentence, and how to continue.  Frontends that can draw pictures show them as thumbnails. */
+typedef struct {
+    const char *heading;
+    const char *lead;
+    category_id_t row_order[CATEGORY_COUNT];
+    const char *closing;
+    const char *continue_prompt;
+} overview_t;
+
+/* Header text, iat11.js leftKeyText / rightKeyText / orText.  On touch screens iat11 hides the key text. */
+#define FRONTEND_LEFT_KEY_TEXT "Press \"E\" for"
+#define FRONTEND_RIGHT_KEY_TEXT "Press \"I\" for"
+#define FRONTEND_OR_TEXT "or"
+
+/* The labels one side of the header shows, top to bottom, as iat11.js orders them: in combined blocks
+   the attribute first, then "or", then the target category (its left1/right1 is the attribute).
+   Returns the number of labels (1 or 2). */
+static int frontend_header_labels(const key_assignment_t *keys, int left_side, category_id_t labels[2])
+{
+    const category_id_t *side = left_side ? keys->left : keys->right;
+    int count = left_side ? keys->left_count : keys->right_count;
+    if (count == 2) {
+        labels[0] = side[1];
+        labels[1] = side[0];
+    } else {
+        labels[0] = side[0];
+    }
+    return count;
+}
+
 static void frontend_open(const stimulus_set_t *set);
 static void frontend_close(void);
 
 /* Clear the screen and show centred lines of text (instructions). */
 static void frontend_show_message(const char **lines, int line_count);
+
+/* Clear the screen and show the overview table. */
+static void frontend_show_overview(const stimulus_set_t *set, const overview_t *overview);
 
 /* Clear the screen and show the block header; the stimulus area is empty afterwards. */
 static void frontend_show_header(const stimulus_set_t *set, const key_assignment_t *keys);

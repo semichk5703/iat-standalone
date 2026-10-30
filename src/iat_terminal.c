@@ -158,22 +158,52 @@ static void frontend_show_message(const char **lines, int line_count)
     fflush(stdout);
 }
 
+/* The terminal cannot draw pictures, so a picture row says how many there are and where they can be
+   seen; that wording is this program's, not the source page's. */
+static void frontend_show_overview(const stimulus_set_t *set, const overview_t *overview)
+{
+    static char rows[CATEGORY_COUNT][4 * STIMULI_MAX_TEXT];
+    const char *lines[CATEGORY_COUNT + 8];
+    int line_count = 0;
+    int r, i;
+    lines[line_count++] = overview->heading;
+    lines[line_count++] = "";
+    lines[line_count++] = overview->lead;
+    lines[line_count++] = "";
+    for (r = 0; r < CATEGORY_COUNT; r++) {
+        const category_t *category = &set->categories[overview->row_order[r]];
+        char *row = rows[r];
+        int used = snprintf(row, sizeof rows[r], "%s:  ", category->name);
+        if (category->items[0].is_picture) {
+            snprintf(row + used, sizeof rows[r] - used, "%d pictures (shown by iat-sdl and the web page)", category->item_count);
+        } else {
+            for (i = 0; i < category->item_count && used < (int)sizeof rows[r] - 1; i++) {
+                used += snprintf(row + used, sizeof rows[r] - used, "%s%s", i ? ", " : "", category->items[i].text);
+            }
+        }
+        lines[line_count++] = row;
+    }
+    lines[line_count++] = "";
+    lines[line_count++] = overview->closing;
+    lines[line_count++] = overview->continue_prompt;
+    frontend_show_message(lines, line_count);
+}
+
 static void frontend_show_header(const stimulus_set_t *set, const key_assignment_t *keys)
 {
-    int i;
+    int side, i;
     terminal_clear_screen();
-    terminal_move_to(1, 1);
-    printf("Press E for:");
-    terminal_move_to(1, terminal_columns - 13);
-    printf("Press I for:");
-    for (i = 0; i < keys->left_count; i++) {
-        terminal_move_to(2 + i, 1);
-        fputs(set->categories[keys->left[i]].name, stdout);
-    }
-    for (i = 0; i < keys->right_count; i++) {
-        const char *name = set->categories[keys->right[i]].name;
-        terminal_move_to(2 + i, terminal_columns - terminal_text_width(name));
-        fputs(name, stdout);
+    for (side = 0; side < 2; side++) {
+        int left_side = side == 0;
+        const char *key_text = left_side ? FRONTEND_LEFT_KEY_TEXT : FRONTEND_RIGHT_KEY_TEXT;
+        category_id_t labels[2];
+        int count = frontend_header_labels(keys, left_side, labels);
+        for (i = -1; i < 2 * count - 1; i++) {
+            /* row 1: key text; then label, "or", label */
+            const char *text = i < 0 ? key_text : (i % 2 ? FRONTEND_OR_TEXT : set->categories[labels[i / 2]].name);
+            terminal_move_to(2 + i, left_side ? 1 : terminal_columns + 1 - terminal_text_width(text));
+            fputs(text, stdout);
+        }
     }
     fflush(stdout);
 }

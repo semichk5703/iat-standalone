@@ -48,7 +48,7 @@ deadline = time.time() + 600 / scale
 while time.time() < deadline:
     if not rd(): break
     txt = strip(buf)
-    if 'Press the space bar' in txt or 'Press SPACE' in txt:
+    if 'Press the space bar' in txt or 'Press SPACE' in txt or 'Press space to continue' in txt:
         # Which categories answer to E: the lines that mention the E key, in Project Implicit's wording
         # ("...on the E key for ... X." / "Use the E key for X and for Y.")
         # (the terminal wraps long lines, so sentences are reassembled from the whole screen first)

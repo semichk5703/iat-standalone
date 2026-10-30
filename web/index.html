@@ -15,9 +15,13 @@
   .stimulus { font-size: 2.3em; font-weight: bold; min-height: 2em; }
   .stimulus img { max-height: 40vh; max-width: 60vw; }
   .error { color: #f00; font-size: 3em; font-weight: bold; margin-top: 0.5em; }
-  .message { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 8vw; text-align: center; background: #fff; }
+  .message { position: absolute; inset: 0; overflow-y: auto; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 8vw; text-align: center; background: #fff; }
   .message p { margin: 0.3em 0; }
   .message a { margin-top: 1em; }
+  .overview { border-collapse: collapse; margin: 0.5em 0; }
+  .overview th, .overview td { border: 1px solid #ccc; padding: 0.3em 0.6em; text-align: left; }
+  .overview img { margin: 1px; vertical-align: middle; }
+  .message button.start { font: inherit; padding: 0.4em 1.6em; margin-top: 0.6em; }
   .choices { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5em; margin-top: 0.5em; }
   .choices button { font: inherit; padding: 0.5em 0.9em; }
   .touch-zones { display: none; }

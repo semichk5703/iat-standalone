@@ -48,13 +48,42 @@ export class DomFrontend {
         this.elements['zone-right'].classList.remove('active');
     }
 
+    /** The source page's table (raceiat_instructions.jst): group names, then words or 60 px thumbnails;
+     *  a Start button continues, as do space and the touch area. */
+    showOverview(set, overview) {
+        this.showMessage([]);
+        const message = this.elements.message;
+        const add = (tag, props) => message.appendChild(Object.assign(document.createElement(tag), props));
+        add('h2', { textContent: overview.heading });
+        add('p', { textContent: overview.lead });
+        const table = add('table', { className: 'overview' });
+        table.innerHTML = '<tr><th>Category</th><th>Items</th></tr>';
+        for (const c of overview.rowOrder) {
+            const category = set.categories[c];
+            const row = table.insertRow();
+            row.appendChild(Object.assign(document.createElement('th'), { textContent: category.name }));
+            const cell = row.insertCell();
+            if (category.items[0].isPicture) {
+                category.items.forEach(item => cell.appendChild(Object.assign(new Image(), { src: item.text, alt: item.label, height: 60 })));
+            } else {
+                cell.textContent = category.items.map(item => item.text).join(', ');
+            }
+        }
+        add('p', { textContent: overview.closing });
+        add('button', { textContent: overview.startButton, className: 'start', onclick: () => this.deliver(KEY_CONTINUE) });
+    }
+
     showHeader(set, keys) {
         const names = set.categories.map(c => c.name);
         this.elements.message.style.display = 'none';
         this.elements.header.style.visibility = '';
         this.elements.stage.style.visibility = '';
-        this.elements.left.innerHTML = `<small>${this.touch ? 'Touch left for' : 'Press "E" for'}</small>` + keys.left.map(c => `<div>${names[c]}</div>`).join('<div class="or">or</div>');
-        this.elements.right.innerHTML = `<small>${this.touch ? 'Touch right for' : 'Press "I" for'}</small>` + keys.right.map(c => `<div>${names[c]}</div>`).join('<div class="or">or</div>');
+        // iat11.js header: key text (hidden on touch screens), then in combined blocks the attribute,
+        // "or", the target category (frontend_header_labels in C)
+        const side = (keyText, categories) => `<small style="visibility:${this.touch ? 'hidden' : 'visible'}">${keyText}</small>` +
+            categories.slice().reverse().map(c => `<div>${names[c]}</div>`).join('<div class="or">or</div>');
+        this.elements.left.innerHTML = side('Press "E" for', keys.left);
+        this.elements.right.innerHTML = side('Press "I" for', keys.right);
         this.elements['zone-continue'].classList.remove('active');
         this.elements['zone-left'].classList.add('active');
         this.elements['zone-right'].classList.add('active');

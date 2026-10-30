@@ -54,12 +54,17 @@ typedef struct {
 
 static score_t scoring_compute(const procedure_result_t *result);
 
-/* Project Implicit's feedback bands for |D|: "little or no" / "slight" / "moderate" / "strong".
-   Not part of the D measure and not in Greenwald et al. (2003): they are the messageDef cuts in
-   iat11.js (0.15 / 0.35 / 0.65), which the implicit.harvard.edu results page words as
-   "slightly / moderately / much faster" (see also the archived
-   implicit.harvard.edu/implicit/demo/background/raceinfo.html). */
-static const char *scoring_strength_label(double d);
+/* Which of Project Implicit's result sentences a D selects.  Not part of the D measure and not in
+   Greenwald et al. (2003): iat11.js messageDef cuts -0.65 / -0.35 / -0.15 / 0.15 / 0.35 / 0.65, the first
+   cut D is at or below choosing (scorer/feedbacker.js), and its fb_* sentences "You were much /
+   moderately / slightly faster at sorting ..." or "about equally fast".  The archived
+   implicit.harvard.edu/implicit/demo/background/raceinfo.html describes the same bands. */
+typedef struct {
+    const char *speed;         /* "much", "moderately", "slightly", or NULL for "about equally fast" */
+    int reversed;              /* 1: the faster pairing was target_b with attr_a (D below zero) */
+} feedback_band_t;
+
+static feedback_band_t scoring_feedback_band(double d);
 
 /* iat11.js's message when feedback is withheld, or NULL when it is shown. */
 static const char *scoring_feedback_message(feedback_t feedback);
@@ -195,13 +200,17 @@ static score_t scoring_compute(const procedure_result_t *result)
     return score;
 }
 
-static const char *scoring_strength_label(double d)
+static feedback_band_t scoring_feedback_band(double d)
 {
-    double magnitude = fabs(d);          /* iat11.js messageDef cuts: -0.65 -0.35 -0.15 0.15 0.35 0.65 */
-    if (magnitude < 0.15) return "little or no";
-    if (magnitude < 0.35) return "slight";
-    if (magnitude < 0.65) return "moderate";
-    return "strong";
+    feedback_band_t band = { NULL, 0 };
+    if (d <= -0.65)     { band.speed = "much";       band.reversed = 1; }
+    else if (d <= -0.35) { band.speed = "moderately"; band.reversed = 1; }
+    else if (d <= -0.15) { band.speed = "slightly";   band.reversed = 1; }
+    else if (d <= 0.15)  { band.speed = NULL; }
+    else if (d <= 0.35)  { band.speed = "slightly"; }
+    else if (d <= 0.65)  { band.speed = "moderately"; }
+    else                 { band.speed = "much"; }
+    return band;
 }
 
 static const char *scoring_feedback_message(feedback_t feedback)

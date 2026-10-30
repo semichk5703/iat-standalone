@@ -67,7 +67,8 @@ static int app_parse_options(app_options_t *options, int argc, char **argv)
    you will complete an Implicit Association Test (IAT)..."), minus the questionnaire and duration it
    mentions there, since this program runs the IAT alone.  Not in minno-tasks: transcribed from the live
    site (2026-10).  The next screen opens with "Next," because on the site it follows the questionnaire;
-   this screen gives it something to follow.  --no-intro omits it. */
+   this screen gives it something to follow.  --no-intro omits it.  The last line is this program's:
+   the site continues with a button. */
 static void app_show_introduction(const stimulus_set_t *set)
 {
     const char *lines[] = {
@@ -83,36 +84,42 @@ static void app_show_introduction(const stimulus_set_t *set)
     frontend_show_message(lines, 6);
 }
 
-/* The welcome screen implicit.harvard.edu shows before the IAT: minno-tasks
-   docs/studies/raceiat/raceiat_instructions.jst ("Next, you will use the 'E' and 'I' computer keys to
-   categorize items into groups..."), its table of groups and items flattened to one line per group. */
+/* The overview implicit.harvard.edu shows before the IAT: minno-tasks
+   docs/studies/raceiat/raceiat_instructions.jst, word for word, with its rows in its order (Good, Bad,
+   then the two target groups: attribute2, attribute1, category1, category2).  Its keyboard wording; the
+   web page uses the touch wording on touch screens.  The continue prompt is this program's: the source
+   has a Start button. */
 static void app_show_welcome(const stimulus_set_t *set)
 {
-    static char group_lines[CATEGORY_COUNT][4 * STIMULI_MAX_TEXT];
-    const char *lines[CATEGORY_COUNT + 6];
-    int line_count = 0;
-    int c, i;
+    overview_t overview = {
+        "IAT Instructions",
+        "Next, you will use the 'E' and 'I' computer keys to categorize items into groups as fast as you can. "
+        "These are the four groups and the items that belong to each:",
+        { CATEGORY_ATTRIBUTE_B, CATEGORY_ATTRIBUTE_A, CATEGORY_TARGET_A, CATEGORY_TARGET_B },
+        "There are seven parts.  The instructions change for each part.  Pay attention!",
+        "Press the space bar to start.",
+    };
+    frontend_show_overview(set, &overview);
+}
 
-    lines[line_count++] = "Next, you will use the 'E' and 'I' computer keys to categorize items into groups";
-    lines[line_count++] = "as fast as you can. These are the four groups and the items that belong to each:";
-    lines[line_count++] = "";
-    for (c = 0; c < CATEGORY_COUNT; c++) {
-        const category_t *category = &set->categories[c];
-        char *line = group_lines[c];
-        int used = snprintf(line, sizeof group_lines[c], "%s:  ", category->name);
-        if (category->items[0].is_picture) {
-            snprintf(line + used, sizeof group_lines[c] - used, "[pictures]");
-        } else {
-            for (i = 0; i < category->item_count && used < (int)sizeof group_lines[c] - 1; i++) {
-                used += snprintf(line + used, sizeof group_lines[c] - used, "%s%s", i ? ", " : "", category->items[i].text);
-            }
-        }
-        lines[line_count++] = line;
+/* Project Implicit's result sentence (iat11.js fb_* messages, filled as its getFB does). */
+static void app_format_result_sentence(char *out, size_t size, const stimulus_set_t *set, double d)
+{
+    const char *target_a = set->categories[CATEGORY_TARGET_A].name;
+    const char *target_b = set->categories[CATEGORY_TARGET_B].name;
+    const char *attribute_a = set->categories[CATEGORY_ATTRIBUTE_A].name;
+    const char *attribute_b = set->categories[CATEGORY_ATTRIBUTE_B].name;
+    feedback_band_t band = scoring_feedback_band(d);
+    const char *faster = band.reversed ? target_b : target_a;     /* iat11's categoryA */
+    const char *slower = band.reversed ? target_a : target_b;     /* iat11's categoryB */
+    if (!band.speed) {
+        snprintf(out, size, "You were about equally fast at sorting '%s' with '%s' and '%s' with '%s' "
+                 "and at sorting '%s' with '%s' and '%s' with '%s'.",
+                 target_a, attribute_a, target_b, attribute_b, target_b, attribute_a, target_a, attribute_b);
+        return;
     }
-    lines[line_count++] = "";
-    lines[line_count++] = "There are seven parts. The instructions change for each part. Pay attention!";
-    lines[line_count++] = "Press the space bar to continue.";
-    frontend_show_message(lines, line_count);
+    snprintf(out, size, "You were %s faster at sorting '%s' with '%s' and '%s' with '%s' than '%s' with '%s' and '%s' with '%s'",
+             band.speed, faster, attribute_a, slower, attribute_b, slower, attribute_a, faster, attribute_b);
 }
 
 /* Results file, format 2: the session's raw data plus the facts needed to score it.  The score itself is
@@ -153,24 +160,20 @@ static void app_write_csv(FILE *out, const app_options_t *options, const stimulu
             score->fast_fraction, score->error_fraction, scoring_feedback_name(score->feedback));
 }
 
+/* The site shows only the result sentence (or the withheld message).  The D line after it is this
+   program's, for the person running the session; the same numbers are in the results file. */
 static void app_print_score(const stimulus_set_t *set, const procedure_result_t *result, const score_t *score)
 {
-    const category_t *c = set->categories;
     const char *withheld = scoring_feedback_message(score->feedback);
-    printf("\nD-score = %+.3f   (practice %+.3f, test %+.3f; single-parcel %+.3f)\n",
-           score->d, score->d_practice, score->d_test, score->d_single_parcel);
+    char sentence[10 * STIMULI_MAX_TEXT];   /* eight labels of up to STIMULI_MAX_TEXT, plus the sentence */
     if (withheld) {
-        /* implicit.harvard.edu shows only this message; the numbers above stay in the CSV for analysis */
-        printf("%s\n", withheld);
-        return;
+        printf("\n%s\n", withheld);
+    } else {
+        app_format_result_sentence(sentence, sizeof sentence, set, score->d);
+        printf("\n%s\n", sentence);
     }
-    printf("%s association of %s+%s / %s+%s %s\n", scoring_strength_label(score->d),
-           c[CATEGORY_TARGET_A].name, c[CATEGORY_ATTRIBUTE_A].name,
-           c[CATEGORY_TARGET_B].name, c[CATEGORY_ATTRIBUTE_B].name,
-           score->d > 0 ? "(faster with this pairing)" : score->d < 0 ? "(faster with the reverse pairing)" : "");
-    printf("Mean latency ms: %s+%s blocks %.0f | reversed blocks %.0f | pairing order %d\n",
-           c[CATEGORY_TARGET_A].name, c[CATEGORY_ATTRIBUTE_A].name,
-           score->mean_first_ms, score->mean_reversed_ms, result->pairing_order);
+    printf("D-score = %+.3f   (practice %+.3f, test %+.3f; single-parcel %+.3f; pairing order %d)\n",
+           score->d, score->d_practice, score->d_test, score->d_single_parcel, result->pairing_order);
 }
 
 static int iat_app_main(int argc, char **argv)

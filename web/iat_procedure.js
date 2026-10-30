@@ -62,34 +62,55 @@ export function procedureInstructionLines(set, block, blockIndex, touch) {
     const names = set.categories.map(c => c.name);
     const left = names[block.keys.left[0]], right = names[block.keys.right[0]];
     const leftAttribute = names[block.keys.left[1]] || '', rightAttribute = names[block.keys.right[1]] || '';
-    const leftKey = touch ? 'the left green area' : 'the E key';
-    const rightKey = touch ? 'the right green area' : 'the I key';
-    const lines = [`Part ${blockIndex + 1} of ${PROCEDURE_BLOCK_COUNT}`, ''];
-    const errorLine = touch ? 'If you make a mistake, a red X will appear. Touch the other side.'
-                            : 'If you make a mistake, a red X will appear. Press the other key to continue.';
+    const part = `Part ${blockIndex + 1} of ${PROCEDURE_BLOCK_COUNT}`;
+    const keyError = 'If you make a mistake, a red X will appear. Press the other key to continue.';
+    const touchError = 'If you make a mistake, a red X will appear. Touch the other side. Go as fast as you can while being accurate.';
+    const fast = 'Go as fast as you can while being accurate.';
+    if (touch) {                                       // iat11.js inst*Touch templates
+        const touchStart = 'Touch the lower green area to start.';
+        switch (block.instructions) {
+        case INSTRUCTIONS_CATEGORIES_PRACTICE:
+        case INSTRUCTIONS_ATTRIBUTES_PRACTICE:
+            return [part, '',
+                `Put a left finger over the left green area for items that belong to the category ${left}.`,
+                `Put a right finger over the right green area for items that belong to the category ${right}.`,
+                ...(block.instructions === INSTRUCTIONS_CATEGORIES_PRACTICE ? ['Items will appear one at a time.'] : []),
+                touchError, touchStart];
+        case INSTRUCTIONS_FIRST_COMBINED:
+        case INSTRUCTIONS_SECOND_COMBINED:
+            return [part, '',
+                `Put a left finger over the left green area for ${left} items and for ${leftAttribute}.`,
+                `Put a right finger over the right green area for ${right} items and for ${rightAttribute}.`,
+                block.instructions === INSTRUCTIONS_FIRST_COMBINED ? touchError : fast, touchStart];
+        case INSTRUCTIONS_SWITCH_CATEGORIES:
+            return [part, '', 'Watch out, the labels have changed position!',
+                `Put a left finger over the left green area for ${left} items.`,
+                `Put a right finger over the right green area for ${right} items.`,
+                'Items will appear one at a time.', touchError, touchStart];
+        }
+    }
+    const lines = [part, ''];                          // iat11.js inst* templates (keyboard)
     switch (block.instructions) {
     case INSTRUCTIONS_CATEGORIES_PRACTICE:
     case INSTRUCTIONS_ATTRIBUTES_PRACTICE:
-        lines.push(`Put a left finger ${touch ? 'over' : 'on'} ${leftKey} for items that belong to the category ${left}.`,
-                   `Put a right finger ${touch ? 'over' : 'on'} ${rightKey} for items that belong to the category ${right}.`);
+        lines.push(`Put a left finger on the E key for items that belong to the category ${left}.`,
+                   `Put a right finger on the I key for items that belong to the category ${right}.`);
         if (block.instructions === INSTRUCTIONS_CATEGORIES_PRACTICE) lines.push('Items will appear one at a time.');
-        lines.push(errorLine);
+        lines.push(keyError);
         break;
     case INSTRUCTIONS_FIRST_COMBINED:
     case INSTRUCTIONS_SECOND_COMBINED:
         if (block.instructions === INSTRUCTIONS_SECOND_COMBINED) lines.push('This is the same as the previous part.');
-        lines.push(`Use ${leftKey} for ${left} and for ${leftAttribute}.`, `Use ${rightKey} for ${right} and for ${rightAttribute}.`,
+        lines.push(`Use the E key for ${left} and for ${leftAttribute}.`, `Use the I key for ${right} and for ${rightAttribute}.`,
                    'Each item belongs to only one category.');
-        if (block.instructions === INSTRUCTIONS_FIRST_COMBINED) lines.push(errorLine);
+        if (block.instructions === INSTRUCTIONS_FIRST_COMBINED) lines.push(keyError);
         break;
     case INSTRUCTIONS_SWITCH_CATEGORIES:
         lines.push('Watch out, the labels have changed position!',
-                   `Use the left finger ${touch ? 'over' : 'on'} ${leftKey} for ${left}.`,
-                   `Use the right finger ${touch ? 'over' : 'on'} ${rightKey} for ${right}.`);
+                   `Use the left finger on the E key for ${left}.`, `Use the right finger on the I key for ${right}.`);
         break;
     }
-    lines.push('Go as fast as you can while being accurate.',
-               touch ? 'Touch the lower green area to start.' : 'Press the space bar when you are ready to start.');
+    lines.push(fast, 'Press the space bar when you are ready to start.');
     return lines;
 }
 
@@ -123,7 +144,10 @@ export class Procedure {
         for (let b = 0; b < blocks.length; b++) {
             if (!await this.runBlock(blocks[b], b)) return false;
         }
-        return true;
+        // iat11.js finalText / finalTouchText
+        this.frontend.showMessage([this.touch ? 'Touch the bottom green area to continue to the next task'
+                                              : 'Press space to continue to the next task']);
+        return this.waitForContinue();
     }
 
     async runBlock(block, blockIndex) {

@@ -4,7 +4,7 @@
 import { StimulusSet, CATEGORY_TARGET_A, CATEGORY_TARGET_B, CATEGORY_ATTRIBUTE_A, CATEGORY_ATTRIBUTE_B } from './iat_stimuli.js';
 import { Random } from './iat_random.js';
 import { Procedure } from './iat_procedure.js';
-import { scoringCompute, scoringStrengthLabel, SCORING_VERSION } from './iat_scoring.js';
+import { scoringCompute, scoringFeedbackBand, SCORING_VERSION } from './iat_scoring.js';
 import { DomFrontend } from './iat_frontend_dom.js';
 import { FetchedResources, EmbeddedResources } from './iat_resources.js';
 
@@ -34,33 +34,44 @@ export class IatApp {
         ];
     }
 
-    /** minno-tasks docs/studies/raceiat/raceiat_instructions.jst (parallel to app_show_welcome). */
-    welcomeLines(set) {
-        const keysText = this.touch ? 'the left and right green areas' : "the 'E' and 'I' computer keys";
-        return [
-            `Next, you will use ${keysText} to categorize items into groups as fast as you can.`,
-            'These are the four groups and the items that belong to each:', '',
-            ...set.categories.map(c => `${c.name}:  ${c.items[0].isPicture ? '[pictures]' : c.items.map(i => i.text).join(', ')}`),
-            '', 'There are seven parts. The instructions change for each part. Pay attention!',
-            this.touch ? 'Touch the lower green area to continue.' : 'Press the space bar to continue.',
-        ];
+    /** The overview implicit.harvard.edu shows before the IAT: minno-tasks docs/studies/raceiat/
+     *  raceiat_instructions.jst word for word, rows in its order (attribute2, attribute1, category1,
+     *  category2), with its touch wording on touch screens (parallel to app_show_welcome). */
+    overview() {
+        return {
+            heading: 'IAT Instructions',
+            lead: `Next, ${this.touch ? 'you will' : "you will use the 'E' and 'I' computer keys to"} categorize items into groups as fast as you can. ` +
+                  'These are the four groups and the items that belong to each:',
+            rowOrder: [CATEGORY_ATTRIBUTE_B, CATEGORY_ATTRIBUTE_A, CATEGORY_TARGET_A, CATEGORY_TARGET_B],
+            closing: 'There are seven parts.  The instructions change for each part.  Pay attention!',
+            startButton: 'Start',
+        };
     }
 
-    resultLines(set, score, trials) {
-        const names = set.categories.map(c => c.name);
-        const signed = v => (v >= 0 ? '+' : '') + v.toFixed(3);
-        const lines = [`D-score = ${signed(score.d)}   (practice ${signed(score.dPractice)}, test ${signed(score.dTest)}; single-parcel ${signed(score.dSingleParcel)})`];
-        if (score.feedbackMessage) {
-            lines.push(score.feedbackMessage);       // implicit.harvard.edu shows only this message
-            return lines;
+    /** Project Implicit's result sentence (iat11.js fb_* messages, filled as its getFB does). */
+    resultSentence(set, d) {
+        const [targetA, targetB, attributeA, attributeB] = set.categories.map(c => c.name);
+        const band = scoringFeedbackBand(d);
+        if (!band.speed) {
+            return `You were about equally fast at sorting '${targetA}' with '${attributeA}' and '${targetB}' with '${attributeB}' ` +
+                   `and at sorting '${targetB}' with '${attributeA}' and '${targetA}' with '${attributeB}'.`;
         }
-        lines.push(
-            `${scoringStrengthLabel(score.d)} association of ${names[CATEGORY_TARGET_A]}+${names[CATEGORY_ATTRIBUTE_A]} / ${names[CATEGORY_TARGET_B]}+${names[CATEGORY_ATTRIBUTE_B]}` +
-                (score.d > 0 ? ' (faster with this pairing)' : score.d < 0 ? ' (faster with the reverse pairing)' : ''),
-            `Mean latency ms: first pairing ${score.meanFirstMs.toFixed(0)} | reversed ${score.meanReversedMs.toFixed(0)} | pairing order ${this.pairingOrder}`);
-        // Greenwald, Brendl et al. 2019, p. 18: test-retest "nearer to .50 and often lower" for sensitive attitudes
-        lines.push('', 'A single IAT is a snapshot (test-retest about r = .5 or lower), not a measurement of a person.');
-        return lines;
+        const [faster, slower] = band.reversed ? [targetB, targetA] : [targetA, targetB];   // iat11's categoryA, categoryB
+        return `You were ${band.speed} faster at sorting '${faster}' with '${attributeA}' and '${slower}' with '${attributeB}' ` +
+               `than '${slower}' with '${attributeA}' and '${faster}' with '${attributeB}'`;
+    }
+
+    /** The site shows only the result sentence (or the withheld message). The rest is this program's:
+     *  the D line for whoever runs the session, and a note on reliability (Greenwald, Brendl et al. 2019,
+     *  p. 18: test-retest "nearer to .50 and often lower" for sensitive attitudes). */
+    resultLines(set, score) {
+        const signed = v => (v >= 0 ? '+' : '') + v.toFixed(3);
+        return [
+            score.feedbackMessage || this.resultSentence(set, score.d), '',
+            `D-score = ${signed(score.d)}   (practice ${signed(score.dPractice)}, test ${signed(score.dTest)}; ` +
+                `single-parcel ${signed(score.dSingleParcel)}; pairing order ${this.pairingOrder})`,
+            'A single IAT is a snapshot (test-retest about r = .5 or lower), not a measurement of a person.',
+        ];
     }
 
     /** Results file, format 2, as the C build writes it (src/iat_app.h app_write_csv): data and the facts
@@ -102,11 +113,11 @@ export class IatApp {
             frontend.showMessage(this.introductionLines(set));
             if (!await procedure.waitForContinue()) { frontend.showMessage(['aborted']); return; }
         }
-        frontend.showMessage(this.welcomeLines(set));
+        frontend.showOverview(set, this.overview());
         if (!await procedure.waitForContinue() || !await procedure.run()) { frontend.showMessage(['aborted']); return; }
 
         const score = scoringCompute(procedure.trials, this.pairingOrder);
-        frontend.showMessage(this.resultLines(set, score, procedure.trials));
+        frontend.showMessage(this.resultLines(set, score));
         const link = document.createElement('a');
         link.textContent = 'download results.csv';
         link.href = URL.createObjectURL(new Blob([this.csv(set, procedure.trials, score)], { type: 'text/csv' }));

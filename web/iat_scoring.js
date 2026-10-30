@@ -81,11 +81,16 @@ export function scoringCompute(trials, pairingOrder) {
     };
 }
 
-/** Project Implicit's feedback bands for |D| (iat11.js messageDef cuts 0.15 / 0.35 / 0.65); not in the 2003 paper. */
-export function scoringStrengthLabel(d) {
-    const magnitude = Math.abs(d);
-    if (magnitude < 0.15) return 'little or no';
-    if (magnitude < 0.35) return 'slight';
-    if (magnitude < 0.65) return 'moderate';
-    return 'strong';
+/** Which of Project Implicit's result sentences a D selects (parallel to scoring_feedback_band in C):
+ *  iat11.js messageDef cuts -0.65 / -0.35 / -0.15 / 0.15 / 0.35 / 0.65, the first cut D is at or below
+ *  choosing (scorer/feedbacker.js).  speed: 'much' / 'moderately' / 'slightly', or null for about equal;
+ *  reversed: the faster pairing was target_b with attr_a.  Not part of the D measure, not in the 2003 paper. */
+export function scoringFeedbackBand(d) {
+    if (d <= -0.65) return { speed: 'much', reversed: true };
+    if (d <= -0.35) return { speed: 'moderately', reversed: true };
+    if (d <= -0.15) return { speed: 'slightly', reversed: true };
+    if (d <= 0.15) return { speed: null, reversed: false };
+    if (d <= 0.35) return { speed: 'slightly', reversed: false };
+    if (d <= 0.65) return { speed: 'moderately', reversed: false };
+    return { speed: 'much', reversed: false };
 }

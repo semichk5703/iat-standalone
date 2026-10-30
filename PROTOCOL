@@ -53,10 +53,51 @@ block instructions    iat11 templates, verbatim      —                        
                                                                                                 Combined, instSecondCombined,
                                                                                                 instSwitchCategories
 pre-IAT instructions  "Next, you will use the 'E'    —                                          raceiat_instructions.jst
-                      and 'I' computer keys..."
+                      and 'I' computer keys..."                                                 (see Displayed text)
 opening screen        "In this study you will        — ; not in minno-tasks: transcribed from   — (the live site shows it before
                       complete an IAT..."; omit      the live site, 2026-10                     its questionnaire, which this
                       with --no-intro                                                           program does not run)
+
+Displayed text
+--------------
+Every screen, where its words come from, and what is this program's own.  "iat11" is
+upstream/minno-tasks IAT/iat11.js; "overview source" is docs/studies/raceiat/raceiat_instructions.jst.
+
+screen                source                                          this program's own
+--------------------  ----------------------------------------------  ------------------------------------------
+set menu (single-     —                                               all of it ("Choose a test:", the set names)
+file web build)
+opening screen        live site, transcribed 2026-10 (not in          the last line ("Press the space bar to
+                      minno-tasks): "In this study you will complete  continue." / touch: "Touch the lower green
+                      an Implicit Association Test (IAT)..."          area to continue."); the questionnaire and
+                                                                      duration it mentions are left out; omit
+                                                                      the screen with --no-intro / &intro=0
+overview              overview source, word for word: "IAT            C: "Press the space bar to start." (the
+                      Instructions", "Next, you will use the 'E'      source has a Start button; the web page
+                      and 'I' computer keys to categorize items...",  has one); terminal: a picture row reads
+                      rows Good, Bad, then the two target groups      "N pictures (shown by iat-sdl and the web
+                      (attribute2, attribute1, category1, category2), page)" because a terminal cannot draw them
+                      pictures as 60 px thumbnails, "There are seven
+                      parts. ... Pay attention!"; touch: "Next, you
+                      will categorize items..."
+block instructions    iat11 inst* templates (keyboard) and            —
+                      inst*Touch templates (touch), word for word
+block header          iat11 leftKeyText 'Press "E" for',              —
+                      rightKeyText 'Press "I" for' (hidden on touch
+                      screens), orText 'or'; combined blocks show
+                      the attribute, "or", the target (left1/left2)
+error mark            iat11: red X; press the other key / touch the   —
+                      other side
+final screen          iat11 finalText "Press space to continue to     —
+                      the next task" / finalTouchText
+result                iat11 fb_* sentences: "You were much /          the D line beneath it (for whoever runs the
+                      moderately / slightly faster at sorting 'A'     session; the site shows no number); the web
+                      with 'X' and 'B' with 'Y' than ..." or "about   page's reliability note (Greenwald, Brendl
+                      equally fast", chosen by messageDef cuts; when  et al. 2019, p. 18)
+                      withheld, iat11 notEnough / tooFast /
+                      manyErrors
+labels and words      demo.iats/race.js (and the live site's mgr.js): —
+                      label set chosen per session, 8 of 32 words
 
 Scoring (D measure) — Greenwald, Nosek & Banaji 2003, Table 4 (p. 213), "improved algorithm"
 -------------------
@@ -80,9 +121,9 @@ too many errors       no result if > 40% of combined —                        
 not enough trials     no result if < 4 scored        —                                          minTotalScoredTrialsFB 4
 withheld wording      "There were too many fast      —                                          iat11 tooFast / manyErrors /
                       trials to determine..." etc.                                              notEnough; feedbacker.js order
-feedback bands        0.15 / 0.35 / 0.65             — (not in 2003)                            iat11 messageDef cuts; the
-                                                                                                site's raceinfo.html describes
-                                                                                                the same bands
+feedback bands        0.15 / 0.35 / 0.65, first cut  — (not in 2003)                            iat11 messageDef cuts and fb_*
+                      D is at or below picks the                                                sentences; feedbacker.js picks;
+                      iat11 sentence                                                            raceinfo.html describes them
 
 Verification
 ------------

@@ -309,7 +309,11 @@ static int procedure_run(procedure_result_t *result, const stimulus_set_t *set, 
             return 0;
         }
     }
-    return 1;
+    {
+        const char *final_lines[] = { "Press space to continue to the next task" };   /* iat11.js finalText */
+        frontend_show_message(final_lines, 1);
+    }
+    return procedure_wait_for_continue();
 }
 
 #endif

@@ -153,17 +153,20 @@ static void sdl_load_all_pictures(const stimulus_set_t *set)
 static void sdl_draw_header(void)
 {
     const category_t *categories = sdl_scene.set->categories;
-    const key_assignment_t *keys = sdl_scene.keys;
     int line_height = 8 * sdl_font_scale + 6;
-    int i;
-    sdl_draw_text(10, 10, "Press E for:", SDL_COLOR_TEXT);
-    sdl_draw_text(sdl_width - 10 - sdl_text_width("Press I for:"), 10, "Press I for:", SDL_COLOR_TEXT);
-    for (i = 0; i < keys->left_count; i++) {
-        sdl_draw_text(10, 10 + line_height * (i + 1), categories[keys->left[i]].name, SDL_COLOR_CATEGORY);
-    }
-    for (i = 0; i < keys->right_count; i++) {
-        const char *name = categories[keys->right[i]].name;
-        sdl_draw_text(sdl_width - 10 - sdl_text_width(name), 10 + line_height * (i + 1), name, SDL_COLOR_CATEGORY);
+    int side, i;
+    for (side = 0; side < 2; side++) {
+        int left_side = side == 0;
+        category_id_t labels[2];
+        int count = frontend_header_labels(sdl_scene.keys, left_side, labels);
+        for (i = -1; i < 2 * count - 1; i++) {
+            /* row 0: key text; then label, "or", label */
+            const char *text = i < 0 ? (left_side ? FRONTEND_LEFT_KEY_TEXT : FRONTEND_RIGHT_KEY_TEXT)
+                                     : (i % 2 ? FRONTEND_OR_TEXT : categories[labels[i / 2]].name);
+            SDL_Color color = (i >= 0 && i % 2 == 0) ? SDL_COLOR_CATEGORY : SDL_COLOR_TEXT;
+            int x = left_side ? 10 : sdl_width - 10 - sdl_text_width(text);
+            sdl_draw_text(x, 10 + line_height * (i + 1), text, color);
+        }
     }
 }
 
@@ -294,6 +297,96 @@ static void frontend_show_message(const char **lines, int line_count)
     SDL_RenderPresent(sdl_renderer);
     sdl_font_scale = saved_scale;
     if (sdl_echo_stimuli) {
+        fflush(stdout);
+    }
+}
+
+/* Draw text word-wrapped to the window width from y; returns the y below it. */
+static int sdl_draw_wrapped(int y, const char *text, SDL_Color color)
+{
+    int columns = (sdl_width - 40) / (8 * sdl_font_scale);
+    int line_height = 8 * sdl_font_scale + 6;
+    char line[512];
+    while (*text) {
+        const char *end = text;
+        const char *last_space = NULL;
+        int count = 0;
+        while (*end && count < columns) {
+            if (*end == ' ') {
+                last_space = end;
+            }
+            if (((unsigned char)*end & 0xC0) != 0x80) {
+                count++;
+            }
+            end++;
+        }
+        if (*end && last_space) {
+            end = last_space;
+        }
+        snprintf(line, sizeof line, "%.*s", (int)(end - text), text);
+        sdl_draw_text_centered(y, line, color);
+        y += line_height;
+        text = end;
+        while (*text == ' ') {
+            text++;
+        }
+    }
+    return y;
+}
+
+/* The source page's table: each group's name, then its words, or its pictures as thumbnails
+   (the page shows them 60 px high; here scaled to fit the row across the window). */
+static void frontend_show_overview(const stimulus_set_t *set, const overview_t *overview)
+{
+    int saved_scale = sdl_font_scale;
+    int y = 16;
+    int r, i;
+    sdl_scene.keys = NULL;
+    sdl_scene.has_stimulus = 0;
+    sdl_scene.error_shown = 0;
+    SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
+    SDL_RenderClear(sdl_renderer);
+
+    y = sdl_draw_wrapped(y, overview->heading, SDL_COLOR_CATEGORY) + 6;
+    sdl_font_scale = saved_scale > 2 ? 2 : saved_scale;
+    y = sdl_draw_wrapped(y, overview->lead, SDL_COLOR_TEXT) + 8;
+    for (r = 0; r < CATEGORY_COUNT; r++) {
+        category_id_t c = overview->row_order[r];
+        const category_t *category = &set->categories[c];
+        y = sdl_draw_wrapped(y, category->name, SDL_COLOR_CATEGORY);
+        if (category->items[0].is_picture) {
+            int gap = 4, total_width = 0, height = 60, x;
+            for (i = 0; i < category->item_count; i++) {
+                total_width += sdl_textures[c][i] ? sdl_texture_width[c][i] * height / sdl_texture_height[c][i] + gap : 0;
+            }
+            if (total_width > sdl_width - 40) {
+                height = height * (sdl_width - 40) / total_width;
+                total_width = sdl_width - 40;
+            }
+            x = (sdl_width - total_width) / 2;
+            for (i = 0; i < category->item_count; i++) {
+                if (sdl_textures[c][i]) {
+                    SDL_Rect thumbnail = { x, y, sdl_texture_width[c][i] * height / sdl_texture_height[c][i], height };
+                    SDL_RenderCopy(sdl_renderer, sdl_textures[c][i], NULL, &thumbnail);
+                    x += thumbnail.w + gap;
+                }
+            }
+            y += height + 8;
+        } else {
+            char words[4 * STIMULI_MAX_TEXT];
+            int used = 0;
+            for (i = 0; i < category->item_count && used < (int)sizeof words - 1; i++) {
+                used += snprintf(words + used, sizeof words - used, "%s%s", i ? ", " : "", category->items[i].text);
+            }
+            y = sdl_draw_wrapped(y, words, SDL_COLOR_TEXT) + 6;
+        }
+    }
+    y = sdl_draw_wrapped(y + 6, overview->closing, SDL_COLOR_TEXT);
+    sdl_draw_wrapped(y + 6, overview->continue_prompt, SDL_COLOR_TEXT);
+    SDL_RenderPresent(sdl_renderer);
+    sdl_font_scale = saved_scale;
+    if (sdl_echo_stimuli) {
+        printf("%s\n%s\n%s\n", overview->lead, overview->closing, overview->continue_prompt);
         fflush(stdout);
     }
 }
