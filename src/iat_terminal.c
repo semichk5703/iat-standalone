@@ -175,7 +175,7 @@ static void frontend_show_overview(const stimulus_set_t *set, const overview_t *
         char *row = rows[r];
         int used = snprintf(row, sizeof rows[r], "%s:  ", category->name);
         if (category->items[0].is_picture) {
-            snprintf(row + used, sizeof rows[r] - used, "%d pictures (shown by iat-sdl and the web page)", category->item_count);
+            snprintf(row + used, sizeof rows[r] - used, "%d pictures (shown by iat-sdl)", category->item_count);
         } else {
             for (i = 0; i < category->item_count && used < (int)sizeof rows[r] - 1; i++) {
                 used += snprintf(row + used, sizeof rows[r] - used, "%s%s", i ? ", " : "", category->items[i].text);

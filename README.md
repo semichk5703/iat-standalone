@@ -1,31 +1,59 @@
-# iat — a small, offline Implicit Association Test
+# iat — the Implicit Association Test, offline
 
 A self-contained implementation of the Implicit Association Test (Greenwald, McGhee & Schwartz, 1998)
 in its seven-block form, scored with the D measure (Greenwald, Nosek & Banaji, 2003), following the code
 implicit.harvard.edu runs (minno-tasks `IAT/iat11.js`, scored by its `scorer/nogaScorer.js`).
 
-It comes in three forms with the same procedure, scoring, stimuli files and results files; each is
-written module for module in parallel (`src/iat_*.h` and `web/iat_*.js`) and `make test` checks they agree:
+It comes in two forms:
 
-| form                 | needs                       | stimuli          | runs on |
-|----------------------|-----------------------------|------------------|---------|
-| `iat` (terminal)     | a C compiler; libc          | words            | any terminal, serial console, Linux framebuffer |
-| `iat-sdl` (window)   | a C compiler; SDL2          | words + pictures | X11, Wayland, Windows, or a framebuffer via `SDL_VIDEODRIVER=kmsdrm` |
-| web page             | a browser                   | words + pictures | desktop browsers; phones untested (see below); keyboard or touch |
+| form                       | what runs                                    | needs                         | stimuli |
+|----------------------------|----------------------------------------------|-------------------------------|---------|
+| **offline page**           | Project Implicit's own code, unchanged: the  | a browser                     | their study configs and pictures |
+| (`offline/index.html`)     | minno-quest player and minno-tasks' studies,  |                               | (minno-tasks) |
+|                            | with every address redirected to local copies |                               | |
+| **C programs**             | this repository's reimplementation, checked   | a C compiler; libc (`iat`) or | `stimuli/*.txt` (18 sets) |
+| (`iat`, `iat-sdl`)         | against theirs                               | SDL2 (`iat-sdl`)              | |
 
-Eighteen ready-made task sets are included (race, age, weight, skin tone, disability, religion,
-sexuality, weapons, presidents, Asian-American, Native American, gender–career, gender–science,
-Arab-Muslim, and others), taken from Project Implicit's open task library with full provenance.
+The offline page is the faithful one: it is their task, their questionnaires where a study has them,
+their scorer. The C programs are for machines with no browser (a terminal, a serial console, a Linux
+framebuffer), and `make test-offline` checks that their scoring agrees with Project Implicit's scorer
+on a session run through the offline page.
 
-## Run
+## Offline page
 
-Keys everywhere: **E** = left, **I** = right, **Space** = continue, **Q**/Esc = quit. On a touch screen
-the web page uses Project Implicit's touch layout instead: green areas at the left and right edges
-answer, the area along the bottom continues.
+    git clone --recurse-submodules <this repo>
+    python3 -m http.server 8000 --bind 127.0.0.1         # in the repository root
+    # open http://127.0.0.1:8000/offline/index.html       (127.0.0.1: only this computer can reach it)
 
-**Terminal and window** (`iat`, `iat-sdl`):
+It starts with Project Implicit's demo task menu (minno-tasks `docs/studies/datapipe.iat.examples/demo.iats`).
+At the end the page offers the results as `results.json`; `python3 tools/rescore_csv.py results.json`
+scores it independently and `--output` converts it to the C programs' results format.
 
-    git clone --recurse-submodules <this repo>     # submodules are only needed for tools/provenance.sh verify
+**One file, no server**: `make offline-single` (or `python3 tools/build_offline_html.py`) writes
+`dist/iat-offline.html`, about 3 MB, with the player, the study, the task scripts, scorers and pictures
+inside. Copy it anywhere and open it in a browser.
+
+| URL parameter  | meaning |
+|----------------|---------|
+| `?study=PATH`  | another study's manager script, relative to the page (`tools/build_offline_html.py --study FOLDER` for the single file) |
+| `&iat=11`      | load `IAT/iat11.js` wherever a study asks for `iat10.js` (the version the live Race IAT uses; see PROTOCOL) |
+
+How it works: their player loads scripts through RequireJS, whose `requirejs.load` hook
+`offline/offline_loader.js` wraps, rewriting each upstream address (CDN scripts, GitHub Pages pictures)
+to its pinned local copy through one table in `offline/index.html`. The live site's results upload,
+minno-datapipe, is replaced by `offline/results_sink.js`, which keeps the same function and arguments
+and holds results for download. That is the one place a different destination (for instance an upload
+a study's owners had agreed to) would go.
+
+**What has been tested, and what has not.** A scripted participant has run Project Implicit's Race IAT
+through the offline page, served and as the single file, with the network blocked, and their in-page
+score agreed with ours (`make test-offline`). The C programs are run end to end on every stimulus set
+by `make test`. **Phones have not been tested at all.** Firefox on Android should open the single
+file; iOS does not run scripts in a locally opened HTML file, so on an iPhone the page needs to be on
+a web host. Reports from real devices are welcome.
+
+## C programs
+
     make                                            # or: make iat   (no SDL needed)
     ./iat-sdl stimuli/race.txt
     ./iat stimuli/gender-career.txt --order 2 --out me.csv
@@ -34,37 +62,16 @@ Guix: `guix shell gcc-toolchain make pkg-config sdl2-compat -- make`.
 Debian/Ubuntu: `apt install build-essential libsdl2-dev`.
 If `sdl2-config` is missing: `make SDL_CFLAGS="$(pkg-config --cflags sdl2)" SDL_LIBS="$(pkg-config --libs sdl2)"`.
 
-**Web page**, two ways:
+Keys: **E** = left, **I** = right, **Space** = continue, **Q**/Esc = quit.
 
-- *One file, no server* (`make web-single`, or `python3 tools/build_single_html.py`): writes
-  `dist/iat.html`, about 2 MB, with the code, all eighteen sets and their pictures inside. Copy it
-  anywhere and open it in a browser; it starts with a menu of the sets. This is the form to carry to
-  another computer or a phone.
-- *Served from the repository* (`python3 -m http.server 8000 --bind 127.0.0.1` in the repository root):
-  open `http://127.0.0.1:8000/web/index.html?stimuli=../stimuli/race.txt`. Edits to `web/` or
-  `stimuli/` show up on reload, so this is the form for working on it.
-
-Results download from the last screen as the same CSV the programs write.
-
-**What has been tested, and what has not.** The terminal and window programs, the served page and the
-single file have been run end to end by scripted participants (`make test`, and headless Chromium for
-the web page, opened both from a server and straight from disk). **Phones have not been tested at
-all**: the touch layout has only been exercised with a desktop browser's simulated touch. Expect
-differences in how a phone opens a local file: Firefox on Android should open `iat.html`; iOS does
-not run scripts in a locally opened HTML file, so on an iPhone the page needs to be put on a web host
-and opened from there. Reports from real devices are welcome.
-
-**Options**, the same in all three forms:
-
-| command line   | web page (URL)  | meaning |
-|----------------|-----------------|---------|
-| `STIMULI_FILE` | `?stimuli=PATH` | which set to run (single file without it: a menu) |
-| `--order 1\|2` | `&order=1\|2`   | which pairing comes first (default: random, as Project Implicit; alternate across sittings if you repeat) |
-| `--seed N`     | `&seed=N`       | replay: every choice comes from a generator seeded with N (default: every choice from the operating system: `getrandom()` / `crypto.getRandomValues`) |
-| `--no-intro`   | `&intro=0`      | skip the opening screen (transcribed from the live site; not in minno-tasks) |
-| `--out FILE`   | (download link) | results file (default `results.csv`); see "Results files" below |
-| —              | `&touch=1`      | force the touch layout (it switches on by itself on touch screens) |
-| `IAT_FULLSCREEN=1`, `IAT_SCALE=n` | — | `iat-sdl` fullscreen (default 800×600 window); font pixel size (default 3) |
+| option                 | meaning |
+|------------------------|---------|
+| `STIMULI_FILE`         | which set to run |
+| `--order 1\|2`         | which pairing comes first (default: random, as Project Implicit; alternate across sittings if you repeat) |
+| `--seed N`             | replay: every choice comes from a generator seeded with N (default: every choice from the operating system, `getrandom()`) |
+| `--no-intro`           | skip the opening screen (transcribed from the live site; not in minno-tasks) |
+| `--out FILE`           | results file (default `results.csv`); see "Results files" below |
+| `IAT_FULLSCREEN=1`, `IAT_SCALE=n` | `iat-sdl` fullscreen (default 800×600 window); font pixel size (default 3) |
 
 ## What the score means
 
@@ -117,7 +124,8 @@ instruction wording, 8-of-32 attribute-word sampling, per-session label sets, an
 Where Project Implicit departs from a paper, PROTOCOL says so.
 `make test` drives a scripted participant through every task set on both frontends at 100× speed and
 re-scores the output with independent re-implementations (`test/rescore_project_implicit.py`,
-`test/rescore_greenwald_2003.py`, `test/web_scoring_check.mjs`); they agree with the C scorer to < 10⁻³.
+`test/rescore_greenwald_2003.py`); they agree with the C scorer to < 10⁻³. `make test-offline` compares
+with Project Implicit's own scorer, running in the offline page.
 
 ## Stimuli
 
@@ -155,32 +163,35 @@ domain/MIT; font8x8: public domain; papers and Project Implicit study materials:
 
 ## Layout
 
+    offline/index.html        runs a Project Implicit study offline: their player and files, unchanged
+    offline/offline_loader.js redirects their upstream addresses to the pinned local copies
+    offline/results_sink.js   stands in for minno-datapipe: same interface, results kept for download
     src/iat_app.h          command line, session flow, results file and score output (entry: iat_app_main)
     src/iat_procedure.h    the seven blocks, trial sequencing, timing          (entry: procedure_run)
     src/iat_scoring.h      the D measure                                      (entry: scoring_compute)
     src/iat_stimuli.h      the four categories and the stimuli file format    (entry: stimuli_load)
-    src/iat_frontend.h     the eight display/keyboard calls a frontend implements
+    src/iat_random.h       every random choice (getrandom by default; --seed replays)
+    src/iat_frontend.h     the calls a frontend implements
     src/iat_terminal.c     terminal frontend (termios + ANSI)
     src/iat_sdl.c          SDL2 frontend (pictures; retained scene redrawn per frame)
-    web/iat_*.js           the web form, module for module parallel to src/ (plus iat_resources.js:
-                           fetched from a server, or embedded in the single file)
-    web/index.html         the web page
-    stimuli/               18 task sets
+    stimuli/               18 task sets for the C programs
     media/minno/           minno-tasks docs/images (git-lfs)
     media/project-implicit/  Project Implicit study materials (git-lfs; tools/fetch_media.ps1)
+    tools/build_offline_html.py dist/iat-offline.html: the offline page as one file (make offline-single)
+    tools/rescore_csv.py        score results files (C or offline page) from their trials; convert formats
     tools/minno_to_stimuli.py   minno-tasks config -> stimuli file
     tools/regen_stimuli.sh      rebuild the 13 converted sets from the submodule
     tools/provenance.sh         verify / sync / manifest  ->  PROVENANCE.txt
-    tools/rescore_csv.py        score results files from their trials; convert earlier builds' files
-    tools/build_single_html.py   dist/iat.html: the web form as one self-contained file (make web-single)
     tools/fetch_media.ps1, tools/fetch_drive_missing.py   Windows: fetch Project Implicit study materials
-    test/simulate_participant.py        pty-driven scripted participant (make test)
+    test/simulate_participant.py        pty-driven scripted participant for the C programs (make test)
     test/rescore_project_implicit.py    independent re-implementation of nogaScorer.js (iat11 settings)
     test/rescore_greenwald_2003.py      independent re-implementation of 2003 Table 4
-    test/web_scoring_check.mjs   web scorer vs the C scorer's results file
+    test/offline_session.js             scripted participant through the offline page (make test-offline)
+    test/offline_agreement.py           their in-page score vs ours
     references/            papers.bib, fetch_papers.sh, and the papers (PDF, git-lfs)
     third_party/           stb_image.h, font8x8_basic.h (copies of upstream/)
-    upstream/              git submodules: minno-tasks, stb, font8x8
+    upstream/              git submodules: minno-quest (player), minno-tasks (studies, tasks, scorer),
+                           minno-datapipe (results interface, reference only), stb, font8x8
     PROTOCOL, REFERENCES.md, NOTICE, LICENSE, CITATION.cff
 
 Naming: `module_verb_object` functions, `thing_t` types, one statement per line; each header opens

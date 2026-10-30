@@ -1,4 +1,4 @@
-/* iat_random.h — where every random choice in a session comes from (parallel to web/iat_random.js).
+/* iat_random.h — where every random choice in a session comes from.
  *
  * By default every draw asks the operating system (getrandom(2)), so no choice the participant sees
  * comes from a formula they could, even in principle, become attuned to.  Passing --seed N switches
@@ -61,8 +61,7 @@ static uint32_t random_operating_system_u32(void)
 }
 
 /* Mulberry32 (Tommy Ettinger, public domain): a 32-bit state, one add and a few multiply/xor-shifts per
-   draw; statistically adequate for shuffling, not cryptographic.  Identical to web/iat_random.js, so
-   the same --seed draws the same numbers in both. */
+   draw; statistically adequate for shuffling, not cryptographic. */
 static uint32_t random_seeded_u32(random_t *random)
 {
     uint32_t t;

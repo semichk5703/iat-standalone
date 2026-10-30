@@ -25,7 +25,6 @@ test: all
 	done
 	python3 test/rescore_project_implicit.py results.csv
 	python3 test/rescore_greenwald_2003.py results.csv
-	node test/web_scoring_check.mjs results.csv
 
 # Project Implicit's own Race IAT run offline by a scripted participant (needs node with playwright), served
 # from the repository and then as the single file from disk; their in-page score must agree with ours.

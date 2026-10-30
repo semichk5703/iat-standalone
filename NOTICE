@@ -8,10 +8,21 @@ minno-tasks — Project Implicit's open task library.  Yoav Bar-Anan and contrib
   https://github.com/baranan/minno-tasks   Apache License 2.0 (upstream/minno-tasks/LICENSE)
   Used for: task configs converted into stimuli/*.txt; docs/images/ copied to media/minno/;
   IAT/iat11.js, scorer/nogaScorer.js, docs/studies/datapipe.iat.examples/demo.iats/ and
-  docs/studies/raceiat/ as the protocol reference.
+  docs/studies/raceiat/ as the protocol reference; the offline page runs IAT/, scorer/ and the
+  demo study unchanged (embedded as they are in dist/iat-offline.html).
   Copyright of the photographs: the image files are distributed by minno-tasks under its Apache-2.0
   license; this repository redistributes them unmodified on that basis. If you are a rights-holder
   and believe a file should not be here, open an issue and it will be removed.
+
+minno-quest (branch 1.0) — Project Implicit's study player (pi-minno.js, which includes RequireJS).
+  Elad Zlotnick and contributors.  https://github.com/minnojs/minno-quest
+  Apache License 2.0 (upstream/minno-quest/LICENSE).  Used for: dist/pi-minno.js and dist/main.css,
+  loaded unchanged by offline/index.html and embedded as they are in dist/iat-offline.html.
+
+minno-datapipe — Project Implicit's results upload.  https://github.com/minnojs/minno-datapipe
+  No licence file at the pinned commit, so none of its code is copied or embedded.  Used for:
+  its interface only (init_data_pipe and the logger it registers), which offline/results_sink.js follows
+  so study files call it unchanged; the submodule is kept as the reference for that interface.
 
 stb_image.h — Sean Barrett and contributors.  https://github.com/nothings/stb
   Public domain (Unlicense) or MIT, at your option (see the end of third_party/stb_image.h).

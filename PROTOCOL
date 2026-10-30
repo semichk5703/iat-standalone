@@ -60,42 +60,37 @@ opening screen        "In this study you will        — ; not in minno-tasks: t
 
 Displayed text
 --------------
-Every screen, where its words come from, and what is this program's own.  "iat11" is
-upstream/minno-tasks IAT/iat11.js; "overview source" is docs/studies/raceiat/raceiat_instructions.jst.
+offline/index.html shows Project Implicit's own screens: their files run unchanged.  The C programs
+(iat, iat-sdl) reproduce them; this table gives each of their screens' source, and what is the C
+programs' own.  "iat11" is upstream/minno-tasks IAT/iat11.js; "overview source" is
+docs/studies/raceiat/raceiat_instructions.jst.
 
-screen                source                                          this program's own
+screen                source                                          the C programs' own
 --------------------  ----------------------------------------------  ------------------------------------------
-set menu (single-     —                                               all of it ("Choose a test:", the set names)
-file web build)
 opening screen        live site, transcribed 2026-10 (not in          the last line ("Press the space bar to
-                      minno-tasks): "In this study you will complete  continue." / touch: "Touch the lower green
-                      an Implicit Association Test (IAT)..."          area to continue."); the questionnaire and
-                                                                      duration it mentions are left out; omit
-                                                                      the screen with --no-intro / &intro=0
-overview              overview source, word for word: "IAT            C: "Press the space bar to start." (the
-                      Instructions", "Next, you will use the 'E'      source has a Start button; the web page
-                      and 'I' computer keys to categorize items...",  has one); terminal: a picture row reads
-                      rows Good, Bad, then the two target groups      "N pictures (shown by iat-sdl and the web
-                      (attribute2, attribute1, category1, category2), page)" because a terminal cannot draw them
-                      pictures as 60 px thumbnails, "There are seven
-                      parts. ... Pay attention!"; touch: "Next, you
-                      will categorize items..."
-block instructions    iat11 inst* templates (keyboard) and            —
-                      inst*Touch templates (touch), word for word
+                      minno-tasks): "In this study you will complete  continue."); the questionnaire and duration
+                      an Implicit Association Test (IAT)..."          it mentions are left out; --no-intro omits
+                                                                      the screen
+overview              overview source, word for word: "IAT            "Press the space bar to start." (the source
+                      Instructions", "Next, you will use the 'E'      has a Start button); in the terminal, a
+                      and 'I' computer keys to categorize items...",  picture row reads "N pictures (shown by
+                      rows Good, Bad, then the two target groups      iat-sdl)" because a terminal cannot draw
+                      (attribute2, attribute1, category1, category2), them
+                      pictures as thumbnails, "There are seven
+                      parts. ... Pay attention!"
+block instructions    iat11 inst* templates, word for word            —
 block header          iat11 leftKeyText 'Press "E" for',              —
-                      rightKeyText 'Press "I" for' (hidden on touch
-                      screens), orText 'or'; combined blocks show
-                      the attribute, "or", the target (left1/left2)
-error mark            iat11: red X; press the other key / touch the   —
-                      other side
+                      rightKeyText 'Press "I" for', orText 'or';
+                      combined blocks show the attribute, "or", the
+                      target (left1/left2)
+error mark            iat11: red X; press the other key               —
 final screen          iat11 finalText "Press space to continue to     —
-                      the next task" / finalTouchText
+                      the next task"
 result                iat11 fb_* sentences: "You were much /          the D line beneath it (for whoever runs the
-                      moderately / slightly faster at sorting 'A'     session; the site shows no number); the web
-                      with 'X' and 'B' with 'Y' than ..." or "about   page's reliability note (Greenwald, Brendl
-                      equally fast", chosen by messageDef cuts; when  et al. 2019, p. 18)
-                      withheld, iat11 notEnough / tooFast /
-                      manyErrors
+                      moderately / slightly faster at sorting 'A'     session; the site shows no number)
+                      with 'X' and 'B' with 'Y' than ..." or "about
+                      equally fast", chosen by messageDef cuts; when
+                      withheld, iat11 notEnough / tooFast / manyErrors
 labels and words      demo.iats/race.js (and the live site's mgr.js): —
                       label set chosen per session, 8 of 32 words
 
@@ -129,5 +124,5 @@ Verification
 ------------
 test/rescore_project_implicit.py   re-implements nogaScorer.js with iat11 settings; agrees with the C scorer
 test/rescore_greenwald_2003.py     re-implements Table 4; agrees
-test/web_scoring_check.mjs         web scorer vs the C scorer's CSV
+test/offline_agreement.py          Project Implicit's scorer, running in offline/index.html, vs ours (make test-offline)
 make test                          all of the above over every stimulus set, both C frontends

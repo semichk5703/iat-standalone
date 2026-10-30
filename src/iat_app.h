@@ -86,9 +86,8 @@ static void app_show_introduction(const stimulus_set_t *set)
 
 /* The overview implicit.harvard.edu shows before the IAT: minno-tasks
    docs/studies/raceiat/raceiat_instructions.jst, word for word, with its rows in its order (Good, Bad,
-   then the two target groups: attribute2, attribute1, category1, category2).  Its keyboard wording; the
-   web page uses the touch wording on touch screens.  The continue prompt is this program's: the source
-   has a Start button. */
+   then the two target groups: attribute2, attribute1, category1, category2), keyboard wording.  The
+   continue prompt is this program's: the source has a Start button. */
 static void app_show_welcome(const stimulus_set_t *set)
 {
     overview_t overview = {
