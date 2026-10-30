@@ -21,6 +21,7 @@ test: all
 	done
 	python3 test/rescore_project_implicit.py results.csv
 	python3 test/rescore_greenwald_2003.py results.csv
+	node test/web_scoring_check.mjs results.csv
 
 clean:
 	rm -f iat iat-sdl results.csv

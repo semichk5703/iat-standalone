@@ -34,6 +34,16 @@ Keys: **E** = left, **I** = right, **Space** = continue, **Q**/Esc = quit.
 | `IAT_FULLSCREEN=1`     | `iat-sdl` fullscreen (default 800×600 window) |
 | `IAT_SCALE=n`          | `iat-sdl` font pixel size (default 3) |
 
+## Web and mobile
+
+`web/` is the same program for a browser, module for module (`iat_stimuli.js`, `iat_procedure.js`,
+`iat_scoring.js`, `iat_app.js`, `iat_frontend_dom.js`), reading the same `stimuli/*.txt` files.
+Serve the repository root (`python3 -m http.server`) and open
+`web/index.html?stimuli=../stimuli/race.txt`; `&order=1|2`, `&seed=N` as for the binaries.  On a
+touch screen it switches to Project Implicit's touch layout (left/right green areas answer, the lower
+area continues; `&touch=1` forces it).  Results download as the same CSV.
+`node test/web_scoring_check.mjs results.csv` checks the web scorer against a CSV from the C build.
+
 ## What the score means
 
 `D = (mean latency, reversed pairing − mean latency, first-listed pairing) / pooled SD`, over the four
@@ -106,6 +116,7 @@ public domain) and [LICENSE](LICENSE) for this repository's own code (MIT).
     references/papers.bib, references/fetch_papers.sh    primary sources
     third_party/           stb_image.h, font8x8_basic.h (copies of upstream/)
     upstream/              git submodules: minno-tasks, stb, font8x8
+    web/                   browser/mobile port, parallel module for module; test/web_scoring_check.mjs
     PROTOCOL, NOTICE, LICENSE, CITATION.cff
 
 Naming: `module_verb_object` functions, `thing_t` types, one statement per line; each header opens

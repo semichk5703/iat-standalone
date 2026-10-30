@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Implicit Association Test</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #fff; color: #000; font: 20px/1.4 Arial, sans-serif; }
+  #iat { position: relative; height: 100%; display: flex; flex-direction: column; }
+  .header { display: flex; justify-content: space-between; padding: 12px 20px; font-size: 1.5em; color: #31940f; font-weight: bold; }
+  .header small { display: block; color: #000; font-size: 0.6em; font-weight: normal; }
+  .header .right { text-align: right; }
+  .header .or { color: #000; font-weight: normal; font-size: 0.8em; }
+  .stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .stimulus { font-size: 2.3em; font-weight: bold; min-height: 2em; }
+  .stimulus img { max-height: 40vh; max-width: 60vw; }
+  .error { color: #f00; font-size: 3em; font-weight: bold; margin-top: 0.5em; }
+  .message { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 8vw; text-align: center; background: #fff; }
+  .message p { margin: 0.3em 0; }
+  .message a { margin-top: 1em; }
+  .touch-zones { display: none; }
+  .touch .touch-zones { display: block; }
+  .touch .zone { position: absolute; background: #cfc; opacity: 0; touch-action: none; }
+  .touch .zone.active { opacity: 0.6; }
+  .touch .zone-left  { left: 0; top: 30%; width: 25%; height: 55%; }
+  .touch .zone-right { right: 0; top: 30%; width: 25%; height: 55%; }
+  .touch .zone-continue { left: 0; bottom: 0; width: 100%; height: 15%; }
+  .touch .message { bottom: 15%; }
+</style>
+</head>
+<body>
+<div id="iat"></div>
+<script type="module">
+  import { IatApp } from './iat_app.js';
+  new IatApp(document.getElementById('iat')).run().catch(e => { document.getElementById('iat').textContent = e.message; });
+</script>
+</body>
+</html>
