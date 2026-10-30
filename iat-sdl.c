@@ -60,7 +60,17 @@ static void ui_init(void){
     for(int c=0;c<4;c++) for(int i=0;i<cat[c].n;i++) if(cat[c].isimg[i]) tex[c][i]=load_image(cat[c].item[i],&texw[c][i],&texh[c][i]);
 }
 static void ui_quit(void){ SDL_DestroyRenderer(ren); SDL_DestroyWindow(win); SDL_Quit(); }
+/* Retained scene: SDL's renderer is double-buffered, so every present() must redraw the whole frame;
+   presenting after drawing only one region shows a back buffer that lacks the rest (header jumps). */
+static struct {
+    const Block *block;      /* header to draw, or NULL */
+    const Cat *stim_cat;     /* stimulus to draw, or NULL */
+    int stim_item;
+    int error_shown;         /* red X under the stimulus */
+} scene;
+
 static void ui_message(const char **lines,int n){
+    scene.block=NULL; scene.stim_cat=NULL; scene.error_shown=0;
     clear_all();
     int save=fs, longest=0; for(int i=0;i<n;i++) if(ulen(lines[i])>longest) longest=ulen(lines[i]);
     while(fs>1 && longest*8*fs > W-20) fs--;            /* shrink font so the widest line fits the window */
@@ -70,29 +80,44 @@ static void ui_message(const char **lines,int n){
     if(echo) fflush(stdout);
     present();
 }
-static void ui_header(const Block *b){
-    clear_all(); int lh=8*fs+6;
-    draw_text(10,10,"Press E for:",white); draw_text(W-10-text_w("Press I for:"),10,"Press I for:",white);
+
+static void draw_header(const Block *b){
+    int lh=8*fs+6;
+    draw_text(10,10,"Press E for:",white);
+    draw_text(W-10-text_w("Press I for:"),10,"Press I for:",white);
     for(int i=0;i<b->nleft;i++)  draw_text(10,10+lh*(i+1),cat[b->left[i]].name,green);
     for(int i=0;i<b->nright;i++) draw_text(W-10-text_w(cat[b->right[i]].name),10+lh*(i+1),cat[b->right[i]].name,green);
-    present();
 }
-static void stim_area_clear(void){ SDL_SetRenderDrawColor(ren,0,0,0,255); SDL_Rect r={0,H/4,W,H/2+8*fs*2}; SDL_RenderFillRect(ren,&r); }
-static void ui_stimulus(const Cat *c,int item){
-    int ci=(int)(c-cat); stim_area_clear();
+static void draw_stimulus(const Cat *c,int item){
+    int ci=(int)(c-cat);
     if(c->isimg[item]&&tex[ci][item]){
-        int h=H*0.4, w=texw[ci][item]*h/texh[ci][item]; if(w>W*0.6){ w=W*0.6; h=texh[ci][item]*w/texw[ci][item]; }
-        SDL_Rect dst={(W-w)/2,(H-h)/2,w,h}; SDL_RenderCopy(ren,tex[ci][item],NULL,&dst);
+        int h=H*0.4, w=texw[ci][item]*h/texh[ci][item];
+        if(w>W*0.6){ w=W*0.6; h=texh[ci][item]*w/texw[ci][item]; }
+        SDL_Rect dst={(W-w)/2,(H-h)/2,w,h};
+        SDL_RenderCopy(ren,tex[ci][item],NULL,&dst);
     } else text_centered(H/2-4*fs,c->isimg[item]?item_label(c,item):c->item[item],white);
-    if(echo){ printf("STIM %s\n",item_label(c,item)); fflush(stdout); }   /* test hook: driver keys off "STIM " */
-    present();
 }
-static void ui_clear_stimulus(void){ stim_area_clear(); present(); }
-static void ui_error(void){
-    SDL_SetRenderDrawColor(ren,red.r,red.g,red.b,255); int s=6*fs, cx=W/2, cy=H/2+H*0.22;
+static void draw_error(void){
+    SDL_SetRenderDrawColor(ren,red.r,red.g,red.b,255);
+    int s=6*fs, cx=W/2, cy=H/2+H*0.22;
     for(int t=-2;t<=2;t++){ SDL_RenderDrawLine(ren,cx-s+t,cy-s,cx+s+t,cy+s); SDL_RenderDrawLine(ren,cx-s+t,cy+s,cx+s+t,cy-s); }
+}
+static void redraw_scene(void){
+    clear_all();
+    if(scene.block) draw_header(scene.block);
+    if(scene.stim_cat) draw_stimulus(scene.stim_cat,scene.stim_item);
+    if(scene.error_shown) draw_error();
     present();
 }
+
+static void ui_header(const Block *b){ scene.block=b; scene.stim_cat=NULL; scene.error_shown=0; redraw_scene(); }
+static void ui_stimulus(const Cat *c,int item){
+    scene.stim_cat=c; scene.stim_item=item; scene.error_shown=0;
+    if(echo){ printf("STIM %s\n",item_label(c,item)); fflush(stdout); }   /* test hook: driver keys off "STIM " */
+    redraw_scene();
+}
+static void ui_clear_stimulus(void){ scene.stim_cat=NULL; scene.error_shown=0; redraw_scene(); }
+static void ui_error(void){ scene.error_shown=1; redraw_scene(); }
 static int map_key(SDL_Keycode k){ switch(k){ case SDLK_e: return 'e'; case SDLK_i: return 'i'; case SDLK_SPACE: return ' ';
     case SDLK_q: case SDLK_ESCAPE: return 'q'; default: return 0; } }
 static int ui_key(void){
