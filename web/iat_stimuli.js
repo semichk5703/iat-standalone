@@ -11,12 +11,10 @@ export const CATEGORY_COUNT = 4;
 const STIMULI_CATEGORY_KEYS = ['target_a', 'target_b', 'attr_a', 'attr_b'];
 
 export class StimulusItem {
-    constructor(text, isPicture) {
-        this.text = text;              // the word, or the picture's URL
+    constructor(text, isPicture, label) {
+        this.text = text;              // the word, or what an <img> loads for the picture (a URL or data: URI)
         this.isPicture = isPicture;
-    }
-    get label() {                      // the word, or the picture's file name
-        return this.isPicture ? this.text.split('/').pop() : this.text;
+        this.label = label;            // the word, or the picture's file name (as in results files)
     }
 }
 
@@ -35,8 +33,9 @@ export class StimulusSet {
         this.hasPictures = false;
     }
 
-    /** Parse the stimuli text format. baseUrl resolves relative picture paths. Throws on a malformed file. */
-    static parse(text, baseUrl) {
+    /** Parse the stimuli text format. baseUrl resolves relative picture paths; resources (iat_resources.js),
+     *  if given, says what an <img> loads for each picture. Throws on a malformed file. */
+    static parse(text, baseUrl, resources) {
         const set = new StimulusSet();
         for (const rawLine of text.split('\n')) {
             const colon = rawLine.indexOf(':');
@@ -53,8 +52,11 @@ export class StimulusSet {
                 } else if (key === categoryKey + '_items') {
                     category.items = value.split(',').map(v => v.trim()).filter(Boolean).map(entry => {
                         const isPicture = /\.(jpe?g|png|gif)$/i.test(entry);
-                        if (isPicture) set.hasPictures = true;
-                        return new StimulusItem(isPicture ? new URL(entry, baseUrl).href : entry, isPicture);
+                        if (!isPicture) return new StimulusItem(entry, false, entry);
+                        set.hasPictures = true;
+                        const absoluteUrl = new URL(entry, baseUrl).href;
+                        const source = resources ? resources.pictureSource(absoluteUrl) : absoluteUrl;
+                        return new StimulusItem(source, true, entry.split('/').pop());
                     });
                 }
             });
@@ -66,10 +68,9 @@ export class StimulusSet {
         return set;
     }
 
-    static async load(url) {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`cannot load ${url}: HTTP ${response.status}`);
-        return StimulusSet.parse(await response.text(), new URL(url, location.href).href);
+    /** Load a stimuli file through resources (iat_resources.js): fetched from a server, or embedded. */
+    static async load(url, resources) {
+        return StimulusSet.parse(await resources.text(url), resources.resolve(url), resources);
     }
 
     /** An item listed under two categories has no correct key: reject rather than score nonsense. */

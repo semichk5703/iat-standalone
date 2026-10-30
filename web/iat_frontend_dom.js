@@ -69,6 +69,22 @@ export class DomFrontend {
     clearStimulus() { this.elements.stimulus.replaceChildren(); this.elements.error.style.visibility = 'hidden'; }
     showError() { this.elements.error.style.visibility = ''; }
 
+    /** A menu of buttons (used to pick a stimuli set in the single-file build). Resolves the chosen index. */
+    showChoice(lines, options) {
+        this.showMessage(lines);
+        this.elements['zone-continue'].classList.remove('active');
+        const list = document.createElement('div');
+        list.className = 'choices';
+        return new Promise(resolve => {
+            options.forEach((text, index) => {
+                const button = Object.assign(document.createElement('button'), { textContent: text });
+                button.addEventListener('click', () => resolve(index));
+                list.append(button);
+            });
+            this.elements.message.append(list);
+        });
+    }
+
     readKey() {
         if (this.pendingKeys.length) return Promise.resolve(this.pendingKeys.shift());
         return new Promise(resolve => { this.waiter = resolve; });

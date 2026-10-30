@@ -6,6 +6,10 @@ CORE = src/iat_app.h src/iat_frontend.h src/iat_procedure.h src/iat_scoring.h sr
 
 all: iat iat-sdl
 
+# The web app as one self-contained HTML file (no server needed): dist/iat.html
+web-single:
+	python3 tools/build_single_html.py dist/iat.html
+
 iat: src/iat_terminal.c $(CORE)
 	$(CC) $(CFLAGS) -o iat src/iat_terminal.c -lm
 
@@ -25,3 +29,4 @@ test: all
 
 clean:
 	rm -f iat iat-sdl results.csv
+	rm -rf dist

@@ -6,11 +6,14 @@ import { Random } from './iat_random.js';
 import { Procedure } from './iat_procedure.js';
 import { scoringCompute, scoringStrengthLabel, SCORING_VERSION } from './iat_scoring.js';
 import { DomFrontend } from './iat_frontend_dom.js';
+import { FetchedResources, EmbeddedResources } from './iat_resources.js';
 
 export class IatApp {
     constructor(root, params = new URLSearchParams(location.search)) {
         this.root = root;
-        this.stimuliUrl = params.get('stimuli') || '../stimuli/flowers-insects.txt';
+        // The single-file build defines IAT_EMBEDDED_FILES; served pages fetch from the server.
+        this.resources = globalThis.IAT_EMBEDDED_FILES ? new EmbeddedResources(globalThis.IAT_EMBEDDED_FILES) : new FetchedResources();
+        this.stimuliUrl = params.get('stimuli');                     // null: offer a menu, or the default set
         this.pairingOrder = parseInt(params.get('order'), 10) || 0;      // 0: random, as Project Implicit
         this.seed = params.has('seed') ? parseInt(params.get('seed'), 10) : undefined;
         this.touch = params.has('touch') ? params.get('touch') !== '0' : matchMedia('(pointer: coarse)').matches;
@@ -75,13 +78,24 @@ export class IatApp {
                ].join('\n') + '\n';
     }
 
+    /** Which stimuli file to run: the ?stimuli= parameter, else a menu of the embedded sets, else the default. */
+    async chooseStimuli(frontend) {
+        if (this.stimuliUrl) return this.stimuliUrl;
+        const paths = this.resources.stimuliPaths();
+        if (!paths) return '../stimuli/flowers-insects.txt';
+        const names = paths.map(p => p.split('/').pop().replace(/\.txt$/, ''));
+        const index = await frontend.showChoice(['Implicit Association Test', '', 'Choose a test:'], names);
+        return paths[index];
+    }
+
     async run() {
         const random = new Random(this.seed);
-        const set = await StimulusSet.load(this.stimuliUrl);
+        const frontend = new DomFrontend(this.root, this.touch);
+        this.stimuliUrl = await this.chooseStimuli(frontend);
+        const set = await StimulusSet.load(this.stimuliUrl, this.resources);
         set.randomizeSession(random);
         if (this.pairingOrder !== 1 && this.pairingOrder !== 2) this.pairingOrder = 1 + random.below(2);
 
-        const frontend = new DomFrontend(this.root, this.touch);
         const procedure = new Procedure(frontend, set, this.pairingOrder, { random, timeScale: this.timeScale, touch: this.touch });
         frontend.open(set);
         if (this.showIntroduction) {
