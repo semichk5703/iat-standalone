@@ -17,6 +17,18 @@ export class IatApp {
         this.timeScale = parseFloat(params.get('timescale')) || 1;
     }
 
+    /** implicit.harvard.edu's opening screen, minus the questionnaire it introduces there (parallel to
+     *  app_show_introduction in src/iat_app.h). Without it, "Next, you will..." has nothing to follow. */
+    introductionLines(set) {
+        const sorted = set.hasPictures ? 'pictures and words' : 'words';
+        return [
+            'Implicit Association Test', '',
+            `In this study you will complete an Implicit Association Test (IAT) in which you will be asked to sort ${sorted} into groups as fast as you can.`,
+            'This should take about 5 minutes to complete. At the end, you will receive your IAT result.', '',
+            this.touch ? 'Touch the lower green area to continue.' : 'Press the space bar to continue.',
+        ];
+    }
+
     welcomeLines(set) {
         const keysText = this.touch ? 'the left and right green areas' : "the 'E' and 'I' computer keys";
         return [
@@ -58,6 +70,8 @@ export class IatApp {
         const frontend = new DomFrontend(this.root, this.touch);
         const procedure = new Procedure(frontend, set, this.pairingOrder, { random, timeScale: this.timeScale, touch: this.touch });
         frontend.open(set);
+        frontend.showMessage(this.introductionLines(set));
+        if (!await procedure.waitForContinue()) { frontend.showMessage(['aborted']); return; }
         frontend.showMessage(this.welcomeLines(set));
         if (!await procedure.waitForContinue() || !await procedure.run()) { frontend.showMessage(['aborted']); return; }
 

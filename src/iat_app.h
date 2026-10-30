@@ -54,6 +54,25 @@ static int app_parse_options(app_options_t *options, int argc, char **argv)
     return 1;
 }
 
+/* The opening screen implicit.harvard.edu shows first ("You have selected the Race Task. In this study
+   you will complete an Implicit Association Test (IAT)..."), minus the questionnaire it introduces there,
+   since this program runs the IAT alone.  Without it the next screen's "Next, you will..." has nothing
+   to follow. */
+static void app_show_introduction(const stimulus_set_t *set)
+{
+    const char *lines[] = {
+        "Implicit Association Test",
+        "",
+        set->has_pictures
+            ? "In this study you will complete an Implicit Association Test (IAT) in which you will be asked to sort pictures and words into groups as fast as you can."
+            : "In this study you will complete an Implicit Association Test (IAT) in which you will be asked to sort words into groups as fast as you can.",
+        "This should take about 5 minutes to complete. At the end, you will receive your IAT result.",
+        "",
+        "Press the space bar to continue.",
+    };
+    frontend_show_message(lines, 6);
+}
+
 /* The welcome screen implicit.harvard.edu shows before the IAT (transcribed from the live Race task,
    2026-10): the four groups and their items, then "There are seven parts...". */
 static void app_show_welcome(const stimulus_set_t *set)
@@ -140,6 +159,12 @@ static int iat_app_main(int argc, char **argv)
     }
 
     frontend_open(&set);
+    app_show_introduction(&set);
+    if (!procedure_wait_for_continue()) {
+        frontend_close();
+        puts("aborted");
+        return 1;
+    }
     app_show_welcome(&set);
     if (!procedure_wait_for_continue() || !procedure_run(&result, &set, options.pairing_order)) {
         frontend_close();
