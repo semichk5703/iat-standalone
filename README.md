@@ -30,7 +30,7 @@ Keys: **E** = left, **I** = right, **Space** = continue, **Q**/Esc = quit.
 | option / env           | meaning |
 |------------------------|---------|
 | `--order 1\|2`          | which pairing comes first (default: random, as Project Implicit; alternate across sittings if you repeat) |
-| `--out FILE`           | raw trials CSV: block, category, item, correct key, error count, latency ms; D-scores on a trailing `#` line |
+| `--out FILE`           | results file (default `results.csv`); see "Results files" below |
 | `--seed N`             | replay: every choice comes from a generator seeded with N (default: every choice from the OS, `getrandom()`) |
 | `--no-intro`           | skip the opening screen (transcribed from the live site; not in minno-tasks) |
 | `IAT_FULLSCREEN=1`     | `iat-sdl` fullscreen (default 800×600 window) |
@@ -51,7 +51,7 @@ area continues; `&touch=1` forces it).  Results download as the same CSV.
 For each half of the combined blocks (practice: parts 3 and 6; test: parts 4 and 7),
 `(mean latency, reversed pairing − mean latency, first-listed pairing) / pooled SD`; D is the mean of
 the two, as on implicit.harvard.edu. As there, no result is given if more than 10% of responses were
-under 300 ms or more than 40% had errors; the numbers still go to the CSV. **D > 0** means you were faster when *target_a* shared a key with *attr_a* (as named in
+under 300 ms or more than 40% had errors. **D > 0** means you were faster when *target_a* shared a key with *attr_a* (as named in
 the stimuli file). Project Implicit's feedback bands: |D| < 0.15 little or none, < 0.35 slight,
 < 0.65 moderate, otherwise strong.
 
@@ -59,6 +59,30 @@ Read it as a snapshot, not a verdict: for socially sensitive attitudes, test–r
 "nearer to .50 and often lower" (Greenwald, Brendl et al., 2019, p. 18), scores shift with context, and
 the measure characterises groups much better than it does individuals (see
 [REFERENCES.md](REFERENCES.md), "On interpretation"). It is not a screening tool.
+
+## Results files
+
+A results file holds the session's data, not its score:
+
+    # iat results, format 2
+    # stimuli: stimuli/race.txt
+    # pairing_order: 1                  which pairing came first; scoring needs it
+    # random: os                        or "seed N" for a replayable session
+    block,category,item,correct_key,errors,rt_ms
+    1,European Americans,wm1_nc.jpg,i,0,386.8
+    ...
+    # displayed: scoring=iat11 D=1.1340 ... feedback=shown
+
+The last line records what the session showed and under which scoring rules, as history. The score
+itself is always recomputed from the trials, so it never goes stale when the rules change:
+
+    python3 tools/rescore_csv.py results.csv [more.csv ...]      # current score of each session
+    python3 tools/rescore_csv.py --output new.csv old.csv        # convert an earlier build's file
+
+Files from earlier builds (score and pairing order on one trailing `#` line) are read as they are;
+`--output` writes them in the current format, keeping their old score as a labelled `# displayed:`
+line, and never overwrites the original. It writes UTF-8 itself, so use `--output` rather than `>`
+in PowerShell 5, whose `>` writes UTF-16.
 
 ## Fidelity to the mainstream implementation
 
@@ -124,7 +148,7 @@ domain/MIT; font8x8: public domain; papers and Project Implicit study materials:
     tools/minno_to_stimuli.py   minno-tasks config -> stimuli file
     tools/regen_stimuli.sh      rebuild the 13 converted sets from the submodule
     tools/provenance.sh         verify / sync / manifest  ->  PROVENANCE.txt
-    tools/rescore_csv.py        re-score results CSVs from any earlier build with the current scoring
+    tools/rescore_csv.py        score results files from their trials; convert earlier builds' files
     tools/fetch_media.ps1, tools/fetch_drive_missing.py   Windows: fetch Project Implicit study materials
     test/simulate_participant.py        pty-driven scripted participant (make test)
     test/rescore_project_implicit.py    independent re-implementation of nogaScorer.js (iat11 settings)

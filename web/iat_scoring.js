@@ -3,6 +3,9 @@
 // (blocks 3+6, 4+7), trials 400 ms..10 s, error trials at measured latency, per-parcel
 // (mean reversed - mean first) / sample SD, D = mean of the two parcels (Greenwald et al. 2003, Table 4).
 
+// Name of these scoring rules, written beside every displayed result (as SCORING_VERSION in C).
+export const SCORING_VERSION = 'iat11';
+
 export const SCORING_MIN_LATENCY_MS = 400;          // iat11 minRT
 export const SCORING_MAX_LATENCY_MS = 10000;        // iat11 maxRT
 export const SCORING_FAST_MS = 300;                 // iat11 fastRT
@@ -40,12 +43,12 @@ function dFor(trials, firstBlocks, reversedBlocks) {
     return sd ? (mean(reversed) - mean(first)) / sd : 0;
 }
 
-/** iat11.js's message when feedback is withheld (scorer/feedbacker.js order), or null. */
-function feedbackMessage(scoredTrialCount, fastFraction, errorFraction) {
-    if (scoredTrialCount < SCORING_MIN_SCORED_TRIALS) return 'There were not enough trials to determine a result.';
-    if (fastFraction > SCORING_FAST_FRACTION_LIMIT) return 'There were too many fast trials to determine a result.';
-    if (errorFraction > SCORING_ERROR_FRACTION_LIMIT) return 'There were too many errors made to determine a result.';
-    return null;
+/** Feedback outcome in scorer/feedbacker.js order: [name for results files, iat11.js message or null]. */
+function feedbackOutcome(scoredTrialCount, fastFraction, errorFraction) {
+    if (scoredTrialCount < SCORING_MIN_SCORED_TRIALS) return ['not_enough_trials', 'There were not enough trials to determine a result.'];
+    if (fastFraction > SCORING_FAST_FRACTION_LIMIT) return ['too_fast', 'There were too many fast trials to determine a result.'];
+    if (errorFraction > SCORING_ERROR_FRACTION_LIMIT) return ['too_many_errors', 'There were too many errors made to determine a result.'];
+    return ['shown', null];
 }
 
 /** trials: [{blockIndex, latencyMs, errorCount, ...}]. Returns the same fields as the C score_t. */
@@ -62,6 +65,7 @@ export function scoringCompute(trials, pairingOrder) {
     const errorFraction = upToMax.length ? upToMax.filter(t => t.errorCount > 0).length / upToMax.length : 0;
     const scoredTrialCount = upToMax.filter(t => t.latencyMs >= SCORING_MIN_LATENCY_MS).length;
 
+    const [feedbackName, feedbackMessage] = feedbackOutcome(scoredTrialCount, fastFraction, errorFraction);
     return {
         d: (dPractice + dTest) / 2,
         dPractice,
@@ -72,7 +76,8 @@ export function scoringCompute(trials, pairingOrder) {
         scoredTrialCount,
         fastFraction,
         errorFraction,
-        feedbackMessage: feedbackMessage(scoredTrialCount, fastFraction, errorFraction),
+        feedbackName,
+        feedbackMessage,
     };
 }
 

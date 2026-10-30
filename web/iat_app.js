@@ -4,7 +4,7 @@
 import { StimulusSet, CATEGORY_TARGET_A, CATEGORY_TARGET_B, CATEGORY_ATTRIBUTE_A, CATEGORY_ATTRIBUTE_B } from './iat_stimuli.js';
 import { Random } from './iat_random.js';
 import { Procedure } from './iat_procedure.js';
-import { scoringCompute, scoringStrengthLabel } from './iat_scoring.js';
+import { scoringCompute, scoringStrengthLabel, SCORING_VERSION } from './iat_scoring.js';
 import { DomFrontend } from './iat_frontend_dom.js';
 
 export class IatApp {
@@ -60,12 +60,19 @@ export class IatApp {
         return lines;
     }
 
-    /** Same CSV as the C build writes, offered as a download. */
+    /** Results file, format 2, as the C build writes it (src/iat_app.h app_write_csv): data and the facts
+     *  needed to score it; the last line records what was displayed and under which scoring rules. */
     csv(set, trials, score) {
         const rows = trials.map(t => [t.blockIndex + 1, set.categories[t.category].name, set.categories[t.category].items[t.itemIndex].label,
                                       t.correctKey, t.errorCount, t.latencyMs.toFixed(1)].join(','));
-        return ['block,category,item,correct_key,errors,rt_ms', ...rows,
-                `# D=${score.d.toFixed(4)} d_practice=${score.dPractice.toFixed(4)} d_test=${score.dTest.toFixed(4)} D_single_parcel=${score.dSingleParcel.toFixed(4)} fast=${score.fastFraction.toFixed(4)} errors=${score.errorFraction.toFixed(4)} order=${this.pairingOrder}`].join('\n') + '\n';
+        return ['# iat results, format 2',
+                `# stimuli: ${this.stimuliUrl}`,
+                `# pairing_order: ${this.pairingOrder}`,
+                `# random: ${this.seed === undefined ? 'os' : 'seed ' + this.seed}`,
+                'block,category,item,correct_key,errors,rt_ms', ...rows,
+                `# displayed: scoring=${SCORING_VERSION} D=${score.d.toFixed(4)} d_practice=${score.dPractice.toFixed(4)} d_test=${score.dTest.toFixed(4)} ` +
+                `D_single_parcel=${score.dSingleParcel.toFixed(4)} fast=${score.fastFraction.toFixed(4)} errors=${score.errorFraction.toFixed(4)} feedback=${score.feedbackName}`,
+               ].join('\n') + '\n';
     }
 
     async run() {

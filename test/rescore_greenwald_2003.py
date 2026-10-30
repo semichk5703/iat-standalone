@@ -12,7 +12,7 @@ errors, as on Project Implicit / minno-tasks iat11).  Steps, as in the paper:
   8. divide each by its pooled SD
   9. D = average of the two
 Project Implicit additionally drops trials under 400 ms before steps 5-6; applied here too (minRT=400).
-Usage: test/rescore_greenwald_2003.py results.csv -> prints D and compares with D on the '#' line the program wrote (iat11 scores this two-parcel D).
+Usage: test/rescore_greenwald_2003.py results.csv -> prints D and compares with the D on the program's '# displayed:' line (iat11 scores this two-parcel D).
 (test/rescore_project_implicit.py checks the primary, Project Implicit single-parcel D.)"""
 import csv, math, sys, statistics
 
@@ -32,17 +32,16 @@ def dscore(rows, order):
     return (d_practice + d_test) / 2, d_practice, d_test
 
 if __name__ == '__main__':
-    lines = open(sys.argv[1]).read().splitlines()
-    rows = list(csv.DictReader(l for l in lines if not l.startswith('#')))
-    tail = [l for l in lines if l.startswith('# D=')]
-    order = int(tail[0].split('order=')[1]) if tail else 1
-    D, dp, dt = dscore(rows, order)
-    all_rt = [float(r['rt_ms']) for r in rows]
+    import os
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tools'))
+    from rescore_csv import ResultsFile      # file parsing only; dscore above is independent
+    results = ResultsFile(sys.argv[1])
+    D, dp, dt = dscore(results.rows, results.pairing_order)
+    all_rt = [float(r['rt_ms']) for r in results.rows]
     print(f'python  D={D:+.4f} d_practice={dp:+.4f} d_test={dt:+.4f}')
-    print(f'fast trials: {sum(rt < 300 for rt in all_rt) / len(all_rt):.1%} < 300 ms (paper), '
-          f'{sum(rt < 150 for rt in all_rt) / len(all_rt):.1%} < 150 ms (minno)')
-    if tail:
-        print('program', tail[0][2:])
-        prog = float(tail[0].split('D=')[1].split()[0])
+    print(f'fast trials: {sum(rt < 300 for rt in all_rt) / len(all_rt):.1%} < 300 ms (paper)')
+    if 'D' in results.displayed:
+        prog = float(results.displayed['D'])
+        print('program', ' '.join(f'{k}={v}' for k, v in results.displayed.items()))
         print('agree' if abs(prog - D) < 1e-3 else 'MISMATCH')
         sys.exit(0 if abs(prog - D) < 1e-3 else 1)

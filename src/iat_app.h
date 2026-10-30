@@ -2,7 +2,7 @@
  *
  *   iat STIMULI_FILE [--order 1|2] [--out results.csv] [--seed N] [--no-intro]
  *     --order   which pairing comes first (default: random, as Project Implicit)
- *     --out     raw trials as CSV, with the scores on a trailing '#' line (default results.csv)
+ *     --out     results file (default results.csv): raw trials and session facts; see app_write_csv
  *     --seed    replay: draw every choice from a generator seeded with N, so the same N repeats the
  *               same session (default: every choice comes from the operating system, getrandom)
  *     --no-intro  skip the opening screen (it is transcribed from the live site, not from minno-tasks)
@@ -115,9 +115,29 @@ static void app_show_welcome(const stimulus_set_t *set)
     frontend_show_message(lines, line_count);
 }
 
-static void app_write_csv(FILE *out, const stimulus_set_t *set, const procedure_result_t *result, const score_t *score)
+/* Results file, format 2: the session's raw data plus the facts needed to score it.  The score itself is
+   not data: tools/rescore_csv.py recomputes it from the trials under the current rules.  The last line
+   records what this session displayed, labelled with the scoring version that produced it.
+       # iat results, format 2
+       # stimuli: stimuli/race.txt
+       # pairing_order: 1                 which pairing came first; scoring needs it
+       # random: os                       or "seed N" for a replayable session
+       block,category,item,correct_key,errors,rt_ms
+       ...
+       # displayed: scoring=iat11 D=... d_practice=... d_test=... ... feedback=shown            */
+static void app_write_csv(FILE *out, const app_options_t *options, const stimulus_set_t *set,
+                          const procedure_result_t *result, const score_t *score)
 {
     int i;
+    fprintf(out, "# iat results, format 2\n");
+    fprintf(out, "# stimuli: %s\n", options->stimuli_path);
+    fprintf(out, "# pairing_order: %d\n", result->pairing_order);
+    if (options->has_seed) {
+        fprintf(out, "# random: seed %u\n", (unsigned)options->seed);
+    } else {
+        fprintf(out, "# random: os\n");
+    }
+
     fprintf(out, "block,category,item,correct_key,errors,rt_ms\n");
     for (i = 0; i < result->trial_count; i++) {
         const trial_t *trial = &result->trials[i];
@@ -126,9 +146,11 @@ static void app_write_csv(FILE *out, const stimulus_set_t *set, const procedure_
                 stimulus_item_label(&category->items[trial->item_index]), trial->correct_key,
                 trial->error_count, trial->latency_ms);
     }
-    fprintf(out, "# D=%.4f d_practice=%.4f d_test=%.4f D_single_parcel=%.4f fast=%.4f errors=%.4f order=%d\n",
-            score->d, score->d_practice, score->d_test, score->d_single_parcel,
-            score->fast_fraction, score->error_fraction, result->pairing_order);
+
+    fprintf(out, "# displayed: scoring=%s D=%.4f d_practice=%.4f d_test=%.4f D_single_parcel=%.4f"
+                 " fast=%.4f errors=%.4f feedback=%s\n",
+            SCORING_VERSION, score->d, score->d_practice, score->d_test, score->d_single_parcel,
+            score->fast_fraction, score->error_fraction, scoring_feedback_name(score->feedback));
 }
 
 static void app_print_score(const stimulus_set_t *set, const procedure_result_t *result, const score_t *score)
@@ -198,7 +220,7 @@ static int iat_app_main(int argc, char **argv)
     app_print_score(&set, &result, &score);
     out = fopen(options.output_path, "w");
     if (out) {
-        app_write_csv(out, &set, &result, &score);
+        app_write_csv(out, &options, &set, &result, &score);
         fclose(out);
         printf("raw trials written to %s\n", options.output_path);
     }

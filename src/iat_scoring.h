@@ -40,6 +40,10 @@ typedef struct {
     feedback_t feedback;
 } score_t;
 
+/* Name of these scoring rules, written beside every displayed result so a results file says which rules
+   produced the number it shows.  Change it whenever the scoring changes. */
+#define SCORING_VERSION "iat11"
+
 /* iat11.js settings. */
 #define SCORING_MIN_LATENCY_MS 400            /* minRT */
 #define SCORING_MAX_LATENCY_MS 10000          /* maxRT */
@@ -59,6 +63,9 @@ static const char *scoring_strength_label(double d);
 
 /* iat11.js's message when feedback is withheld, or NULL when it is shown. */
 static const char *scoring_feedback_message(feedback_t feedback);
+
+/* Short name of a feedback outcome for results files: shown / not_enough_trials / too_fast / too_many_errors. */
+static const char *scoring_feedback_name(feedback_t feedback);
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -204,6 +211,16 @@ static const char *scoring_feedback_message(feedback_t feedback)
     case FEEDBACK_TOO_FAST:          return "There were too many fast trials to determine a result.";
     case FEEDBACK_TOO_MANY_ERRORS:   return "There were too many errors made to determine a result.";
     default:                         return NULL;
+    }
+}
+
+static const char *scoring_feedback_name(feedback_t feedback)
+{
+    switch (feedback) {
+    case FEEDBACK_NOT_ENOUGH_TRIALS: return "not_enough_trials";
+    case FEEDBACK_TOO_FAST:          return "too_fast";
+    case FEEDBACK_TOO_MANY_ERRORS:   return "too_many_errors";
+    default:                         return "shown";
     }
 }
 

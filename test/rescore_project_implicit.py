@@ -2,7 +2,9 @@
 checked against it: upstream/minno-tasks/scorer/nogaScorer.js with the settings of IAT/iat11.js (the code
 the live Race IAT loads; byte-identical to the copies served, per PROTOCOL).
     python3 test/rescore_project_implicit.py results.csv     -> prints D and compares with the '#' line."""
-import csv, math, sys
+import math, os, sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tools'))
+from rescore_csv import ResultsFile      # file parsing only; the arithmetic below is independent
 
 
 class NogaScorerCheck:
@@ -12,14 +14,10 @@ class NogaScorerCheck:
     MIN_RT, MAX_RT, FAST_RT = 400, 10000, 300
 
     def __init__(self, path):
-        rows, self.meta = [], {}
-        for line in open(path):
-            if line.startswith('#'):
-                self.meta = dict(kv.split('=') for kv in line[1:].split())
-            else:
-                rows.append(line)
-        self.trials = list(csv.DictReader(rows))
-        order = int(self.meta['order'])
+        results = ResultsFile(path)
+        self.trials = [{'block': str(r['block']), 'rt_ms': r['rt_ms']} for r in results.rows]
+        self.meta = results.displayed
+        order = results.pairing_order
         # (first-pairing block, reversed block) per parcel, 1-based as in the CSV
         self.parcels = [(3, 6), (4, 7)] if order == 1 else [(6, 3), (7, 4)]
 

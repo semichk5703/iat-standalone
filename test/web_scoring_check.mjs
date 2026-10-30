@@ -5,13 +5,15 @@ import { scoringCompute } from '../web/iat_scoring.js';
 import { procedureDefineBlocks, procedureSequenceCategories } from '../web/iat_procedure.js';
 import { Random } from '../web/iat_random.js';
 
+// results file format 2: '# pairing_order: N' near the top, '# displayed: ... D=...' at the end
 const lines = readFileSync(process.argv[2], 'utf8').trim().split('\n');
-const meta = Object.fromEntries(lines.filter(l => l.startsWith('#')).pop().slice(1).trim().split(' ').map(kv => kv.split('=')));
-const trials = lines.slice(1).filter(l => !l.startsWith('#')).map(l => {
+const order = parseInt(lines.find(l => l.startsWith('# pairing_order:')).split(':')[1], 10);
+const meta = Object.fromEntries(lines.find(l => l.startsWith('# displayed:')).slice('# displayed:'.length).trim().split(' ').map(kv => kv.split('=')));
+const trials = lines.filter(l => !l.startsWith('#')).slice(1).map(l => {
     const [block, , , , errors, rt] = l.split(',');
     return { blockIndex: parseInt(block, 10) - 1, latencyMs: parseFloat(rt), errorCount: parseInt(errors, 10) };
 });
-const score = scoringCompute(trials, parseInt(meta.order, 10));
+const score = scoringCompute(trials, order);
 const diff = Math.abs(score.d - parseFloat(meta.D));
 console.log(`web scorer: D = ${score.d.toFixed(4)}   C wrote D = ${meta.D}   diff = ${diff.toExponential(2)}`);
 
