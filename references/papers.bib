@@ -1,0 +1,74 @@
+% Primary sources for the procedure and scoring implemented in this repository.
+% references/fetch-papers.sh downloads the author-hosted PDFs into this directory (they are not committed).
+
+@article{greenwald1998iat,
+  author  = {Greenwald, Anthony G. and McGhee, Debbie E. and Schwartz, Jordan L. K.},
+  title   = {Measuring individual differences in implicit cognition: The {Implicit Association Test}},
+  journal = {Journal of Personality and Social Psychology},
+  year    = {1998}, volume = {74}, number = {6}, pages = {1464--1480},
+  doi     = {10.1037/0022-3514.74.6.1464},
+  note    = {Seven-block procedure (Table 1, Experiment 1); flowers/insects and pleasant/unpleasant word lists (Appendix A)}
+}
+@article{greenwald2003scoring,
+  author  = {Greenwald, Anthony G. and Nosek, Brian A. and Banaji, Mahzarin R.},
+  title   = {Understanding and using the {Implicit Association Test}: {I}. An improved scoring algorithm},
+  journal = {Journal of Personality and Social Psychology},
+  year    = {2003}, volume = {85}, number = {2}, pages = {197--216},
+  doi     = {10.1037/0022-3514.85.2.197},
+  url     = {https://faculty.washington.edu/agg/pdf/GB&N.JPSP.2003.pdf},
+  note    = {D measure, Table 4 (improved algorithm, built-in error penalty variant); >10,000 ms deletion; >10\% under 300 ms exclusion}
+}
+@article{nosek2005method,
+  author  = {Nosek, Brian A. and Greenwald, Anthony G. and Banaji, Mahzarin R.},
+  title   = {Understanding and using the {Implicit Association Test}: {II}. Method variables and construct validity},
+  journal = {Personality and Social Psychology Bulletin},
+  year    = {2005}, volume = {31}, number = {2}, pages = {166--180},
+  doi     = {10.1177/0146167204271418},
+  note    = {Block order, extended practice in the reversed-target block (the 28/40-trial block 5)}
+}
+@incollection{lane2007iat,
+  author    = {Lane, Kristin A. and Banaji, Mahzarin R. and Nosek, Brian A. and Greenwald, Anthony G.},
+  title     = {Understanding and using the {Implicit Association Test}: {IV}. What we know (so far) about the method},
+  booktitle = {Implicit Measures of Attitudes},
+  editor    = {Wittenbrink, Bernd and Schwarz, Norbert},
+  publisher = {Guilford Press}, address = {New York},
+  year      = {2007}, pages = {59--102},
+  note      = {Table 3.3 (p. 92): step-by-step D scoring procedure}
+}
+@article{nosek2007pervasiveness,
+  author  = {Nosek, Brian A. and Smyth, Frederick L. and Hansen, Jeffrey J. and Devos, Thierry and Lindner, Nicole M. and Ranganath, Kate A. and Smith, Colin Tucker and Olson, Kristina R. and Chugh, Dolly and Greenwald, Anthony G. and Banaji, Mahzarin R.},
+  title   = {Pervasiveness and correlates of implicit attitudes and stereotypes},
+  journal = {European Review of Social Psychology},
+  year    = {2007}, volume = {18}, number = {1}, pages = {36--88},
+  doi     = {10.1080/10463280701489053},
+  note    = {Citation requested by Project Implicit for use of its stimulus materials}
+}
+@article{greenwald2009meta,
+  author  = {Greenwald, Anthony G. and Poehlman, T. Andrew and Uhlmann, Eric Luis and Banaji, Mahzarin R.},
+  title   = {Understanding and using the {Implicit Association Test}: {III}. Meta-analysis of predictive validity},
+  journal = {Journal of Personality and Social Psychology},
+  year    = {2009}, volume = {97}, number = {1}, pages = {17--41},
+  doi     = {10.1037/a0015575}
+}
+@article{oswald2013meta,
+  author  = {Oswald, Frederick L. and Mitchell, Gregory and Blanton, Hart and Jaccard, James and Tetlock, Philip E.},
+  title   = {Predicting ethnic and racial discrimination: A meta-analysis of {IAT} criterion studies},
+  journal = {Journal of Personality and Social Psychology},
+  year    = {2013}, volume = {105}, number = {2}, pages = {171--192},
+  doi     = {10.1037/a0032734}
+}
+@article{greenwald2020review,
+  author  = {Greenwald, Anthony G. and Lai, Calvin K.},
+  title   = {Implicit social cognition},
+  journal = {Annual Review of Psychology},
+  year    = {2020}, volume = {71}, pages = {419--445},
+  doi     = {10.1146/annurev-psych-010419-050837},
+  note    = {Test--retest reliability of a single IAT around r = .5}
+}
+@misc{minnotasks,
+  author = {Bar-Anan, Yoav and {Project Implicit contributors}},
+  title  = {minno-tasks: {Project Implicit}'s open library of implicit-measure tasks},
+  year   = {2024},
+  url    = {https://github.com/baranan/minno-tasks},
+  note   = {IAT/qualtrics/quiat9.js (task) and scorer/nogaScorer.js (scoring); pinned commit in PROVENANCE.txt. This is the code implicit.harvard.edu serves}
+}
