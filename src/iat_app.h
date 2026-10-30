@@ -3,7 +3,8 @@
  *   iat STIMULI_FILE [--order 1|2] [--out results.csv] [--seed N] [--no-intro]
  *     --order   which pairing comes first (default: random, as Project Implicit)
  *     --out     raw trials as CSV, with the scores on a trailing '#' line (default results.csv)
- *     --seed    fix the shuffle (default: time)
+ *     --seed    replay: draw every choice from a generator seeded with N, so the same N repeats the
+ *               same session (default: every choice comes from the operating system, getrandom)
  *     --no-intro  skip the opening screen (it is transcribed from the live site, not from minno-tasks)
  */
 #ifndef IAT_APP_H
@@ -12,10 +13,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #include "iat_frontend.h"
 #include "iat_procedure.h"
+#include "iat_random.h"
 #include "iat_scoring.h"
 #include "iat_stimuli.h"
 
@@ -28,7 +29,8 @@ typedef struct {
     const char *output_path;
     int pairing_order;         /* 0 = choose at random */
     int show_introduction;
-    unsigned seed;
+    int has_seed;              /* 0: every choice from getrandom(); 1: seeded replay */
+    uint32_t seed;
 } app_options_t;
 
 static int app_parse_options(app_options_t *options, int argc, char **argv)
@@ -37,7 +39,8 @@ static int app_parse_options(app_options_t *options, int argc, char **argv)
     options->stimuli_path = NULL;
     options->output_path = "results.csv";
     options->pairing_order = 0;
-    options->seed = (unsigned)time(NULL);
+    options->has_seed = 0;
+    options->seed = 0;
     options->show_introduction = 1;
     for (i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--order") && i + 1 < argc) {
@@ -47,7 +50,8 @@ static int app_parse_options(app_options_t *options, int argc, char **argv)
         } else if (!strcmp(argv[i], "--no-intro")) {
             options->show_introduction = 0;
         } else if (!strcmp(argv[i], "--seed") && i + 1 < argc) {
-            options->seed = (unsigned)atoi(argv[++i]);
+            options->has_seed = 1;
+            options->seed = (uint32_t)strtoul(argv[++i], NULL, 10);
         } else {
             options->stimuli_path = argv[i];
         }
@@ -152,6 +156,7 @@ static int iat_app_main(int argc, char **argv)
     app_options_t options;
     static stimulus_set_t set;
     static procedure_result_t result;
+    random_t random;
     score_t score;
     FILE *out;
 
@@ -162,10 +167,14 @@ static int iat_app_main(int argc, char **argv)
         procedure_time_scale = atof(getenv("IAT_TIMESCALE"));
     }
     stimuli_load(&set, options.stimuli_path);
-    srand(options.seed);
-    stimuli_randomize_session(&set);
+    if (options.has_seed) {
+        random_init_seeded(&random, options.seed);
+    } else {
+        random_init_operating_system(&random);
+    }
+    stimuli_randomize_session(&set, &random);
     if (options.pairing_order != 1 && options.pairing_order != 2) {
-        options.pairing_order = 1 + procedure_random_below(2);
+        options.pairing_order = 1 + random_below(&random, 2);
     }
 
     frontend_open(&set);
@@ -178,7 +187,7 @@ static int iat_app_main(int argc, char **argv)
         }
     }
     app_show_welcome(&set);
-    if (!procedure_wait_for_continue() || !procedure_run(&result, &set, options.pairing_order)) {
+    if (!procedure_wait_for_continue() || !procedure_run(&result, &set, options.pairing_order, &random)) {
         frontend_close();
         puts("aborted");
         return 1;

@@ -13,6 +13,7 @@
 #include <time.h>
 
 #include "iat_frontend.h"
+#include "iat_random.h"
 #include "iat_stimuli.h"
 
 #define PROCEDURE_BLOCK_COUNT 7
@@ -37,9 +38,9 @@ typedef struct {
 /* Milliseconds of blank screen between trials (iat11.js ITIDuration). */
 #define PROCEDURE_INTER_TRIAL_MS 250
 
-/* Run all seven blocks through the frontend.  pairing_order is 1 or 2.
-   Returns 0 if the participant quit; the result then holds the trials completed so far. */
-static int procedure_run(procedure_result_t *result, const stimulus_set_t *set, int pairing_order);
+/* Run all seven blocks through the frontend.  pairing_order is 1 or 2; random supplies every trial-order
+   and item choice.  Returns 0 if the participant quit; the result then holds the trials completed so far. */
+static int procedure_run(procedure_result_t *result, const stimulus_set_t *set, int pairing_order, random_t *random);
 
 /* Automated tests set IAT_TIMESCALE=100: waits shrink 100x and measured latencies are scaled back up,
    so a scripted participant finishes a session in seconds and the scoring is unchanged. */
@@ -76,11 +77,6 @@ static void procedure_sleep_ms(double milliseconds)
     duration.tv_sec = (time_t)(milliseconds / 1000);
     duration.tv_nsec = (long)((milliseconds - duration.tv_sec * 1000) * 1e6);
     nanosleep(&duration, NULL);
-}
-
-static int procedure_random_below(int count)
-{
-    return (int)((double)rand() / ((double)RAND_MAX + 1) * count);
 }
 
 static key_assignment_t procedure_keys(category_id_t left_target, category_id_t right_target,
@@ -129,14 +125,14 @@ static int procedure_key_is_left(const key_assignment_t *keys, category_id_t cat
 
 /* Trial order as iat11.js builds it (getMiniMixer2/getMiniMixer4): mini-blocks of one trial per category, each mini-block shuffled,
    targets and attributes alternating in combined blocks, so left and right responses stay balanced. */
-static void procedure_sequence_categories(category_id_t sequence[], const block_t *block)
+static void procedure_sequence_categories(category_id_t sequence[], const block_t *block, random_t *random)
 {
     const key_assignment_t *keys = &block->keys;
     int filled = 0;
     while (filled < block->trial_count) {
         if (keys->left_count == 2) {
-            int target_first = procedure_random_below(2);
-            int attribute_first = procedure_random_below(2);
+            int target_first = random_below(random, 2);
+            int attribute_first = random_below(random, 2);
             category_id_t targets[2] = { keys->left[0], keys->right[0] };
             category_id_t attributes[2] = { keys->left[1], keys->right[1] };
             sequence[filled++] = targets[target_first];
@@ -144,7 +140,7 @@ static void procedure_sequence_categories(category_id_t sequence[], const block_
             sequence[filled++] = targets[1 - target_first];
             sequence[filled++] = attributes[1 - attribute_first];
         } else {
-            int left_first = procedure_random_below(2);
+            int left_first = random_below(random, 2);
             category_id_t pair[2] = { keys->left[0], keys->right[0] };
             sequence[filled++] = pair[left_first];
             sequence[filled++] = pair[1 - left_first];
@@ -268,7 +264,7 @@ static int procedure_run_trial(procedure_result_t *result, const stimulus_set_t 
 }
 
 static int procedure_run_block(procedure_result_t *result, const stimulus_set_t *set, const block_t *block,
-                               int block_index)
+                               int block_index, random_t *random)
 {
     category_id_t sequence[PROCEDURE_MAX_TRIALS];
     int next_item[CATEGORY_COUNT];
@@ -279,10 +275,10 @@ static int procedure_run_block(procedure_result_t *result, const stimulus_set_t 
         return 0;
     }
 
-    procedure_sequence_categories(sequence, block);
+    procedure_sequence_categories(sequence, block, random);
     /* Items cycle through each category from a random start, so every item is seen before any repeats. */
     for (c = 0; c < CATEGORY_COUNT; c++) {
-        next_item[c] = procedure_random_below(set->categories[c].item_count);
+        next_item[c] = random_below(random, set->categories[c].item_count);
     }
 
     frontend_show_header(set, &block->keys);
@@ -292,7 +288,7 @@ static int procedure_run_block(procedure_result_t *result, const stimulus_set_t 
         int item_index = next_item[category];
         next_item[category] = (item_index + 1) % item_count;
         if (next_item[category] == 0) {
-            next_item[category] = procedure_random_below(item_count);
+            next_item[category] = random_below(random, item_count);
         }
         if (!procedure_run_trial(result, set, block, block_index, category, item_index)) {
             return 0;
@@ -301,7 +297,7 @@ static int procedure_run_block(procedure_result_t *result, const stimulus_set_t 
     return 1;
 }
 
-static int procedure_run(procedure_result_t *result, const stimulus_set_t *set, int pairing_order)
+static int procedure_run(procedure_result_t *result, const stimulus_set_t *set, int pairing_order, random_t *random)
 {
     block_t blocks[PROCEDURE_BLOCK_COUNT];
     int b;
@@ -309,7 +305,7 @@ static int procedure_run(procedure_result_t *result, const stimulus_set_t *set, 
     result->pairing_order = pairing_order;
     procedure_define_blocks(blocks, pairing_order);
     for (b = 0; b < PROCEDURE_BLOCK_COUNT; b++) {
-        if (!procedure_run_block(result, set, &blocks[b], b)) {
+        if (!procedure_run_block(result, set, &blocks[b], b, random)) {
             return 0;
         }
     }

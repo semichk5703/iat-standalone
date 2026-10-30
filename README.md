@@ -31,7 +31,7 @@ Keys: **E** = left, **I** = right, **Space** = continue, **Q**/Esc = quit.
 |------------------------|---------|
 | `--order 1\|2`          | which pairing comes first (default: random, as Project Implicit; alternate across sittings if you repeat) |
 | `--out FILE`           | raw trials CSV: block, category, item, correct key, error count, latency ms; D-scores on a trailing `#` line |
-| `--seed N`             | fix the shuffle |
+| `--seed N`             | replay: every choice comes from a generator seeded with N (default: every choice from the OS, `getrandom()`) |
 | `--no-intro`           | skip the opening screen (transcribed from the live site; not in minno-tasks) |
 | `IAT_FULLSCREEN=1`     | `iat-sdl` fullscreen (default 800×600 window) |
 | `IAT_SCALE=n`          | `iat-sdl` font pixel size (default 3) |
@@ -41,7 +41,7 @@ Keys: **E** = left, **I** = right, **Space** = continue, **Q**/Esc = quit.
 `web/` is the same program for a browser, module for module (`iat_stimuli.js`, `iat_procedure.js`,
 `iat_scoring.js`, `iat_app.js`, `iat_frontend_dom.js`), reading the same `stimuli/*.txt` files.
 Serve the repository root (`python3 -m http.server`) and open
-`web/index.html?stimuli=../stimuli/race.txt`; `&order=1|2`, `&seed=N`, `&intro=0` as for the binaries.  On a
+`web/index.html?stimuli=../stimuli/race.txt`; `&order=1|2`, `&seed=N`, `&intro=0` as for the binaries (without a seed, every choice comes from `crypto.getRandomValues`).  On a
 touch screen it switches to Project Implicit's touch layout (left/right green areas answer, the lower
 area continues; `&touch=1` forces it).  Results download as the same CSV.
 `node test/web_scoring_check.mjs results.csv` checks the web scorer against a CSV from the C build.

@@ -23,6 +23,8 @@
 #include <string.h>
 #include <strings.h>
 
+#include "iat_random.h"
+
 #define STIMULI_MAX_ITEMS 64
 #define STIMULI_MAX_TEXT 256
 
@@ -59,8 +61,8 @@ typedef struct {
 /* Load a stimuli file.  Exits with a message on a malformed file; abnormal input is a user error here. */
 static void stimuli_load(stimulus_set_t *set, const char *path);
 
-/* Apply the per-session randomisations (label variant, item samples). Call after srand(). */
-static void stimuli_randomize_session(stimulus_set_t *set);
+/* Apply the per-session randomisations (label variant, item samples). */
+static void stimuli_randomize_session(stimulus_set_t *set, random_t *random);
 
 /* The short label of an item: the word itself, or a picture's file name without directories. */
 static const char *stimulus_item_label(const stimulus_item_t *item);
@@ -234,20 +236,15 @@ static void stimuli_load(stimulus_set_t *set, const char *path)
     stimuli_check_disjoint(set);
 }
 
-static int stimuli_random_below(int count)
-{
-    return (int)((double)rand() / ((double)RAND_MAX + 1) * count);
-}
-
 /* Keep a random sample_count of the items (partial Fisher-Yates shuffle, then truncate). */
-static void stimuli_sample_items(category_t *category)
+static void stimuli_sample_items(category_t *category, random_t *random)
 {
     int i;
     if (category->sample_count <= 0 || category->sample_count >= category->item_count) {
         return;
     }
     for (i = 0; i < category->sample_count; i++) {
-        int j = i + stimuli_random_below(category->item_count - i);
+        int j = i + random_below(random, category->item_count - i);
         stimulus_item_t swapped = category->items[i];
         category->items[i] = category->items[j];
         category->items[j] = swapped;
@@ -255,7 +252,7 @@ static void stimuli_sample_items(category_t *category)
     category->item_count = category->sample_count;
 }
 
-static void stimuli_randomize_session(stimulus_set_t *set)
+static void stimuli_randomize_session(stimulus_set_t *set, random_t *random)
 {
     int most_variants = 0;
     int chosen_variant;
@@ -266,13 +263,13 @@ static void stimuli_randomize_session(stimulus_set_t *set)
         }
     }
     /* One index for every category, so paired labels ("African Americans"/"European Americans") agree. */
-    chosen_variant = stimuli_random_below(most_variants);
+    chosen_variant = random_below(random, most_variants);
     for (c = 0; c < CATEGORY_COUNT; c++) {
         category_t *category = &set->categories[c];
         if (chosen_variant < category->name_variant_count) {
             strcpy(category->name, category->name_variants[chosen_variant]);
         }
-        stimuli_sample_items(category);
+        stimuli_sample_items(category, random);
     }
 }
 
