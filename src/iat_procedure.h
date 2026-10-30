@@ -1,8 +1,9 @@
 /* iat_procedure.h — the seven-block IAT procedure: block definitions, trial sequencing, timing.
  *
- * Follows Greenwald, McGhee & Schwartz (1998) as parameterised by Project Implicit's quiat9.js
- * (block lengths 20/20/20/40/28/20/40, balanced mini-blocks, 250 ms inter-trial interval, must-correct
- * errors).  PROTOCOL has the parameter-by-parameter provenance.
+ * The seven-block layout of Greenwald, Nosek & Banaji (2003, Table 1), with the parameters of the code
+ * implicit.harvard.edu runs: minno-tasks IAT/iat10.js, loaded by docs/studies/datapipe.iat.examples/
+ * demo.iats/<task>.js (block lengths 20/20/20/40/28/20/40, balanced mini-blocks, 250 ms inter-trial interval,
+ * must-correct errors).  PROTOCOL has the parameter-by-parameter provenance.
  */
 #ifndef IAT_PROCEDURE_H
 #define IAT_PROCEDURE_H
@@ -33,7 +34,7 @@ typedef struct {
     int pairing_order;          /* 1: target_a+attr_a share a key first; 2: the reverse */
 } procedure_result_t;
 
-/* Milliseconds of blank screen between trials (quiat9.js ITIDuration). */
+/* Milliseconds of blank screen between trials (iat10.js ITIDuration). */
 #define PROCEDURE_INTER_TRIAL_MS 250
 
 /* Run all seven blocks through the frontend.  pairing_order is 1 or 2.
@@ -46,7 +47,7 @@ static double procedure_time_scale = 1.0;
 
 /* ---------------------------------------------------------------------------------------------- */
 
-/* Which of Project Implicit's instruction templates (quiat9.js inst*) a block shows. */
+/* Which of Project Implicit's instruction templates (iat10.js inst*) a block shows. */
 typedef enum {
     INSTRUCTIONS_CATEGORIES_PRACTICE,
     INSTRUCTIONS_ATTRIBUTES_PRACTICE,
@@ -126,7 +127,7 @@ static int procedure_key_is_left(const key_assignment_t *keys, category_id_t cat
     return 0;
 }
 
-/* Trial order as quiat9.js builds it: mini-blocks of one trial per category, each mini-block shuffled,
+/* Trial order as iat10.js builds it (getMiniMixer2/getMiniMixer4): mini-blocks of one trial per category, each mini-block shuffled,
    targets and attributes alternating in combined blocks, so left and right responses stay balanced. */
 static void procedure_sequence_categories(category_id_t sequence[], const block_t *block)
 {
@@ -151,9 +152,9 @@ static void procedure_sequence_categories(category_id_t sequence[], const block_
     }
 }
 
-/* Block instructions, worded as the templates in minno-tasks IAT/qualtrics/quiat9.js
-   (instCategoriesPractice, instAttributePractice, instFirstCombined, instSecondCombined,
-   instSwitchCategories), which is what implicit.harvard.edu shows; HTML markup dropped. */
+/* Block instructions, worded as the templates in minno-tasks IAT/iat10.js (instCategoriesPractice,
+   instAttributePractice, instFirstCombined, instSecondCombined, instSwitchCategories), which is what
+   implicit.harvard.edu shows; HTML markup dropped. */
 static void procedure_show_block_instructions(const stimulus_set_t *set, const block_t *block, int block_index)
 {
     const category_t *categories = set->categories;
@@ -199,8 +200,8 @@ static void procedure_show_block_instructions(const stimulus_set_t *set, const b
         break;
     case INSTRUCTIONS_SWITCH_CATEGORIES:
         lines[line_count++] = "Watch out, the labels have changed position!";
-        snprintf(left_line, sizeof left_line, "Put the left finger on the E key for %s.", left);
-        snprintf(right_line, sizeof right_line, "Put the right finger on the I key for %s.", right);
+        snprintf(left_line, sizeof left_line, "Use the left finger on the E key for %s.", left);
+        snprintf(right_line, sizeof right_line, "Use the right finger on the I key for %s.", right);
         lines[line_count++] = left_line;
         lines[line_count++] = right_line;
         break;

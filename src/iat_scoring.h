@@ -2,9 +2,10 @@
  *
  * D = (mean latency, reversed pairing - mean latency, first pairing) / pooled sample SD, over the four
  * combined blocks (3, 4, 6, 7), keeping trials with 400 ms <= latency <= 10 s and keeping error trials
- * at their measured latency (the "built-in penalty" variant).  Positive D: faster when target_a shares
- * a key with attr_a.  nogaScorer.js in minno-tasks is the reference; test/rescore_project_implicit.py
- * re-implements it independently and must agree.  The paper's two-parcel variant is computed too.
+ * at their measured latency (the "built-in penalty" variant: Greenwald et al. 2003, Table 4, p. 213).  Positive D: faster when target_a shares
+ * a key with attr_a.  Reference: minno-time src/js/extensions/dscore/parcelMng.js (pipScorer, which
+ * iat10.js uses), with iat10.js's compute settings; minno-tasks scorer/nogaScorer.js is a port of it.
+ * test/rescore_project_implicit.py re-implements it independently and must agree.  The paper's two-parcel variant is computed too.
  */
 #ifndef IAT_SCORING_H
 #define IAT_SCORING_H
@@ -23,7 +24,9 @@ typedef struct {
     double fast_fraction;      /* share of all trials under SCORING_FAST_MS; > 0.1 makes the result unreliable */
 } score_t;
 
-/* Trial filters (nogaScorer.js minRT/maxRT/fastRT; the 2003 paper deletes only > 10 s and flags 300 ms). */
+/* Trial filters: Greenwald et al. 2003 Table 4 steps 2 and 4 delete >= 10,000 ms and < 400 ms
+   (iat10.js minRT/maxRT agree).  The fast-respondent flag is iat10.js fastRT 150 / 10%; the paper's
+   step 2 uses 300 ms / 10% and drops the respondent rather than warning. */
 #define SCORING_MIN_LATENCY_MS 400
 #define SCORING_MAX_LATENCY_MS 10000
 #define SCORING_FAST_MS 150
@@ -33,8 +36,9 @@ static score_t scoring_compute(const procedure_result_t *result);
 
 /* Project Implicit's feedback bands for |D|: "little or no" / "slight" / "moderate" / "strong".
    Not part of the D measure and not in Greenwald et al. (2003): they are the cut-offs in
-   minno-tasks IAT/qualtrics/quiat9.js, messageDef (cut 0.15 / 0.35 / 0.65), the same ones the
-   implicit.harvard.edu results page describes in prose ("slightly / moderately / strongly faster"). */
+   minno-tasks IAT/iat10.js, messageDef (cut 0.15 / 0.35 / 0.65), which the implicit.harvard.edu
+   results page words as "slightly / moderately / much faster" (see also the archived
+   implicit.harvard.edu/implicit/demo/background/raceinfo.html). */
 static const char *scoring_strength_label(double d);
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -123,7 +127,7 @@ static score_t scoring_compute(const procedure_result_t *result)
     score.mean_reversed_ms = scoring_mean(result, blocks.reversed_practice, blocks.reversed_test);
 
     for (i = 0; i < result->trial_count; i++) {
-        if (result->trials[i].latency_ms < SCORING_FAST_MS) {
+        if (result->trials[i].latency_ms <= SCORING_FAST_MS) {   /* <=, as parcelMng.js */
             fast++;
         }
     }
@@ -133,7 +137,7 @@ static score_t scoring_compute(const procedure_result_t *result)
 
 static const char *scoring_strength_label(double d)
 {
-    double magnitude = fabs(d);          /* quiat9.js messageDef cuts: -0.65 -0.35 -0.15 0.15 0.35 0.65 */
+    double magnitude = fabs(d);          /* iat10.js messageDef cuts: -0.65 -0.35 -0.15 0.15 0.35 0.65 */
     if (magnitude < 0.15) return "little or no";
     if (magnitude < 0.35) return "slight";
     if (magnitude < 0.65) return "moderate";

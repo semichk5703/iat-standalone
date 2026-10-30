@@ -1,5 +1,6 @@
-"""Independent re-scoring of results.csv, written straight from minno-tasks/scorer/nogaScorer.js
-(Project Implicit's scorer) so the C implementation can be checked against it.
+"""Independent re-scoring of results.csv, written from Project Implicit's scorer so the C implementation
+can be checked against it: upstream/minno-time/src/js/extensions/dscore/parcelMng.js (pipScorer, used by
+minno-tasks IAT/iat10.js) and its port upstream/minno-tasks/scorer/nogaScorer.js, which agree.
     python3 test/rescore_project_implicit.py results.csv        -> prints D and compares with the '#' line iat wrote."""
 import csv, math, re, sys
 rows = []; meta = {}

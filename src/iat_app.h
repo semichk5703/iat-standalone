@@ -73,8 +73,9 @@ static void app_show_introduction(const stimulus_set_t *set)
     frontend_show_message(lines, 6);
 }
 
-/* The welcome screen implicit.harvard.edu shows before the IAT (transcribed from the live Race task,
-   2026-10): the four groups and their items, then "There are seven parts...". */
+/* The welcome screen implicit.harvard.edu shows before the IAT: minno-tasks
+   docs/studies/raceiat/raceiat_instructions.jst ("Next, you will use the 'E' and 'I' computer keys to
+   categorize items into groups..."), its table of groups and items flattened to one line per group. */
 static void app_show_welcome(const stimulus_set_t *set)
 {
     static char group_lines[CATEGORY_COUNT][4 * STIMULI_MAX_TEXT];

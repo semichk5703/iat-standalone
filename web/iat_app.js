@@ -29,6 +29,7 @@ export class IatApp {
         ];
     }
 
+    /** minno-tasks docs/studies/raceiat/raceiat_instructions.jst (parallel to app_show_welcome). */
     welcomeLines(set) {
         const keysText = this.touch ? 'the left and right green areas' : "the 'E' and 'I' computer keys";
         return [

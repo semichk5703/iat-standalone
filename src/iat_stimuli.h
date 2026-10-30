@@ -7,9 +7,9 @@
  * An item ending in .jpg/.png/.gif is a picture; its path is relative to the stimuli file and may be a
  * shell glob.  Everything else is a word, shown verbatim (UTF-8).
  *
- * Two optional per-session randomisations, as Project Implicit's demonstration tasks do them
- * (minno-tasks IAT/qualtrics/demoRace0005.js: posWords/negWords are API.shuffle()d and the first 8
- * used; the category labels vary by condition):
+ * Two optional per-session randomisations, as implicit.harvard.edu's tasks do them (minno-tasks
+ * docs/studies/datapipe.iat.examples/demo.iats/race.js: one of two label sets is chosen at random, and
+ * posWords/negWords are API.shuffle()d and the first 8 used, "Based on Axt, Feng, & Bar-Anan (2021)"):
  *     target_a: Black people | African Americans      alternative labels; one index is chosen per session
  *     attr_a_sample: 8                                show a random 8 of the listed items this session
  */

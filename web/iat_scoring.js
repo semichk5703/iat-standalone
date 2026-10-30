@@ -49,11 +49,11 @@ export function scoringCompute(trials, pairingOrder) {
         dTest,
         meanFirstMs: mean(latenciesIn(trials, [b.firstPractice, b.firstTest])),
         meanReversedMs: mean(latenciesIn(trials, [b.reversedPractice, b.reversedTest])),
-        fastFraction: trials.length ? trials.filter(t => t.latencyMs < SCORING_FAST_MS).length / trials.length : 0,
+        fastFraction: trials.length ? trials.filter(t => t.latencyMs <= SCORING_FAST_MS).length / trials.length : 0,
     };
 }
 
-/** Project Implicit's feedback bands for |D| (quiat9.js messageDef cuts 0.15 / 0.35 / 0.65); not in the 2003 paper. */
+/** Project Implicit's feedback bands for |D| (iat10.js messageDef cuts 0.15 / 0.35 / 0.65); not in the 2003 paper. */
 export function scoringStrengthLabel(d) {
     const magnitude = Math.abs(d);
     if (magnitude < 0.15) return 'little or no';
