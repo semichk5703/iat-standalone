@@ -4,6 +4,4 @@ results.csv
 *.o
 __pycache__/
 media/project-implicit/fetch.log
-references/*.pdf
-references/*.html
 references/*.part
