@@ -1,4 +1,6 @@
-# Flowers/Insects word lists from Greenwald, McGhee & Schwartz (1998), JPSP 74(6), 1464-1480, Appendix A.
+# Demonstration set. The categories are those of Greenwald, McGhee & Schwartz (1998, Experiment 1), but these
+# 8-word lists are NOT the paper's: its Appendix A (p. 1479) lists 25 per category. Provenance of these lists
+# is unestablished; replace them from references/greenwald-mcghee-schwartz-1998-iat.pdf to make this canonical.
 # Edit freely: any four categories, comma-separated items. Lines with '#' are ignored.
 target_a: Flowers
 target_a_items: orchid, tulip, rose, daffodil, daisy, lilac, lily, violet

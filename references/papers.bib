@@ -7,7 +7,8 @@
   journal = {Journal of Personality and Social Psychology},
   year    = {1998}, volume = {74}, number = {6}, pages = {1464--1480},
   doi     = {10.1037/0022-3514.74.6.1464},
-  note    = {Seven-block procedure (Table 1, Experiment 1); flowers/insects and pleasant/unpleasant word lists (Appendix A)}
+  url     = {https://faculty.washington.edu/agg/pdf/Gwald_McGh_Schw_JPSP_1998.OCR.pdf},
+  note    = {Original IAT: five-step procedure with 50-trial blocks and 400 ms practice ITI (p. 1467); word lists, 25 per category (Appendix A, p. 1479)}
 }
 @article{greenwald2003scoring,
   author  = {Greenwald, Anthony G. and Nosek, Brian A. and Banaji, Mahzarin R.},
@@ -15,8 +16,8 @@
   journal = {Journal of Personality and Social Psychology},
   year    = {2003}, volume = {85}, number = {2}, pages = {197--216},
   doi     = {10.1037/0022-3514.85.2.197},
-  url     = {https://faculty.washington.edu/agg/pdf/GB&N.JPSP.2003.pdf},
-  note    = {D measure, Table 4 (improved algorithm, built-in error penalty variant); >10,000 ms deletion; >10\% under 300 ms exclusion}
+  url     = {https://faculty.washington.edu/agg/pdf/GN&B.JPSP.2003.pdf},
+  note    = {Seven-block layout 20/20/20/40/20/20/40 (Table 1, p. 198); improved D algorithm (Table 4, p. 213); built-in error penalty (p. 206)}
 }
 @article{nosek2005method,
   author  = {Nosek, Brian A. and Greenwald, Anthony G. and Banaji, Mahzarin R.},
@@ -24,7 +25,8 @@
   journal = {Personality and Social Psychology Bulletin},
   year    = {2005}, volume = {31}, number = {2}, pages = {166--180},
   doi     = {10.1177/0146167204271418},
-  note    = {Block order, extended practice in the reversed-target block (the 28/40-trial block 5)}
+  url     = {https://faculty.washington.edu/agg/pdf/NGB2005.PSPB.pdf},
+  note    = {Study 4 (pp. 176-178): lengthening the reversed-target block from 20 to 40 trials reduces the order effect; at least 4 items per category ideal (p. 178)}
 }
 @incollection{lane2007iat,
   author    = {Lane, Kristin A. and Banaji, Mahzarin R. and Nosek, Brian A. and Greenwald, Anthony G.},
@@ -33,7 +35,7 @@
   editor    = {Wittenbrink, Bernd and Schwarz, Norbert},
   publisher = {Guilford Press}, address = {New York},
   year      = {2007}, pages = {59--102},
-  note      = {Table 3.3 (p. 92): step-by-step D scoring procedure}
+  url       = {https://faculty.washington.edu/agg/pdf/Lane%20et%20al.UUIAT4.2007.pdf}
 }
 @article{nosek2007pervasiveness,
   author  = {Nosek, Brian A. and Smyth, Frederick L. and Hansen, Jeffrey J. and Devos, Thierry and Lindner, Nicole M. and Ranganath, Kate A. and Smith, Colin Tucker and Olson, Kristina R. and Chugh, Dolly and Greenwald, Anthony G. and Banaji, Mahzarin R.},
@@ -41,7 +43,16 @@
   journal = {European Review of Social Psychology},
   year    = {2007}, volume = {18}, number = {1}, pages = {36--88},
   doi     = {10.1080/10463280701489053},
+  url     = {https://faculty.washington.edu/agg/pdf/Nosek%20&%20al.PCIAS.ERSP.2007.pdf},
   note    = {Citation requested by Project Implicit for use of its stimulus materials}
+}
+@article{axt2021attributes,
+  author  = {Axt, Jordan R. and Feng, Tony Y. and Bar-Anan, Yoav},
+  title   = {The good and the bad: Are some attribute words better than others in the {Implicit Association Test}?},
+  journal = {Behavior Research Methods},
+  year    = {2021}, volume = {53}, number = {6}, pages = {2512--2527},
+  doi     = {10.3758/s13428-021-01592-8},
+  note    = {Source of the 32 positive and 32 negative words demo.iats/race.js samples from}
 }
 @article{greenwald2009meta,
   author  = {Greenwald, Anthony G. and Poehlman, T. Andrew and Uhlmann, Eric Luis and Banaji, Mahzarin R.},
@@ -70,5 +81,11 @@
   title  = {minno-tasks: {Project Implicit}'s open library of implicit-measure tasks},
   year   = {2024},
   url    = {https://github.com/baranan/minno-tasks},
-  note   = {IAT/qualtrics/quiat9.js (task) and scorer/nogaScorer.js (scoring); pinned commit in PROVENANCE.txt. This is the code implicit.harvard.edu serves}
+  note   = {IAT/iat10.js and docs/studies/datapipe.iat.examples/demo.iats/ are the code implicit.harvard.edu runs; pinned commit in PROVENANCE.txt}
+}
+@misc{minnotime,
+  author = {{Project Implicit contributors}},
+  title  = {minno-time: the {Minno} task player},
+  url    = {https://github.com/minnojs/minno-time},
+  note   = {src/js/extensions/dscore/parcelMng.js: the D scorer (pipScorer) iat10.js uses; pinned commit in PROVENANCE.txt}
 }
