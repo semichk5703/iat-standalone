@@ -6,9 +6,9 @@ CORE = src/iat_app.h src/iat_frontend.h src/iat_procedure.h src/iat_scoring.h sr
 
 all: iat iat-sdl
 
-# The web app as one self-contained HTML file (no server needed): dist/iat.html
-web-single:
-	python3 tools/build_single_html.py dist/iat.html
+# Project Implicit's own studies as one self-contained HTML file that opens from disk: dist/iat-offline.html
+offline-single:
+	python3 tools/build_offline_html.py dist/iat-offline.html
 
 iat: src/iat_terminal.c $(CORE)
 	$(CC) $(CFLAGS) -o iat src/iat_terminal.c -lm
@@ -27,6 +27,17 @@ test: all
 	python3 test/rescore_greenwald_2003.py results.csv
 	node test/web_scoring_check.mjs results.csv
 
+# Project Implicit's own Race IAT run offline by a scripted participant (needs node with playwright), served
+# from the repository and then as the single file from disk; their in-page score must agree with ours.
+OFFLINE_TEST_PORT = 8768
+test-offline: offline-single
+	python3 -m http.server $(OFFLINE_TEST_PORT) --bind 127.0.0.1 >/dev/null 2>&1 & server=$$!; sleep 1; \
+	  node test/offline_session.js 'http://127.0.0.1:$(OFFLINE_TEST_PORT)/offline/index.html?iat=11' results-served.json; status=$$?; \
+	  kill $$server; exit $$status
+	python3 test/offline_agreement.py results-served.json
+	node test/offline_session.js "file://$(CURDIR)/dist/iat-offline.html?iat=11" results-single.json
+	python3 test/offline_agreement.py results-single.json
+
 clean:
-	rm -f iat iat-sdl results.csv
+	rm -f iat iat-sdl results.csv results-served.json results-single.json
 	rm -rf dist

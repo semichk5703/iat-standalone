@@ -4,6 +4,7 @@ PROTOCOL), and convert files from earlier builds to the current format.
 
     python3 tools/rescore_csv.py results.csv [more.csv ...]       print each session's current score
     python3 tools/rescore_csv.py --output new.csv old.csv         write old.csv in the current format
+    python3 tools/rescore_csv.py results.json                     an offline/index.html session (Project Implicit's own IAT)
 
 Results files hold data, not scores (format 2, written by src/iat_app.h app_write_csv):
     # iat results, format 2
@@ -24,6 +25,7 @@ The output is written as UTF-8 by this script (PowerShell 5's '>' would write UT
 import argparse
 import csv
 import io
+import json
 import math
 import os
 import sys
@@ -39,6 +41,10 @@ class ResultsFile:
         self.facts = {}            # stimuli, pairing_order, random
         self.displayed = {}        # what the session showed, with 'scoring' naming the rules
         self.format = 1
+        with open(path, encoding='utf-8') as peek:
+            if peek.read(1) == '{':
+                self.read_offline_results(path)
+                return
         data_lines = []
         with open(path, encoding='utf-8') as lines:
             for line in lines:
@@ -58,6 +64,35 @@ class ResultsFile:
         self.header = ['item' if column == 'word' else column for column in rows[0]]   # first builds said 'word'
         self.rows = [dict(zip(self.header, row)) for row in rows[1:]]
         self.pairing_order = int(self.facts.get('pairing_order', 1))
+
+    def read_offline_results(self, path):
+        """offline/index.html's results.json: Project Implicit's own IAT logs (minno-tasks IAT/iat*.js).
+        Their trial rows carry data.block (0 = instruction screens), latency, data.score (1 = an error),
+        stimuli (the category) and media (the item); the task's last row is their scorer's summary.
+        Their d is positive when the study's first category paired with its first attribute was faster;
+        the results do not name those, so this reader takes the pairing in block 3 (the summary's
+        block3Cond) as the first pairing: the two agree in sign when the study ran that pairing first."""
+        with open(path, encoding='utf-8') as source:
+            tasks = json.load(source)['tasks']
+        iat_tasks = [name for name, rows in tasks.items() if any(isinstance(r.get('data'), dict) and r['data'].get('block') == 7 for r in rows)]
+        if len(iat_tasks) != 1:
+            sys.exit(f'{path}: expected one IAT task, found {iat_tasks or "none"}')
+        rows = tasks[iat_tasks[0]]
+        summary = next((r for r in reversed(rows) if 'block3Cond' in r), {})
+        self.format = 'offline'
+        self.header = CSV_HEADER
+        self.rows = [{'block': str(r['data']['block']), 'category': (r.get('stimuli') or [''])[0],
+                      'item': str((r.get('media') or [''])[0]).split('/')[-1],
+                      'correct_key': {'left': 'e', 'right': 'i'}.get(r['data'].get('corResp'), ''),
+                      'errors': str(r['data'].get('score', 0)), 'rt_ms': str(r['latency'])}
+                     for r in rows if isinstance(r.get('data'), dict) and 1 <= int(r['data'].get('block', 0)) <= 7]
+        self.facts = {'stimuli': f'{iat_tasks[0]} (Project Implicit task, offline page)',
+                      'pairing_order': '1',
+                      'random': "the study's own (minno)",
+                      'first_pairing': summary.get('block3Cond', 'unknown').split(',')[0]}
+        self.pairing_order = 1
+        self.displayed = {'scoring': 'minno-in-page', 'D': summary.get('d', ''), 'fast': summary.get('fastRate', ''),
+                          'errors': summary.get('errRate', ''), 'scored_trials': summary.get('nScoredTrials', '')}
 
     def read_format_1_score_line(self, line):
         """Format 1: '# D=... order=N'.  The order becomes a fact; the rest is what was displayed."""
@@ -79,6 +114,8 @@ class ResultsFile:
         facts = {'stimuli': self.facts.get('stimuli', 'unknown (converted from format 1)'),
                  'pairing_order': str(self.pairing_order),
                  'random': self.facts.get('random', 'unknown (converted from format 1)')}
+        if 'first_pairing' in self.facts:
+            facts['first_pairing'] = self.facts['first_pairing']
         text = io.StringIO()
         text.write('# iat results, format 2\n')
         for key, value in facts.items():

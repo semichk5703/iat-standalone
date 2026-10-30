@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Implicit Association Test (offline)</title>
+<!-- Project Implicit's player and stylesheet, unchanged (upstream/minno-quest, branch 1.0) -->
+<link rel="stylesheet" href="../upstream/minno-quest/dist/main.css">
+<script src="../upstream/minno-quest/dist/pi-minno.js"></script>
+<script src="offline_loader.js"></script>
+<script src="results_sink.js"></script>
+<style>
+  .container { padding-top: 15px; }
+  #offline-results { text-align: center; margin: 2em; font: 18px Arial, sans-serif; }
+</style>
+</head>
+<body>
+<div class="container"><div id="minno-canvas"></div></div>
+<div id="offline-results"></div>
+<script>
+/** Runs one Project Implicit study offline.
+ *  URL parameters: ?study=PATH  the study's manager script, relative to this page
+ *                                (default: minno-tasks' demo IATs, the task menu Project Implicit publishes)
+ *                  &iat=11       load IAT/iat11.js wherever a study asks for iat10.js (see PROTOCOL) */
+class OfflineStudyApp {
+    static DEFAULT_STUDY = '../upstream/minno-tasks/docs/studies/datapipe.iat.examples/demo.iats/mgr.js';
+
+    /** Every address Project Implicit's files name, and where it is served from here. */
+    static ADDRESS_REWRITES = [
+        new AddressRewrite('https://cdn.jsdelivr.net/gh/baranan/minno-tasks@0.*/', '../upstream/minno-tasks/',
+                           'task scripts (IAT/iat*.js) and scorers, from the minno-tasks CDN'),
+        new AddressRewrite('https://baranan.github.io/minno-tasks/', '../upstream/minno-tasks/docs/',
+                           "pictures, from minno-tasks' GitHub Pages site (which serves its docs/ folder)"),
+        new AddressRewrite('https://cdn.jsdelivr.net/gh/minnojs/minno-datapipe@1.*/datapipe.min.js', 'sink_already_loaded.js',
+                           'the results upload; results_sink.js stands in for it'),
+        new AddressRewrite('https://cdn.jsdelivr.net/gh/minnojs/minno-quest@0.3/dist/', '../upstream/minno-quest/dist/',
+                           'the player, if a study names it'),
+        new AddressRewrite('https://cdn.jsdelivr.net/gh/minnojs/minno-quest@1.0/dist/', '../upstream/minno-quest/dist/',
+                           'the player, if a study names it'),
+    ];
+
+    static IAT11_REWRITE = new AddressRewrite('/IAT/iat10.js', '/IAT/iat11.js',
+                                              'optional (&iat=11): the IAT version the live Race IAT uses');
+
+    constructor(params = new URLSearchParams(location.search)) {
+        this.study = params.get('study') || window.OFFLINE_DEFAULT_STUDY || OfflineStudyApp.DEFAULT_STUDY;
+        this.rewrites = OfflineStudyApp.ADDRESS_REWRITES.concat(params.get('iat') === '11' ? [OfflineStudyApp.IAT11_REWRITE] : []);
+    }
+
+    run() {
+        // a single-file build (tools/build_offline_html.py) defines OFFLINE_FILES, OFFLINE_PAGE_URL and OFFLINE_DEFAULT_STUDY
+        const loader = new OfflineLoader(this.rewrites, window.OFFLINE_FILES || null, window.OFFLINE_PAGE_URL || location.href);
+        loader.install(window.requirejs);
+        minnoJS.onEnd = () => this.showResults();
+        minnoJS(document.getElementById('minno-canvas'), loader.resolve(this.study));
+    }
+
+    showResults() {
+        const panel = document.getElementById('offline-results');
+        const link = window.offlineResults.downloadLink();
+        panel.replaceChildren(link || document.createTextNode('No results were recorded.'));
+    }
+}
+
+new OfflineStudyApp().run();
+</script>
+</body>
+</html>
