@@ -1,8 +1,9 @@
 # iat — a small, offline Implicit Association Test
 
-A self-contained implementation of the seven-block IAT (Greenwald, McGhee & Schwartz, 1998) with the
-D-score of Greenwald, Nosek & Banaji (2003), following the parameters of Project Implicit's current
-public task code. Two frontends share one core:
+A self-contained implementation of the Implicit Association Test (Greenwald, McGhee & Schwartz, 1998)
+in its seven-block form, scored with the D measure (Greenwald, Nosek & Banaji, 2003), following the code
+implicit.harvard.edu runs (minno-tasks `IAT/iat10.js`, scored by minno-time's `parcelMng.js`). Two
+frontends share one core, and `web/` is a browser and phone port of it:
 
 | binary    | dependency | stimuli          | where it runs                                  |
 |-----------|------------|------------------|------------------------------------------------|
@@ -11,7 +12,7 @@ public task code. Two frontends share one core:
 
 Eighteen ready-made task sets are included (race, age, weight, skin tone, disability, religion,
 sexuality, weapons, presidents, Asian-American, Native American, gender–career, gender–science,
-Arab-Muslim, and others), converted from Project Implicit's open task library with full provenance.
+Arab-Muslim, and others), taken from Project Implicit's open task library with full provenance.
 
 ## Build and run
 
@@ -31,6 +32,7 @@ Keys: **E** = left, **I** = right, **Space** = continue, **Q**/Esc = quit.
 | `--order 1\|2`          | which pairing comes first (default: random, as Project Implicit; alternate across sittings if you repeat) |
 | `--out FILE`           | raw trials CSV: block, category, item, correct key, error count, latency ms; D-scores on a trailing `#` line |
 | `--seed N`             | fix the shuffle |
+| `--no-intro`           | skip the opening screen (transcribed from the live site; not in minno-tasks) |
 | `IAT_FULLSCREEN=1`     | `iat-sdl` fullscreen (default 800×600 window) |
 | `IAT_SCALE=n`          | `iat-sdl` font pixel size (default 3) |
 
@@ -39,7 +41,7 @@ Keys: **E** = left, **I** = right, **Space** = continue, **Q**/Esc = quit.
 `web/` is the same program for a browser, module for module (`iat_stimuli.js`, `iat_procedure.js`,
 `iat_scoring.js`, `iat_app.js`, `iat_frontend_dom.js`), reading the same `stimuli/*.txt` files.
 Serve the repository root (`python3 -m http.server`) and open
-`web/index.html?stimuli=../stimuli/race.txt`; `&order=1|2`, `&seed=N` as for the binaries.  On a
+`web/index.html?stimuli=../stimuli/race.txt`; `&order=1|2`, `&seed=N`, `&intro=0` as for the binaries.  On a
 touch screen it switches to Project Implicit's touch layout (left/right green areas answer, the lower
 area continues; `&touch=1` forces it).  Results download as the same CSV.
 `node test/web_scoring_check.mjs results.csv` checks the web scorer against a CSV from the C build.
@@ -51,20 +53,24 @@ combined blocks. **D > 0** means you were faster when *target_a* shared a key wi
 the stimuli file). Project Implicit's feedback bands: |D| < 0.15 little or none, < 0.35 slight,
 < 0.65 moderate, otherwise strong.
 
-Read it as a snapshot, not a verdict: a single IAT's test–retest reliability is about r ≈ .5, scores
-shift with context and recent experience, and the measure characterises groups much better than it
-does individuals (see [REFERENCES.md](REFERENCES.md), "On interpretation"). It is not a screening tool.
+Read it as a snapshot, not a verdict: for socially sensitive attitudes, test–retest reliability is
+"nearer to .50 and often lower" (Greenwald, Brendl et al., 2019, p. 18), scores shift with context, and
+the measure characterises groups much better than it does individuals (see
+[REFERENCES.md](REFERENCES.md), "On interpretation"). It is not a screening tool.
 
 ## Fidelity to the mainstream implementation
 
-[PROTOCOL](PROTOCOL) compares every parameter with `quiat9.js` and `scorer/nogaScorer.js` from
-[minno-tasks](https://github.com/baranan/minno-tasks), the code Project Implicit's own demonstrations
-run: block lengths (20/20/20/40/28/20/40), balanced mini-block trial order, 250 ms inter-trial interval,
-must-correct error handling with latency to the correct key, 400 ms–10 s trial filter, single-parcel D
-with sample SD, 150 ms too-fast flag, feedback cut-offs. The Greenwald-2003 two-parcel D is printed
-alongside. `make test` drives a scripted participant through every task set on both frontends at 100×
-speed and re-scores the output with two independent Python transcriptions of the published algorithms
-(`test/rescore_project_implicit.py`, `test/rescore_greenwald_2003.py`); they agree with the C scorer to < 10⁻³.
+[PROTOCOL](PROTOCOL) traces every parameter to the paper it comes from (page-checked) and to the code
+implicit.harvard.edu runs: [minno-tasks](https://github.com/baranan/minno-tasks) `IAT/iat10.js` and the
+demo site's task configs in `docs/studies/datapipe.iat.examples/demo.iats/`, scored by
+[minno-time](https://github.com/minnojs/minno-time)'s `parcelMng.js`. That covers block lengths
+(20/20/20/40/28/20/40), balanced mini-block trial order, the 250 ms inter-trial interval, must-correct
+errors, the 400 ms–10 s trial filter, single-parcel D with sample SD, the too-fast flag, instruction wording,
+8-of-32 attribute-word sampling, per-session label sets, and feedback cut-offs; the Greenwald-2003
+two-parcel D is printed alongside. Where Project Implicit departs from a paper, PROTOCOL says so.
+`make test` drives a scripted participant through every task set on both frontends at 100× speed and
+re-scores the output with independent re-implementations (`test/rescore_project_implicit.py`,
+`test/rescore_greenwald_2003.py`, `test/web_scoring_check.mjs`); they agree with the C scorer to < 10⁻³.
 
 ## Stimuli
 
@@ -75,26 +81,30 @@ paths relative to the file, shell globs allowed):
     target_a_items: orchid, tulip, rose, ../media/project-implicit/race-faces/*.jpg
     target_b: ...      attr_a: ...      attr_b: ...
 
-Each file's header states where it came from and the upstream commit. Fourteen sets are generated by
-`./tools/regen_stimuli.sh` from the pinned `upstream/minno-tasks` submodule via `tools/minno_to_stimuli.py` (which
-converts any minno-tasks IAT config); four were transcribed by hand because upstream builds them in
-code — their headers say what was chosen. `media/minno/` holds the 161 images those sets use, as
-byte-for-byte copies of `upstream/minno-tasks/docs/images/`.
+Each file's header states where it came from and the upstream commit. Thirteen sets are generated by
+`tools/regen_stimuli.sh` from the pinned `upstream/minno-tasks` submodule via `tools/minno_to_stimuli.py`
+(which converts any minno-tasks IAT config). Five are kept by hand — race (from the demo site's
+`demo.iats/race.js`), skin tone, sexuality and religion (upstream builds them in code), and
+flowers-insects (a demonstration set; its header explains why it is not yet the 1998 lists) — and
+their headers say what was chosen. `media/minno/` is a byte-for-byte copy of
+`upstream/minno-tasks/docs/images/` (git-lfs).
 
-Project Implicit's larger study-material sets (Google Drive, academic-use terms) are *not* included;
-`tools/fetch_media.ps1` downloads them on Windows into `media/project-implicit/` for you to reference from
-your own stimuli files.
+`media/project-implicit/` holds Project Implicit's study-material sets, fetched from Google Drive by
+`tools/fetch_media.ps1`; they are made available "for academic research purposes" (see NOTICE).
+Reference them from your own stimuli files.
 
 ## Provenance
 
-Every third-party file is a verified copy from a git submodule pinned to an exact commit:
+Every file copied from another repository is checked against a git submodule pinned to an exact commit:
 
     git submodule update --init
+    git lfs pull                      # the images and PDFs, if the clone did not fetch them
     tools/provenance.sh verify        # compares third_party/ and media/minno/ byte-for-byte with upstream/
     tools/provenance.sh manifest      # regenerates PROVENANCE.txt (commit hashes + sha256 of every file)
 
-See [NOTICE](NOTICE) for licenses (minno-tasks: Apache-2.0; stb_image: public domain/MIT; font8x8:
-public domain) and [LICENSE](LICENSE) for this repository's own code (MIT).
+See [NOTICE](NOTICE) for licenses (minno-tasks and minno-time: Apache-2.0; stb_image: public
+domain/MIT; font8x8: public domain; papers and Project Implicit study materials: their own terms) and
+[LICENSE](LICENSE) for this repository's own code (MIT).
 
 ## Layout
 
@@ -105,19 +115,21 @@ public domain) and [LICENSE](LICENSE) for this repository's own code (MIT).
     src/iat_frontend.h     the eight display/keyboard calls a frontend implements
     src/iat_terminal.c     terminal frontend (termios + ANSI)
     src/iat_sdl.c          SDL2 frontend (pictures; retained scene redrawn per frame)
-    stimuli/               18 task sets               media/minno/      their images (git-lfs)
+    stimuli/               18 task sets
+    media/minno/           minno-tasks docs/images (git-lfs)
+    media/project-implicit/  Project Implicit study materials (git-lfs; tools/fetch_media.ps1)
     tools/minno_to_stimuli.py   minno-tasks config -> stimuli file
-    tools/regen_stimuli.sh      rebuild all converted sets from the submodule
+    tools/regen_stimuli.sh      rebuild the 13 converted sets from the submodule
     tools/provenance.sh         verify / sync / manifest  ->  PROVENANCE.txt
     tools/fetch_media.ps1, tools/fetch_drive_missing.py   Windows: fetch Project Implicit study materials
     test/simulate_participant.py        pty-driven scripted participant (make test)
-    test/rescore_project_implicit.py    independent re-implementation of nogaScorer.js
+    test/rescore_project_implicit.py    independent re-implementation of minno-time parcelMng.js
     test/rescore_greenwald_2003.py      independent re-implementation of 2003 Table 4
-    references/papers.bib, references/fetch_papers.sh    primary sources
+    references/            papers.bib, fetch_papers.sh, and the papers (PDF, git-lfs)
     third_party/           stb_image.h, font8x8_basic.h (copies of upstream/)
-    upstream/              git submodules: minno-tasks, stb, font8x8
+    upstream/              git submodules: minno-tasks, minno-time, stb, font8x8
     web/                   browser/mobile port, parallel module for module; test/web_scoring_check.mjs
-    PROTOCOL, NOTICE, LICENSE, CITATION.cff
+    PROTOCOL, REFERENCES.md, NOTICE, LICENSE, CITATION.cff
 
 Naming: `module_verb_object` functions, `thing_t` types, one statement per line; each header opens
 with its public type and entry point, implementation below the rule.
@@ -125,4 +137,5 @@ with its public type and entry point, implementation below the rule.
 ## Citing
 
 Cite Greenwald et al. (1998, 2003) for the method, Nosek et al. (2007) if you use Project Implicit's
-study materials, and minno-tasks for the stimuli; `CITATION.cff` has the metadata.
+study materials, and minno-tasks for the stimuli; `CITATION.cff` and `references/papers.bib` have the
+metadata.

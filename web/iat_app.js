@@ -52,7 +52,8 @@ export class IatApp {
             `Mean latency ms: first pairing ${score.meanFirstMs.toFixed(0)} | reversed ${score.meanReversedMs.toFixed(0)} | pairing order ${this.pairingOrder}`,
         ];
         if (score.fastFraction > SCORING_FAST_FRACTION_LIMIT) lines.push(`WARNING: ${(100 * score.fastFraction).toFixed(0)}% of responses < ${SCORING_FAST_MS} ms - too fast, result unreliable.`);
-        lines.push('', 'A single IAT is a snapshot (test-retest about r = .5), not a measurement of a person.');
+        // Greenwald, Brendl et al. 2019, p. 18: test-retest "nearer to .50 and often lower" for sensitive attitudes
+        lines.push('', 'A single IAT is a snapshot (test-retest about r = .5 or lower), not a measurement of a person.');
         return lines;
     }
 

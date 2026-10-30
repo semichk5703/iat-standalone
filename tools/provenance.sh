@@ -10,7 +10,10 @@ pairs() {  # vendored-path  upstream-path
     echo "third_party/stb_image.h upstream/stb/stb_image.h"
     echo "third_party/font8x8_basic.h upstream/font8x8/font8x8_basic.h"
     echo "media/minno/LICENSE-minno-tasks-Apache-2.0 upstream/minno-tasks/LICENSE"
-    for f in media/minno/*.jpg; do echo "$f upstream/minno-tasks/docs/images/$(basename "$f")"; done
+    for f in media/minno/*; do   # every file but the licence copy is a copy of minno-tasks docs/images/
+        [ "$f" = media/minno/LICENSE-minno-tasks-Apache-2.0 ] && continue
+        echo "$f upstream/minno-tasks/docs/images/$(basename "$f")"
+    done
 }
 case "$1" in
   sync)    pairs | while read v u; do cp "$u" "$v"; done; echo synced ;;

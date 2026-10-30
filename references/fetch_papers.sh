@@ -1,9 +1,11 @@
 #!/bin/sh
-# fetch_papers.sh — download the primary papers into references/ (not committed: publisher copyright).
+# fetch_papers.sh — (re)download the primary papers into references/ (tracked with git-lfs; copyright: NOTICE).
 # All are author-posted copies from Anthony Greenwald's publication list,
 # https://faculty.washington.edu/agg/bydate.htm (URLs checked 2026-10).
 #
-#   sh references/fetch_papers.sh          (Windows: run it from Git Bash, which ships with Git for Windows)
+#   sh references/fetch_papers.sh
+# Windows PowerShell, using the bash that ships with Git for Windows:
+#   & "$(Split-Path (Split-Path (Get-Command git).Source))\bin\bash.exe" references/fetch_papers.sh
 #
 # A download is kept only if it starts with the PDF signature "%PDF"; anything else (an HTML error or
 # sign-in page) is saved as <name>.html beside it so the cause can be read, and the script says so.
