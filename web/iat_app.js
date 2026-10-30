@@ -1,5 +1,5 @@
 // iat_app.js — session flow and result display (parallel to src/iat_app.h).
-// URL parameters:  ?stimuli=../stimuli/race.txt  &order=1|2  &seed=N  &touch=1  &timescale=100 (tests)
+// URL parameters:  ?stimuli=../stimuli/race.txt  &order=1|2  &seed=N  &touch=1  &intro=0  &timescale=100 (tests)
 
 import { StimulusSet, CATEGORY_TARGET_A, CATEGORY_TARGET_B, CATEGORY_ATTRIBUTE_A, CATEGORY_ATTRIBUTE_B } from './iat_stimuli.js';
 import { Random } from './iat_random.js';
@@ -15,16 +15,18 @@ export class IatApp {
         this.seed = params.has('seed') ? parseInt(params.get('seed'), 10) : undefined;
         this.touch = params.has('touch') ? params.get('touch') !== '0' : matchMedia('(pointer: coarse)').matches;
         this.timeScale = parseFloat(params.get('timescale')) || 1;
+        this.showIntroduction = params.get('intro') !== '0';      // intro=0 skips the opening screen
     }
 
-    /** implicit.harvard.edu's opening screen, minus the questionnaire it introduces there (parallel to
-     *  app_show_introduction in src/iat_app.h). Without it, "Next, you will..." has nothing to follow. */
+    /** implicit.harvard.edu's opening screen, minus the questionnaire and duration it mentions there
+     *  (parallel to app_show_introduction in src/iat_app.h). Transcribed from the live site, not from
+     *  minno-tasks; intro=0 omits it. */
     introductionLines(set) {
         const sorted = set.hasPictures ? 'pictures and words' : 'words';
         return [
             'Implicit Association Test', '',
             `In this study you will complete an Implicit Association Test (IAT) in which you will be asked to sort ${sorted} into groups as fast as you can.`,
-            'This should take about 5 minutes to complete. At the end, you will receive your IAT result.', '',
+            'At the end, you will receive your IAT result.', '',
             this.touch ? 'Touch the lower green area to continue.' : 'Press the space bar to continue.',
         ];
     }
@@ -71,8 +73,10 @@ export class IatApp {
         const frontend = new DomFrontend(this.root, this.touch);
         const procedure = new Procedure(frontend, set, this.pairingOrder, { random, timeScale: this.timeScale, touch: this.touch });
         frontend.open(set);
-        frontend.showMessage(this.introductionLines(set));
-        if (!await procedure.waitForContinue()) { frontend.showMessage(['aborted']); return; }
+        if (this.showIntroduction) {
+            frontend.showMessage(this.introductionLines(set));
+            if (!await procedure.waitForContinue()) { frontend.showMessage(['aborted']); return; }
+        }
         frontend.showMessage(this.welcomeLines(set));
         if (!await procedure.waitForContinue() || !await procedure.run()) { frontend.showMessage(['aborted']); return; }
 

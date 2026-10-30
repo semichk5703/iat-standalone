@@ -1,9 +1,10 @@
 /* iat_app.h — command line, session flow, and result output.  A frontend's main() calls iat_app_main.
  *
- *   iat STIMULI_FILE [--order 1|2] [--out results.csv] [--seed N]
+ *   iat STIMULI_FILE [--order 1|2] [--out results.csv] [--seed N] [--no-intro]
  *     --order   which pairing comes first (default: random, as Project Implicit)
  *     --out     raw trials as CSV, with the scores on a trailing '#' line (default results.csv)
  *     --seed    fix the shuffle (default: time)
+ *     --no-intro  skip the opening screen (it is transcribed from the live site, not from minno-tasks)
  */
 #ifndef IAT_APP_H
 #define IAT_APP_H
@@ -26,6 +27,7 @@ typedef struct {
     const char *stimuli_path;
     const char *output_path;
     int pairing_order;         /* 0 = choose at random */
+    int show_introduction;
     unsigned seed;
 } app_options_t;
 
@@ -36,11 +38,14 @@ static int app_parse_options(app_options_t *options, int argc, char **argv)
     options->output_path = "results.csv";
     options->pairing_order = 0;
     options->seed = (unsigned)time(NULL);
+    options->show_introduction = 1;
     for (i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--order") && i + 1 < argc) {
             options->pairing_order = atoi(argv[++i]);
         } else if (!strcmp(argv[i], "--out") && i + 1 < argc) {
             options->output_path = argv[++i];
+        } else if (!strcmp(argv[i], "--no-intro")) {
+            options->show_introduction = 0;
         } else if (!strcmp(argv[i], "--seed") && i + 1 < argc) {
             options->seed = (unsigned)atoi(argv[++i]);
         } else {
@@ -48,16 +53,17 @@ static int app_parse_options(app_options_t *options, int argc, char **argv)
         }
     }
     if (!options->stimuli_path) {
-        fprintf(stderr, "usage: %s STIMULI_FILE [--order 1|2] [--out results.csv] [--seed N]\n", argv[0]);
+        fprintf(stderr, "usage: %s STIMULI_FILE [--order 1|2] [--out results.csv] [--seed N] [--no-intro]\n", argv[0]);
         return 0;
     }
     return 1;
 }
 
 /* The opening screen implicit.harvard.edu shows first ("You have selected the Race Task. In this study
-   you will complete an Implicit Association Test (IAT)..."), minus the questionnaire it introduces there,
-   since this program runs the IAT alone.  Without it the next screen's "Next, you will..." has nothing
-   to follow. */
+   you will complete an Implicit Association Test (IAT)..."), minus the questionnaire and duration it
+   mentions there, since this program runs the IAT alone.  Not in minno-tasks: transcribed from the live
+   site (2026-10).  The next screen opens with "Next," because on the site it follows the questionnaire;
+   this screen gives it something to follow.  --no-intro omits it. */
 static void app_show_introduction(const stimulus_set_t *set)
 {
     const char *lines[] = {
@@ -66,7 +72,7 @@ static void app_show_introduction(const stimulus_set_t *set)
         set->has_pictures
             ? "In this study you will complete an Implicit Association Test (IAT) in which you will be asked to sort pictures and words into groups as fast as you can."
             : "In this study you will complete an Implicit Association Test (IAT) in which you will be asked to sort words into groups as fast as you can.",
-        "This should take about 5 minutes to complete. At the end, you will receive your IAT result.",
+        "At the end, you will receive your IAT result.",
         "",
         "Press the space bar to continue.",
     };
@@ -160,11 +166,13 @@ static int iat_app_main(int argc, char **argv)
     }
 
     frontend_open(&set);
-    app_show_introduction(&set);
-    if (!procedure_wait_for_continue()) {
-        frontend_close();
-        puts("aborted");
-        return 1;
+    if (options.show_introduction) {
+        app_show_introduction(&set);
+        if (!procedure_wait_for_continue()) {
+            frontend_close();
+            puts("aborted");
+            return 1;
+        }
     }
     app_show_welcome(&set);
     if (!procedure_wait_for_continue() || !procedure_run(&result, &set, options.pairing_order)) {
