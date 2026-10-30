@@ -21,5 +21,5 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 This license covers the code and documentation written for this repository
-(core.h, iat.c, iat-sdl.c, minno2stim.py, test/, *.sh, *.ps1, *.md, PROTOCOL).
+(src/, tools/, test/, references/*.bib, *.md, PROTOCOL).
 Third-party material is under its own terms; see NOTICE.

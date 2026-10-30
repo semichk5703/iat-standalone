@@ -1,5 +1,5 @@
 """Self-test: drive an IAT binary through a pty as a scripted participant.
-Usage:  IAT_TIMESCALE=100 python3 test/simulate.py stimuli/race.txt [--order 2]
+Usage:  IAT_TIMESCALE=100 python3 test/simulate_participant.py stimuli/race.txt [--order 2]
         IAT_BIN=./iat-sdl ...   (SDL build: runs with SDL_VIDEODRIVER=dummy, keys over stdin)
 The participant is 150 ms slower on blocks 6-7 (reversed pairing) -> expect D > 0 for --order 1."""
 import os, pty, re, sys, time, select, random, glob
@@ -8,7 +8,7 @@ stimfile = sys.argv[1]; extra = sys.argv[2:]
 binary = os.environ.get('IAT_BIN', './iat')
 scale = float(os.environ.get('IAT_TIMESCALE', '1'))
 
-# parse the stimuli file exactly as core.h does (globs relative to the file; images -> basename label)
+# parse the stimuli file exactly as src/iat_stimuli.h does (globs relative to the file; images -> basename label)
 d = os.path.dirname(stimfile) or '.'
 stim = {}
 for line in open(stimfile, encoding='utf-8'):

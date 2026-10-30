@@ -4,7 +4,7 @@ Every parameter below is traced to (a) the primary paper and (b) the live refere
 minno-tasks IAT/qualtrics/quiat9.js and scorer/nogaScorer.js (pinned commit in PROVENANCE.txt).
 quiat9.js is what implicit.harvard.edu/implicit/takeatest.html serves: its instruction templates
 match a transcript of the live Race IAT word for word, including the 28-trial block 5.
-Full citations: references/papers.bib.  PDFs: references/fetch-papers.sh.
+Full citations: references/papers.bib.  PDFs: references/fetch_papers.sh.
 
 Procedure
 ---------
@@ -49,8 +49,8 @@ feedback bands            0.15 / 0.35 / 0.65          Project Implicit conventio
 
 Verification
 ------------
-test/rescore.py        re-implements nogaScorer.js from its source; agrees with the C scorer to < 1e-3.
-test/rescore_2003.py   re-implements 2003 Table 4 steps 1-9 (with PI's 400 ms floor); agrees for D_2003.
+test/rescore_project_implicit.py        re-implements nogaScorer.js from its source; agrees with the C scorer to < 1e-3.
+test/rescore_greenwald_2003.py   re-implements 2003 Table 4 steps 1-9 (with PI's 400 ms floor); agrees for D_2003.
 make test              runs both on every stimulus set, both frontends, at 100x speed.
 Trial balance per category and key per block was checked from the CSV (10/10, 5/5, 14/14).
 A scripted participant with no latency difference scores |D| < 0.1.

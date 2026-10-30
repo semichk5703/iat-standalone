@@ -3,7 +3,7 @@
 Costs Drive one request to list the folder plus one per missing file - gdown's CLI must query Drive
 for every file even when it then skips it, which trips Drive's rate limit on re-runs.
 
-    python fetch-drive-missing.py <folder-url-or-id> <dest-dir>
+    python tools/fetch_drive_missing.py <folder-url-or-id> <dest-dir>
 Exit 0 if every file is present afterwards, 1 otherwise. All gdown output is left visible; each failure
 is reported with the file name and gdown's reason, so the cause can be read from the output."""
 import os, sys, traceback
