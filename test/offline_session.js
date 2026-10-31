@@ -1,6 +1,8 @@
-// offline_session.js — a scripted participant takes Project Implicit's own Race IAT through offline/index.html,
-// with the network blocked except for the local server, and saves the results the page offers.
-//   node test/offline_session.js http://127.0.0.1:8768/offline/index.html?iat=11 results.json
+// offline_session.js — a scripted participant takes a study through offline/index.html, with the network blocked
+// except for the local server, and saves the results the page offers.  The study is the page's default (the race
+// study: questionnaires and Project Implicit's Race IAT) or minno-tasks' demo menu, where it picks Black/White.
+//   node test/offline_session.js http://127.0.0.1:8768/offline/index.html results.json
+// On questionnaire pages it picks each question's first answer, or declines a page that asks for more.
 // Playwright's fake clock drives the page's timers and performance.now(), so each response time is exactly
 // the latency chosen here (no real waiting): FIRST_PAIRING_MS for the blocks where the targets pair as in
 // block 3, REVERSED_PAIRING_MS for blocks 6 and 7.
@@ -32,7 +34,7 @@ class ScriptedParticipant {
 
 class OfflineSessionApp {
     async run(url, outputPath) {
-        const participant = new ScriptedParticipant(path.join(__dirname, '..', 'upstream/minno-tasks/docs/studies/datapipe.iat.examples/demo.iats/race.js'));
+        const participant = new ScriptedParticipant(path.join(__dirname, '..', 'upstream/minno-tasks/docs/studies/raceiat/mgr.js'));
         const browser = await chromium.launch();
         const page = await browser.newPage();
         const blocked = [];
@@ -45,13 +47,17 @@ class OfflineSessionApp {
         await page.clock.install();
         await page.goto(url);
         await this.advance(page, 3000);
-        await page.click('text=Black/White');
-        await page.click('text=Submit');
+        if (await page.$('text=Choose a task')) {          // minno-tasks' demo menu
+            await page.click('text=Black/White');
+            await page.click('text=Submit');
+        }
 
         let part = 0, firstPairingText = null, trials = 0;
+        const pagesSeen = [];
         for (let step = 0; step < 20000 && !(await page.$('#offline-results a')); step++) {
             await this.advance(page, 20);
             const text = await page.innerText('body');
+            if (await this.answerPage(page, pagesSeen)) continue;
             const partMatch = text.match(/Part (\d) of 7/);
             if (partMatch && /space bar/.test(text)) {
                 part = Number(partMatch[1]);
@@ -77,9 +83,45 @@ class OfflineSessionApp {
         console.log(`stopped in part ${part}; screen: ${(await page.innerText('body')).replace(/\s+/g, ' ').slice(0, 200)}`);
         const json = await page.evaluate(() => window.offlineResults.asJson());
         fs.writeFileSync(outputPath, json);
+        console.log(`pages answered: ${pagesSeen.join(', ') || 'none'}`);
         console.log(`trials answered: ${trials}; blocked external requests: ${blocked.length}`);
+        for (const address of blocked) console.log(`  blocked: ${address}`);
         await browser.close();
         return blocked.length === 0 ? 0 : 1;
+    }
+
+    /** A questionnaire or message page: answer it and move on.  Returns false on any other screen. */
+    async answerPage(page, pagesSeen) {
+        const form = await page.$('[piq-page]');
+        if (form) {
+            pagesSeen.push((await page.innerText('[piq-page] h3').catch(() => '?')).trim());
+            for (const list of await page.$$('[piq-page] [quest-select-one] .list-group')) {
+                const first = await list.$('button.list-group-item');
+                if (first) await first.click();
+            }
+            await this.advance(page, 50);
+            const invalid = await page.$('[piq-page].ng-invalid');
+            const decline = await page.$('[piq-page] button:has-text("Decline")');
+            const submit = await page.$('[piq-page] button:has-text("Submit")');
+            const button = invalid && decline ? decline : submit || decline;
+            if (!button) return false;
+            await button.click();
+            if (button === decline) {                       // minno-quest asks to confirm a decline with a second press
+                await this.advance(page, 50);
+                const again = await page.$('[piq-page] button:has-text("Decline")');
+                if (again) await again.click();
+            }
+            await this.advance(page, 300);
+            return true;
+        }
+        const messageButton = await page.$('#minno-canvas [pi-message-done]');
+        if (messageButton && await messageButton.isVisible()) {
+            pagesSeen.push('message');
+            await messageButton.click();
+            await this.advance(page, 300);
+            return true;
+        }
+        return false;
     }
 
     async advance(page, milliseconds) {

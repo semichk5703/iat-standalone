@@ -3,8 +3,8 @@
 Project Implicit's player, the study, the task scripts, scorers and pictures it can load, all embedded.
 
     python3 tools/build_offline_html.py [--study FOLDER] [output.html]
-        --study   the study folder to embed, relative to the repository
-                  (default: minno-tasks' demo IATs, the task menu Project Implicit publishes)
+        --study   the study folder to embed, relative to the repository (default: offline/studies/race;
+                  upstream/minno-tasks/docs/studies/datapipe.iat.examples/demo.iats is the demo task menu)
         output    default dist/iat-offline.html
 
 Nothing of Project Implicit's is changed: their files are embedded as they are, and offline/offline_loader.js
@@ -20,7 +20,7 @@ import re
 import sys
 
 REPOSITORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_STUDY = 'upstream/minno-tasks/docs/studies/datapipe.iat.examples/demo.iats'
+DEFAULT_STUDY = 'offline/studies/race'
 PICTURE_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.gif')
 
 
@@ -28,8 +28,10 @@ class OfflineHtmlBuilder:
     """One study, the shared task scripts and scorers, and the page that runs them, as one HTML document."""
 
     # Besides the study folder, everything a study can load from Project Implicit: the IAT task scripts and
-    # the scorers they depend on, and the placeholder the data-pipe address is redirected to.
-    SHARED_FOLDERS = ['upstream/minno-tasks/IAT', 'upstream/minno-tasks/scorer']
+    # the scorers they depend on, the published Race IAT study and demographics that offline/studies/race
+    # uses, and the placeholder the data-pipe address is redirected to.
+    SHARED_FOLDERS = ['upstream/minno-tasks/IAT', 'upstream/minno-tasks/scorer',
+                      'upstream/minno-tasks/docs/studies/raceiat', 'upstream/minno-tasks/scripts']
     SHARED_FILES = ['offline/sink_already_loaded.js']
     # Where the page is taken to be inside the file; .invalid is a reserved name that never resolves.
     PAGE_URL = 'https://offline.invalid/offline/index.html'
@@ -84,7 +86,7 @@ class OfflineHtmlBuilder:
 
     def build(self):
         page = self.inline_page_resources(self.read_text('offline/index.html'))
-        study_manager = '../' + self.study_folder + '/mgr.js'
+        study_manager = os.path.relpath(self.path(self.study_folder + '/mgr.js'), self.path('offline')).replace(os.sep, '/')
         files_json = json.dumps(self.embedded_files(), ensure_ascii=False).replace('</', '<\\/')
         settings = ('<script>\n// Single-file build (tools/build_offline_html.py): the files offline/offline_loader.js serves\n'
                     f'window.OFFLINE_PAGE_URL = {json.dumps(self.PAGE_URL)};\n'

@@ -20,11 +20,11 @@
 <script>
 /** Runs one Project Implicit study offline.
  *  URL parameters: ?study=PATH  the study's manager script, relative to this page
- *                                (default: minno-tasks' demo IATs, the task menu Project Implicit publishes)
+ *                                (default: the race study in studies/race, built from Project Implicit's files)
  *                  &iat=published  load the IAT version each study names (iat8 or iat10) instead of iat11
  *                                (PROTOCOL, "Which IAT version") */
 class OfflineStudyApp {
-    static DEFAULT_STUDY = '../upstream/minno-tasks/docs/studies/datapipe.iat.examples/demo.iats/mgr.js';
+    static DEFAULT_STUDY = 'studies/race/mgr.js';
 
     /** Every address Project Implicit's files name, and where it is served from here. */
     static ADDRESS_REWRITES = [

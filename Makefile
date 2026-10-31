@@ -7,8 +7,12 @@ CORE = src/iat_app.h src/iat_frontend.h src/iat_procedure.h src/iat_scoring.h sr
 all: iat iat-sdl
 
 # Project Implicit's own studies as one self-contained HTML file that opens from disk: dist/iat-offline.html
-offline-single:
+offline-single: offline/studies/race/codebook_items.js
 	python3 tools/build_offline_html.py dist/iat-offline.html
+
+# the race study's scales, generated from Project Implicit's 2025 codebook (committed; rebuilt when either input changes)
+offline/studies/race/codebook_items.js: references/race-iat-dataset/Race_IAT.public.2025.codebook.csv tools/codebook_to_questionnaires.py
+	python3 tools/codebook_to_questionnaires.py $< $@
 
 iat: src/iat_terminal.c $(CORE)
 	$(CC) $(CFLAGS) -o iat src/iat_terminal.c -lm
@@ -25,8 +29,9 @@ test: all
 	done
 	python3 test/rescore_project_implicit.py results.csv
 	python3 test/rescore_greenwald_2003.py results.csv
+	python3 test/codebook_consistency.py
 
-# Project Implicit's own Race IAT run offline by a scripted participant (needs node with playwright), served
+# The offline race study (questionnaires and Project Implicit's Race IAT) run by a scripted participant (needs node with playwright), served
 # from the repository and then as the single file from disk; their in-page score must agree with ours.
 OFFLINE_TEST_PORT = 8768
 test-offline: offline-single
