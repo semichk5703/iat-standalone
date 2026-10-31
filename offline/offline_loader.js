@@ -4,7 +4,8 @@
 // Their player loads each script through RequireJS; RequireJS lets a page replace its `requirejs.load`
 // function (its documented hook for custom loading), so this file wraps it: fetch the script, apply the
 // address table to the script's address and to its text (task scripts also name picture folders by
-// address), then hand the result to RequireJS as a blob: URL.  In a single-file build there is no file
+// address), then hand the result to RequireJS as a blob: URL.  The player fetches page templates (.jst) with
+// XMLHttpRequest instead, so that is hooked too, with the same table.  In a single-file build there is no file
 // to fetch, so `files` supplies each file's text, and picture addresses map to embedded data: URIs;
 // there the page is treated as if it sat at offline/index.html on a placeholder host (pageUrl), so
 // every address resolves the same way it would in the repository, and files are keyed by that path.
@@ -60,7 +61,8 @@ class OfflineLoader {
         return response.text();
     }
 
-    /** Install the RequireJS hook (and, in a single-file build, the picture hook). Call before minnoJS(). */
+    /** Install the RequireJS and XMLHttpRequest hooks (and, in a single-file build, the picture hook).
+     *  Call before minnoJS(). */
     install(requirejs) {
         const loadWithRequireJs = requirejs.load;
         requirejs.load = (context, moduleName, url) => {
@@ -74,7 +76,27 @@ class OfflineLoader {
                     context.onError(error);
                 });
         };
+        this.installRequestHook();
         if (this.files) this.installPictureHook();
+    }
+
+    /** Templates: XMLHttpRequest.open gets the rewritten address; in a single-file build, a blob: URL of the
+     *  embedded text (a file:// page cannot request files, and the placeholder host does not exist). */
+    installRequestHook() {
+        const loader = this;
+        const open = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function (method, address, ...rest) {
+            let rewritten = loader.rewrite(String(address));
+            if (loader.files && !/^(blob|data):/.test(rewritten)) {
+                const key = loader.fileKey(rewritten);
+                if (key in loader.files) {
+                    rewritten = URL.createObjectURL(new Blob([loader.rewrite(loader.files[key])], { type: 'text/plain' }));
+                } else {
+                    console.error(`offline: ${key} is not in this single-file build`);
+                }
+            }
+            return open.call(this, method, rewritten, ...rest);
+        };
     }
 
     /** Single-file build: an <img> whose address is a local path gets the embedded data: URI instead.
