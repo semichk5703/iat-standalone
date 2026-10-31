@@ -55,7 +55,22 @@ said.  File digests let a later observer tell whether the site has changed.
   one scale chosen from 30 (desktop                                        it routes minors to a separate
   only; touch devices skip the scale),                                     youth study, which needs the
   then a debriefing                                                        site
-  the 30 scale files' names               demo.race.0006/mgr.js            — (the items come from [dataset])
+  the 28 scale files' names               demo.race.0006/mgr.js            — (the items come from [dataset])
+  which items each scale file asks: all   demo.race.0006/*scale.js         codebook_items.js groups (anes+op,
+  371 codebook items; op, caw and cab     (tools/sync_site_configs.py,     pgc+caw, tp+cab: tools/codebook_
+  are asked within anes, pgc and tp       2026-10-31)                      to_questionnaires.py)
+  scale page settings: one question per   demo.race.0006/sdoscale.js and   codebook_questionnaire.js
+  page, pages in random order, answer     the other scale files
+  required unless declined, choose twice
+  to submit, "N out of M" progress
+  displayed wording: 19 of 371 items      tools/compare_site_scales.py     the codebook's wording is used: it
+  differ from the codebook's labels       lists them                       is published; the site's files are
+  (e.g. codebook "Black people living                                      not (a choice to revisit: README)
+  here", site "Black people")
+  explicit questions: the site's          demo.race.0006/explicits.js      the published minno-tasks version
+  explicits.js differs from the                                            (raceiat/explicits.js)
+  published one (variable att7, not
+  attributes7, as the codebook has it)
 
   site file                                     sha256
   user/demo.us/demo.race.0006/raceiat.js        2fecdcfa9c469e71f013d2933f4e2ecc5191630d647a0a40a32b9c50635e1e96

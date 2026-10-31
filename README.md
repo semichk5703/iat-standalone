@@ -190,6 +190,7 @@ domain/MIT; font8x8: public domain; papers and Project Implicit study materials:
     tools/provenance.sh         verify / sync / manifest  ->  PROVENANCE.txt
     tools/codebook_to_questionnaires.py  2025 codebook -> offline/studies/race/codebook_items.js (make rebuilds it)
     tools/sync_site_configs.py  download the live site's study files -> site-cache/ (ignored), references/live-site/manifest.txt
+    tools/compare_site_scales.py  the site's scale files vs the codebook: grouping, and wording that differs
     tools/fetch_media.ps1, tools/fetch_drive_missing.py   Windows: fetch Project Implicit study materials
     test/simulate_participant.py        pty-driven scripted participant for the C programs (make test)
     test/rescore_project_implicit.py    independent re-implementation of nogaScorer.js (iat11 settings)
