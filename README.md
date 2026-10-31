@@ -25,7 +25,11 @@ on a session run through the offline page.
     python3 -m http.server 8000 --bind 127.0.0.1         # in the repository root
     # open http://127.0.0.1:8000/offline/index.html       (127.0.0.1: only this computer can reach it)
 
-It starts with Project Implicit's demo task menu (minno-tasks `docs/studies/datapipe.iat.examples/demo.iats`).
+It runs the Race IAT the way the live site does, from published parts only (`offline/studies/race/mgr.js`
+names the source of each): Project Implicit's explicit questions, demographics and Race IAT (minno-tasks),
+and on desktops one questionnaire scale chosen at random, generated from Project Implicit's public 2025
+codebook (`tools/codebook_to_questionnaires.py`), in random order. The live site's opening screen, age check
+and debriefing are not published and are left out (PROTOCOL, "Observed only on the live site").
 At the end the page offers the results as `results.json`; `python3 tools/rescore_csv.py results.json`
 scores it independently and `--output` converts it to the C programs' results format.
 
@@ -35,19 +39,19 @@ inside. Copy it anywhere and open it in a browser.
 
 | URL parameter  | meaning |
 |----------------|---------|
-| `?study=PATH`  | another study's manager script, relative to the page (`tools/build_offline_html.py --study FOLDER` for the single file) |
-| `&iat=11`      | load `IAT/iat11.js` wherever a study asks for `iat10.js` (the version the live Race IAT uses; see PROTOCOL) |
+| `?study=PATH`  | another study's manager script, relative to the page, e.g. `../upstream/minno-tasks/docs/studies/datapipe.iat.examples/demo.iats/mgr.js` (Project Implicit's demo menu of 10 IATs); `tools/build_offline_html.py --study FOLDER` for the single file |
+| `&iat=published` | run the IAT version each study names (iat8 or iat10) instead of iat11, the version the live site runs (PROTOCOL, "Which IAT version") |
 
 How it works: their player loads scripts through RequireJS, whose `requirejs.load` hook
-`offline/offline_loader.js` wraps, rewriting each upstream address (CDN scripts, GitHub Pages pictures)
+`offline/offline_loader.js` wraps (and page templates through XMLHttpRequest, which it also wraps), rewriting each upstream address (CDN scripts, GitHub Pages pictures)
 to its pinned local copy through one table in `offline/index.html`. The live site's results upload,
 minno-datapipe, is replaced by `offline/results_sink.js`, which keeps the same function and arguments
 and holds results for download. That is the one place a different destination (for instance an upload
 a study's owners had agreed to) would go.
 
-**What has been tested, and what has not.** A scripted participant has run Project Implicit's Race IAT
-through the offline page, served and as the single file, with the network blocked, and their in-page
-score agreed with ours (`make test-offline`). The C programs are run end to end on every stimulus set
+**What has been tested, and what has not.** A scripted participant has run the race study (questionnaires,
+demographics and the IAT) through the offline page, served and as the single file, with the network
+blocked; iat11 ran, and its in-page score agreed with ours (`make test-offline`). The C programs are run end to end on every stimulus set
 by `make test`. **Phones have not been tested at all.** Firefox on Android should open the single
 file; iOS does not run scripts in a locally opened HTML file, so on an iPhone the page needs to be on
 a web host. Reports from real devices are welcome.
@@ -166,6 +170,8 @@ domain/MIT; font8x8: public domain; papers and Project Implicit study materials:
     offline/index.html        runs a Project Implicit study offline: their player and files, unchanged
     offline/offline_loader.js redirects their upstream addresses to the pinned local copies
     offline/results_sink.js   stands in for minno-datapipe: same interface, results kept for download
+    offline/studies/race/     the race study: mgr.js (its parts and their sources), codebook_questionnaire.js
+                              (one scale as a questionnaire), codebook_items.js (generated; do not edit)
     src/iat_app.h          command line, session flow, results file and score output (entry: iat_app_main)
     src/iat_procedure.h    the seven blocks, trial sequencing, timing          (entry: procedure_run)
     src/iat_scoring.h      the D measure                                      (entry: scoring_compute)
@@ -182,13 +188,17 @@ domain/MIT; font8x8: public domain; papers and Project Implicit study materials:
     tools/minno_to_stimuli.py   minno-tasks config -> stimuli file
     tools/regen_stimuli.sh      rebuild the 13 converted sets from the submodule
     tools/provenance.sh         verify / sync / manifest  ->  PROVENANCE.txt
+    tools/codebook_to_questionnaires.py  2025 codebook -> offline/studies/race/codebook_items.js (make rebuilds it)
+    tools/sync_site_configs.py  download the live site's study files -> site-cache/ (ignored), references/live-site/manifest.txt
     tools/fetch_media.ps1, tools/fetch_drive_missing.py   Windows: fetch Project Implicit study materials
     test/simulate_participant.py        pty-driven scripted participant for the C programs (make test)
     test/rescore_project_implicit.py    independent re-implementation of nogaScorer.js (iat11 settings)
     test/rescore_greenwald_2003.py      independent re-implementation of 2003 Table 4
     test/offline_session.js             scripted participant through the offline page (make test-offline)
-    test/offline_agreement.py           their in-page score vs ours
+    test/offline_agreement.py           their in-page score vs ours, and that iat11 ran
+    test/codebook_consistency.py        the 2025 and 2002-2025 codebooks agree on the scales in use
     references/            papers.bib, fetch_papers.sh, and the papers (PDF, git-lfs)
+    references/race-iat-dataset/  Project Implicit's public dataset codebooks (SOURCES.txt says what and where from)
     third_party/           stb_image.h, font8x8_basic.h (copies of upstream/)
     upstream/              git submodules: minno-quest (player), minno-tasks (studies, tasks, scorer),
                            minno-datapipe (results interface, reference only), stb, font8x8

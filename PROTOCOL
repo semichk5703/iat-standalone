@@ -1,25 +1,71 @@
 Protocol provenance
 ===================
-Each parameter is traced to (a) the paper it comes from, page-checked against the author-posted PDFs
-(references/), and (b) the code implicit.harvard.edu runs, pinned in upstream/minno-tasks:
-  IAT/iat11.js                                   the IAT task the live Race IAT loads
-  scorer/nogaScorer.js, scorer/feedbacker.js     its scorer and feedback rules
-  docs/studies/datapipe.iat.examples/demo.iats/  the demo site's task configs (race.js ...)
-  docs/studies/raceiat/raceiat_instructions.jst  the pre-IAT instructions page
+Every detail in this repository comes from one of the sources below, and is labelled with it where it is
+used (code comments name the file and setting; tables here name the source).  Source classes, most
+authoritative first:
 
-Observed on the live site (a browser HAR of the Race IAT, 2026-10-30): the study demo.us/demo.race.0006
-loads cdn.jsdelivr.net/gh/baranan/minno-tasks@0.*/IAT/iat11.js and .../scorer/nogaScorer.js, and the
-copies served were byte-identical to upstream/minno-tasks at the pinned commit.  Its site-hosted files
-(not redistributed here) and their sha256:
+[paper]     the published papers, page-checked against the author-posted PDFs in references/
+            (citations: references/papers.bib)
+[minno]     Project Implicit's open code, pinned as submodules under upstream/ (commits in PROVENANCE.txt):
+              minno-tasks IAT/iat11.js                     the IAT task
+              minno-tasks scorer/nogaScorer.js, feedbacker.js  its scorer and feedback rules
+              minno-tasks docs/studies/raceiat/            the published Race IAT study (Feb 2024): manager,
+                                                           explicit questions, instructions, last page
+              minno-tasks docs/studies/datapipe.iat.examples/demo.iats/  demo task menu (10 IATs)
+              minno-tasks scripts/demographics.js          the demographics questionnaire
+              minno-quest (branch 1.0) dist/pi-minno.js    the player
+[dataset]   Project Implicit's public Race IAT dataset (OSF, osf.io/gwofk; Xu, Nosek & Greenwald 2014
+            describe the series): references/race-iat-dataset/ (SOURCES.txt: what each file is, where from)
+              Race_IAT.public.2025.codebook.csv  every 2025 variable: IAT scores, every questionnaire item's
+                                                 wording and answer codes, demographics
+              readme.2025.txt                    notes on the 2025 data, with a contact for questions
+              Race_IAT_public_2002-2025_codebook.xlsx  every year's variables with start and end dates, and
+                                                 notes on changes to the procedure
+[live]      observed on implicit.harvard.edu, which runs configs that are not published (see below)
+[ours]      this repository's own choice, with the reason given where it is made
+
+Which IAT version.  minno-tasks holds iat6-iat11.  The published study configs predate iat11
+(added 2025-03-26, commit 2d9002d, "IAT11.js and new scorer"): docs/studies/raceiat/raceiat.js and six
+demo.iats tasks load iat10, four demo.iats tasks (arab, native, sexuality, weight) load iat8, and no
+published config loads iat11.  The live site loads iat11 [live: Race IAT and Weight IAT, 2026-10], and
+the 2025 dataset scores the Race IAT as iat11 does, in two parcels [dataset: D_biep.White_Good_36 and
+_47, averaged into _all].  So iat11 is the reference here; the offline page substitutes iat11 where a
+published config asks for iat8 or iat10 (&iat=published turns this off).  That substitution is safe
+because every setting iat8 and iat10 accept, iat11 accepts too, except three scorer defaults (ErrorVar,
+parcelValue, postSettings) that no published config sets [ours: compared the settings objects of
+IAT/iat8.js, iat10.js, iat11.js, and grepped docs/studies].
+
+Observed only on the live site
+------------------------------
+These have no published source; each was observed on implicit.harvard.edu, and is used here only where
+said.  File digests let a later observer tell whether the site has changed.
+  detail                                  observed in                      used here
+  --------------------------------------  -------------------------------  --------------------------------
+  the Race IAT loads IAT/iat11.js and     demo.race.0006/raceiat.js        iat11 is the reference (above);
+  scorer/nogaScorer.js, byte-identical    (HAR, 2026-10-30)                confirmed by [dataset]
+  to the pinned minno-tasks
+  the Weight IAT loads IAT/iat11.js       demo.weight.0004/weightiat.js    as above
+                                          (fetched 2026-10-30)
+  opening screen "In this study you will  demo.race.0006/realstart.jst     C programs' opening screen
+  complete an Implicit Association                                         (--no-intro omits it)
+  Test (IAT)..."
+  study flow: opening screen, age check,  demo.race.0006/mgr.js            offline race study's order
+  then in random order explicit                                            (offline/studies/race/mgr.js);
+  questions, demographics, the IAT, and                                    the age check is left out:
+  one scale chosen from 30 (desktop                                        it routes minors to a separate
+  only; touch devices skip the scale),                                     youth study, which needs the
+  then a debriefing                                                        site
+  the 30 scale files' names               demo.race.0006/mgr.js            — (the items come from [dataset])
+
+  site file                                     sha256
   user/demo.us/demo.race.0006/raceiat.js        2fecdcfa9c469e71f013d2933f4e2ecc5191630d647a0a40a32b9c50635e1e96
   user/demo.us/demo.race.0006/mgr.js            12c122b0b47c01667973fe580e0a7843b721b60bc1b82c02e46b814dfe62f4d3
   user/demo.us/demo.race.0006/instiat_race.jst  339019080349c16ee98015023e05075582809b5a3ccb9a1ae5f364693b6c8872
   user/demo.us/demo.race.0006/realstart.jst     2ddd06fc7c8fed43ea032f3416f405c1d76944c384588a429321bfe731ebbe40
-raceiat.js has the same faces as demo.iats/race.js and no parameter overrides; mgr.js has the same
-label sets and the same 32+32 attribute words; instiat_race.jst has the same text as
-raceiat_instructions.jst.  IAT/iat10.js and IAT/qualtrics/quiat9.js (Qualtrics) are earlier variants:
-same procedure, but a single-parcel D with a 150 ms fast flag (printed here as D_single_parcel).
-Citations: references/papers.bib.
+raceiat.js has the same faces as demo.iats/race.js and no parameter overrides; mgr.js has the same label
+sets and 32+32 attribute words; instiat_race.jst has the same text as raceiat_instructions.jst.
+tools/sync_site_configs.py downloads the current site files (to site-cache/, not committed: they carry no
+licence) and records each address's sha256 in references/live-site/manifest.txt, reporting what changed.
 
 Procedure
 ---------
@@ -28,14 +74,23 @@ parameter             this repo                      paper                      
 block layout          7 blocks, 20/20/20/40/28/20/40 Greenwald, Nosek & Banaji 2003, Table 1     blockCategories/Attributes/
                                                      (p. 198): 20/20/20/40/20/20/40             FirstCombined 20, Second-
                                                      (1998 used 50-trial blocks, p. 1467)       Combined 40, Switch 28
-block 5 length 28     28                             Nosek, Greenwald & Banaji 2005, Study 4    blockSwitch_nTrials: 28
-                                                     (pp. 176-178): lengthening it from 20 to   (28 itself is Project
-                                                     40 cut the pairing-order effect, r .15->.03 Implicit's choice; counted
-                                                                                                as 28 on the live site)
+block 5 length 28     28                             Nosek, Greenwald & Banaji 2005, Study 4    blockSwitch_nTrials: 28;
+                                                     (pp. 176-178): lengthening it from 20 to   [dataset] 2002-2025 codebook:
+                                                     40 cut the pairing-order effect, r .15->.03 "after 9/26/2016 ... block 5
+                                                                                                was cut from 40 trials back
+                                                                                                to 28 trials due to order
+                                                                                                effects" (188 trials in all;
+                                                                                                counted 28 on the live site)
 trial order           mini-blocks of one trial per   — (implementation)                         getMiniMixer2 / getMiniMixer4
                       category; targets/attributes
                       alternate
 pairing order         random per session; --order    2003 p. 198 counterbalanced across         randomBlockOrder: true
+                                                     participants                               [dataset] Order: White+Good
+                                                                                                first=1, Black+Good first=2
+attribute side        Good (attr_b) on the right,    —                                          randomAttSide: false
+                      'I' key, in every block                                                   (attribute2 on the right);
+                                                                                                [dataset] readme: "always ...
+                                                                                                right ... key 'i'"
 inter-trial interval  250 ms                         not given in 2003 or 2005; 1998 used       ITIDuration: 250
                                                      400 ms in practice (p. 1467)
 errors                red X, correct key required,   2003 p. 202 (red X, correct response       errorCorrection: true
@@ -54,9 +109,9 @@ block instructions    iat11 templates, verbatim      —                        
                                                                                                 instSwitchCategories
 pre-IAT instructions  "Next, you will use the 'E'    —                                          raceiat_instructions.jst
                       and 'I' computer keys..."                                                 (see Displayed text)
-opening screen        "In this study you will        — ; not in minno-tasks: transcribed from   — (the live site shows it before
-                      complete an IAT..."; omit      the live site, 2026-10                     its questionnaire, which this
-                      with --no-intro                                                           program does not run)
+opening screen        "In this study you will        — ; [live] realstart.jst (see "Observed    — (the live site shows it before
+                      complete an IAT..."; omit      only on the live site")                    its questionnaires, which the
+                      with --no-intro                                                           C programs do not run)
 
 Displayed text
 --------------
@@ -124,5 +179,8 @@ Verification
 ------------
 test/rescore_project_implicit.py   re-implements nogaScorer.js with iat11 settings; agrees with the C scorer
 test/rescore_greenwald_2003.py     re-implements Table 4; agrees
-test/offline_agreement.py          Project Implicit's scorer, running in offline/index.html, vs ours (make test-offline)
+test/offline_agreement.py          Project Implicit's scorer, running in offline/index.html, vs ours, and that
+                                   iat11 ran (make test-offline)
+test/codebook_consistency.py       the 2025 codebook and the 2002-2025 codebook agree on the 31 scales in use
+                                   in 2025 (make test; skipped without openpyxl or the git-lfs object)
 make test                          all of the above over every stimulus set, both C frontends
