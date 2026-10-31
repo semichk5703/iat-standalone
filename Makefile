@@ -31,10 +31,10 @@ test: all
 OFFLINE_TEST_PORT = 8768
 test-offline: offline-single
 	python3 -m http.server $(OFFLINE_TEST_PORT) --bind 127.0.0.1 >/dev/null 2>&1 & server=$$!; sleep 1; \
-	  node test/offline_session.js 'http://127.0.0.1:$(OFFLINE_TEST_PORT)/offline/index.html?iat=11' results-served.json; status=$$?; \
+	  node test/offline_session.js 'http://127.0.0.1:$(OFFLINE_TEST_PORT)/offline/index.html' results-served.json; status=$$?; \
 	  kill $$server; exit $$status
 	python3 test/offline_agreement.py results-served.json
-	node test/offline_session.js "file://$(CURDIR)/dist/iat-offline.html?iat=11" results-single.json
+	node test/offline_session.js "file://$(CURDIR)/dist/iat-offline.html" results-single.json
 	python3 test/offline_agreement.py results-single.json
 
 clean:

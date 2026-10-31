@@ -6,7 +6,11 @@ Their logged d is rounded to two decimals and is positive when the study's first
 attribute was faster; for the Race IAT (minno-tasks demo.iats/race.js) that is the Black / African Americans
 label with Bad.  Ours (tools/rescore_csv.py) is relative to the pairing shown in block 3.  So the magnitudes
 must match to the rounding, and the signs must match when block 3 paired that first category with that
-first attribute, and be opposite otherwise."""
+first attribute, and be opposite otherwise.
+
+It also checks that iat11 ran (the page's default; PROTOCOL, "Which IAT version"): only iat11's summary row
+has fastRate, errRate and dValid (IAT/iat11.js, the API.save near line 417; iat10 saves block3Cond, feedback, d).
+The race study's manager copies its labels from minno-tasks docs/studies/raceiat/mgr.js, the same as demo.iats/race.js."""
 import os
 import sys
 
@@ -30,7 +34,9 @@ class OfflineAgreementCheck:
         agree = abs(round(expected_theirs, 2) - theirs) <= 0.01
         print(f'theirs d={theirs:+.2f}  ours D={ours:+.4f}  block 3 paired {category} with {attribute}'
               f' -> expect theirs {expected_theirs:+.2f}: {"agree" if agree else "MISMATCH"}')
-        return 0 if agree else 1
+        ran_iat11 = self.results.displayed.get('fast', '') != ''
+        print(f'task version: {"iat11" if ran_iat11 else "not iat11 (no fastRate in the summary row)"}')
+        return 0 if agree and ran_iat11 else 1
 
 
 if __name__ == '__main__':

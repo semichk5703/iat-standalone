@@ -21,7 +21,8 @@
 /** Runs one Project Implicit study offline.
  *  URL parameters: ?study=PATH  the study's manager script, relative to this page
  *                                (default: minno-tasks' demo IATs, the task menu Project Implicit publishes)
- *                  &iat=11       load IAT/iat11.js wherever a study asks for iat10.js (see PROTOCOL) */
+ *                  &iat=published  load the IAT version each study names (iat8 or iat10) instead of iat11
+ *                                (PROTOCOL, "Which IAT version") */
 class OfflineStudyApp {
     static DEFAULT_STUDY = '../upstream/minno-tasks/docs/studies/datapipe.iat.examples/demo.iats/mgr.js';
 
@@ -39,12 +40,17 @@ class OfflineStudyApp {
                            'the player, if a study names it'),
     ];
 
-    static IAT11_REWRITE = new AddressRewrite('/IAT/iat10.js', '/IAT/iat11.js',
-                                              'optional (&iat=11): the IAT version the live Race IAT uses');
+    /** The live site runs iat11; the published configs name iat8 or iat10, whose settings are a subset of
+     *  iat11's (the settings that differ are scorer defaults no published config sets).  PROTOCOL has the sources. */
+    static IAT11_REWRITES = [
+        new AddressRewrite('/IAT/iat8.js', '/IAT/iat11.js', 'the IAT version the live site uses'),
+        new AddressRewrite('/IAT/iat10.js', '/IAT/iat11.js', 'the IAT version the live site uses'),
+    ];
 
     constructor(params = new URLSearchParams(location.search)) {
         this.study = params.get('study') || window.OFFLINE_DEFAULT_STUDY || OfflineStudyApp.DEFAULT_STUDY;
-        this.rewrites = OfflineStudyApp.ADDRESS_REWRITES.concat(params.get('iat') === '11' ? [OfflineStudyApp.IAT11_REWRITE] : []);
+        const iatAsPublished = params.get('iat') === 'published';
+        this.rewrites = OfflineStudyApp.ADDRESS_REWRITES.concat(iatAsPublished ? [] : OfflineStudyApp.IAT11_REWRITES);
     }
 
     run() {
