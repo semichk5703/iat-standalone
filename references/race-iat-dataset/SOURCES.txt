@@ -1,0 +1,50 @@
+Project Implicit's public Race IAT dataset: codebooks and notes
+================================================================
+What these are: the documentation Project Implicit publishes with each year's Race IAT data (the data
+files themselves, hundreds of MB, are not kept here).  Each codebook lists every variable recorded that
+year: the IAT scores and statistics, and each questionnaire item's wording and answer codes.
+
+Where they come from: the OSF storage of project gwofk, https://osf.io/gwofk/ (its file listing; the
+whole storage is also served as one zip at https://files.osf.io/v1/resources/gwofk/providers/osfstorage/?zip=),
+downloaded 2026-10-30/31.  The series is described in Xu, Nosek & Greenwald 2014 (references/papers.bib,
+xu2014raceiatdata).  Licence: as stated on the OSF project page (see NOTICE).
+  NOT YET RECORDED: the page Race_IAT_public_2002-2025_codebook.xlsx and Nosek.SPSP.2006.presentation.pdf
+  were downloaded from; if it was not gwofk, say where in this file.
+
+How this repository uses them:
+  Race_IAT.public.2025.codebook.csv   tools/codebook_to_questionnaires.py -> offline/studies/race/codebook_items.js
+                                      (kept as plain text, not git-lfs, so it diffs and greps)
+  readme.2025.txt                     "Good" always on the right, key 'i' (PROTOCOL)
+  Race_IAT_public_2002-2025_codebook.xlsx
+                                      every year's variables with their start and end dates: block 5 cut from
+                                      40 to 28 trials after 2016-09-26 "due to order effects" (PROTOCOL); the
+                                      31 scales active in 2025 match the 2025 CSV's (PROTOCOL, "Verification")
+  the yearly .xlsx codebooks          history; not read by any tool
+
+sha256 (for the git-lfs files, the same value as the pointer's oid):
+  11a3dcec116ca665c8b83a3c8b0481409ccff0f3f832bedec6ac3f79a550b9c6  Nosek.SPSP.2006.presentation.pdf
+  e2905dd87a43b8a730872f5b6894b1fd8dfad2e26d7c5af6aabe8f22704c42fc  Race_IAT.public.2025.codebook.csv
+  cf69faa9ac9f21fff9f089f8fed2e2ef502103271a698475b747b494b432e844  Race_IAT_public_2002-2003_codebook.xlsx
+  9038f7752f368dd899ec9f27d2af5518ab34e91fa25910a1ea47b71713119535  Race_IAT_public_2002-2025_codebook.xlsx
+  40031d1d9573ef5c05f33aa3ac105357e962d4911edd6ad3bf9513a7547adaae  Race_IAT_public_2004_codebook.xlsx
+  43eb71e38e0ed3612686472f2615a2b8f9bd97c96d1aff96b5eda47b47bd277d  Race_IAT_public_2005_codebook.xlsx
+  c71fb788fb9c9143bef555b94b3b5d6941cb7089c63703119c7a6c6d6a64cd66  Race_IAT_public_2006_codebook.xlsx
+  c2a88dc38b3d77dc9c32a97d0787232bcbc6b372e6c876de459a55c1f394b2a9  Race_IAT_public_2007_codebook.xlsx
+  87951672d2ca584221ab17e87569618b78fc92db21e5362c3b8682fa553a589b  Race_IAT_public_2008_codebook.xlsx
+  71734eaecfd23fa411bef92a20f18183e86dd2af4217d55e8ad3b248a36bd415  Race_IAT_public_2009_codebook.xlsx
+  90809e434054e5c3f71ecd00d7d23ee420c14583785084a38bf3aad533997bc8  Race_IAT_public_2010_codebook.xlsx
+  88247019dcc40152bd7a8056e572a5958852dedcc343db91da759e2c645ab2d5  Race_IAT_public_2011_codebook.xlsx
+  c259ef2b7e24b84a8ade0691868db6dbedcc0c77630a2a9fdc459212b8754449  Race_IAT_public_2012_codebook.xlsx
+  ff25a22abed69c1497423e6e44f81f0c09f4d752c3c6f6a75b0e2ea5f262caff  Race_IAT_public_2013_codebook.xlsx
+  806aa8526d3b30f4d8b3d4035c45f49c98ec43737c8717acd17b981d4cd86910  Race_IAT_public_2014_codebook.xlsx
+  d34a43368726afe749d7fb2a7c9a039e7c1a287a81177b8ca67cda680d443571  Race_IAT_public_2015_codebook.xlsx
+  b7049c998e211abf45434eead30e60a567e400db9c1aef76aead2b10d407ef85  Race_IAT_public_2016_codebook.xlsx
+  50d1371d3f50f553664c48072e0ee904fe3c05a7a8297ea55143312f792e3990  Race_IAT_public_2017_codebook.xlsx
+  47076173d233b91584088270abc131c76c11f63175c2f15df3dc1ab3faacf4db  Race_IAT_public_2018_codebook.xlsx
+  5311175be1977528d33c7e99f88f04ac9f38ac872836e9437fd7167bb7f7e03b  Race_IAT_public_2019_codebook.xlsx
+  24c073ccf467b177f05f15185c67fc876aefe433bc881e0bf2497344d4091a0d  Race_IAT_public_2020_codebook.xlsx
+  06ac5baacca7d2b112e6d1dbde81279bea187cb68dd5923021634b382fe92c7c  Race_IAT_public_2021_codebook.xlsx
+  6ce2a8ef280b85939f29720f3263ca80ebb45f4bd256043d1af9a9a18dc69c3e  Race_IAT_public_2022_codebook.xlsx
+  6870a5b50b51a84b6c2e91186064e00c5bb32bd583d344d76e03dd6b3cea6f64  Race_IAT_public_2023_codebook.xlsx
+  f02d809af0cb2d301fc03c8d2415992bf967cc8ffc8ee55da13d53496d59f130  Race_IAT_public_2024_codebook.xlsx
+  8f4ae6bb1c27d3a2469f9c1ad870b4c5239b38c3062e5256f9cd4d0d88e3647d  readme.2025.txt

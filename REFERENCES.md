@@ -33,6 +33,11 @@ were checked against the author-posted PDFs (`references/fetch_papers.sh`).
   `scorer/nogaScorer.js` (its scorer), both confirmed byte-identical to what the live site serves;
   `docs/studies/datapipe.iat.examples/demo.iats/` (the demo site's task configs),
   `docs/studies/raceiat/raceiat_instructions.jst` (the pre-IAT instructions page).
+- Project Implicit's public Race IAT dataset, 2025 release, https://osf.io/gwofk — its codebook and readme
+  are in `references/race-iat-dataset/`: the variables recorded, the wording and answer options of every
+  questionnaire item, and how the IAT was scored and laid out. The series is described in Xu, K., Nosek, B.,
+  & Greenwald, A. G. (2014). Psychology data from the Race Implicit Association Test on the Project Implicit
+  Demo website. *Journal of Open Psychology Data, 2*(1), e3. https://doi.org/10.5334/jopd.ac
 - Pinned commits: PROVENANCE.txt. Parameter-by-parameter comparison: [PROTOCOL](PROTOCOL).
 
 ## On interpretation (worth reading before drawing conclusions from a score)
