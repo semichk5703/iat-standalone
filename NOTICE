@@ -24,7 +24,7 @@ minno-datapipe — Project Implicit's results upload.  https://github.com/minnoj
   its interface only (init_data_pipe and the logger it registers), which offline/results_sink.js follows
   so study files call it unchanged; the submodule is kept as the reference for that interface.
 
-Project Implicit Race IAT public dataset, 2025 release — codebook and readme.  https://osf.io/gwofk
+Project Implicit Race IAT public dataset, 2025 release — codebook and readme.  https://osf.io/52qxl
   references/race-iat-dataset/, unmodified.  Used for: the questionnaire items (tools/codebook_to_
   questionnaires.py) and as a published source for scoring details (PROTOCOL).  The OSF project page
   states its licence; check it before redistributing these files elsewhere.

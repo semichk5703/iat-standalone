@@ -4,12 +4,11 @@ What these are: the documentation Project Implicit publishes with each year's Ra
 files themselves, hundreds of MB, are not kept here).  Each codebook lists every variable recorded that
 year: the IAT scores and statistics, and each questionnaire item's wording and answer codes.
 
-Where they come from: the OSF storage of project gwofk, https://osf.io/gwofk/ (its file listing; the
-whole storage is also served as one zip at https://files.osf.io/v1/resources/gwofk/providers/osfstorage/?zip=),
-downloaded 2026-10-30/31.  The series is described in Xu, Nosek & Greenwald 2014 (references/papers.bib,
-xu2014raceiatdata).  Licence: as stated on the OSF project page (see NOTICE).
-  NOT YET RECORDED: the page Race_IAT_public_2002-2025_codebook.xlsx and Nosek.SPSP.2006.presentation.pdf
-  were downloaded from; if it was not gwofk, say where in this file.
+Where they come from: the Files section of https://osf.io/52qxl/ (Project Implicit's Race IAT public
+data), whose storage is also served as one zip at
+https://files.osf.io/v1/resources/gwofk/providers/osfstorage/?zip= ; every file here was downloaded from
+that Files section, 2026-10-30/31.  The series is described in Xu, Nosek & Greenwald 2014
+(references/papers.bib, xu2014raceiatdata).  Licence: as stated on the OSF project page (see NOTICE).
 
 How this repository uses them:
   Race_IAT.public.2025.codebook.csv   tools/codebook_to_questionnaires.py -> offline/studies/race/codebook_items.js

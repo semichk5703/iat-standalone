@@ -14,7 +14,7 @@ authoritative first:
               minno-tasks docs/studies/datapipe.iat.examples/demo.iats/  demo task menu (10 IATs)
               minno-tasks scripts/demographics.js          the demographics questionnaire
               minno-quest (branch 1.0) dist/pi-minno.js    the player
-[dataset]   Project Implicit's public Race IAT dataset (OSF, osf.io/gwofk; Xu, Nosek & Greenwald 2014
+[dataset]   Project Implicit's public Race IAT dataset (OSF, osf.io/52qxl; Xu, Nosek & Greenwald 2014
             describe the series): references/race-iat-dataset/ (SOURCES.txt: what each file is, where from)
               Race_IAT.public.2025.codebook.csv  every 2025 variable: IAT scores, every questionnaire item's
                                                  wording and answer codes, demographics
