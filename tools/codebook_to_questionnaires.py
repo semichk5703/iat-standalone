@@ -10,8 +10,8 @@ answer options with their recorded codes ("Values", e.g. "Strongly Disagree=1; .
 every questionnaire item sharing a variable-name prefix (sdof1..sdof16 -> scale "sdof"); the output keeps
 the codebook's wording and codes exactly, so a result row can be read against the codebook directly.
 
-Which variables are scale items is decided by the rule in CodebookScales.is_scale_item, and nothing else:
-there is no hand-kept list to drift out of date when a new codebook is used."""
+Which variables are scale items is decided by the rule in CodebookScales.is_scale_item; the one hand-kept
+table is LIVE_SITE_COMBINED_SCALES, three groups the live site asks inside another scale's file."""
 import argparse
 import csv
 import hashlib
@@ -32,6 +32,10 @@ class CodebookScales:
     ITEM_NUMBER = re.compile(r'^(?P<prefix>[A-Za-z]+)(?P<number>\d+)(?P<part>[a-z]?)$')
     # Variables that are numbered but are not questionnaire items: the IAT's own statistics per block.
     NOT_QUESTIONNAIRES = ('Mn_', 'SD_', 'N_', 'pct_', 'PCT_', 'D_')
+    # The live site asks these codebook groups as part of another scale, one file per scale [live:
+    # demo.race.0006 anesscale.js asks anes1-6 and op1-6, pgcscale.js pgc1-5 and caw1-6, tpscale.js tp1-3
+    # and cab1-6; references/live-site/manifest.txt has the files' sha256].  So 31 groups make 28 scales.
+    LIVE_SITE_COMBINED_SCALES = {'anes': ['op'], 'pgc': ['caw'], 'tp': ['cab']}
 
     def __init__(self, codebook_path):
         self.codebook_path = codebook_path
@@ -46,6 +50,9 @@ class CodebookScales:
         self.scales = {prefix: items for prefix, items in self.scales.items() if len(items) >= 2}
         for items in self.scales.values():
             items.sort(key=self.item_order)
+        for scale, joined in self.LIVE_SITE_COMBINED_SCALES.items():
+            for group in joined:
+                self.scales[scale] += self.scales.pop(group)
 
     def is_scale_item(self, row):
         """A numbered variable with coded answer options, not one of the IAT's statistics."""

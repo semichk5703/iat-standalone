@@ -1,5 +1,5 @@
 """Check that the 2025 codebook (what the offline race study's scales are generated from) and the 2002-2025
-codebook agree on which questionnaire scales were in use in 2025.
+codebook agree on which questionnaire item groups were in use in 2025.
     python3 test/codebook_consistency.py
 Both are Project Implicit's (references/race-iat-dataset/SOURCES.txt).  The multi-year workbook marks each
 variable's Source ('exp' = explicit questions) and its Ending Date; every 'exp' scale still in use in 2025
@@ -40,7 +40,8 @@ class CodebookConsistencyCheck:
                 print('SKIP: the 2002-2025 workbook is a git-lfs pointer; run "git lfs pull"')
                 return 0
         from_workbook = self.workbook_scales_in_2025() - EXPLICITS_JS_VARIABLES
-        from_csv = set(CodebookScales(DEFAULT_CODEBOOK).scales)
+        scales = CodebookScales(DEFAULT_CODEBOOK)
+        from_csv = set(scales.scales) | {group for joined in scales.LIVE_SITE_COMBINED_SCALES.values() for group in joined}
         print(f'2025 scales: workbook {len(from_workbook)}, 2025 CSV {len(from_csv)}')
         if from_workbook != from_csv:
             print(f'MISMATCH: only in workbook {sorted(from_workbook - from_csv)}, only in CSV {sorted(from_csv - from_workbook)}')
