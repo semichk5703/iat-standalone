@@ -28,6 +28,9 @@ Project Implicit Race IAT public dataset, 2025 release — codebook and readme. 
   references/race-iat-dataset/, unmodified.  Used for: the questionnaire items (tools/codebook_to_
   questionnaires.py) and as a published source for scoring details (PROTOCOL).  The OSF project page
   states its licence; check it before redistributing these files elsewhere.
+site-cache/ — copies of implicit.harvard.edu study files, as downloaded by tools/sync_site_configs.py
+  (addresses, dates and sha256 in references/live-site/manifest.txt).  They are Project Implicit's, carry no
+  licence, and are kept unmodified as a record of what the live site ran; they will be removed on request.
 stb_image.h — Sean Barrett and contributors.  https://github.com/nothings/stb
   Public domain (Unlicense) or MIT, at your option (see the end of third_party/stb_image.h).
 
