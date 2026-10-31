@@ -1,0 +1,104 @@
+<div class="jumbotron jumbotron-dark">
+    <h2><b>Results</b></h2>
+<p style="font-size:20px; font-weight: bold"> During the Implicit Association Test (IAT) you just completed:</p>
+<p style="font-size:18px; font-weight: bold"><%= showFeedback() %></p></div> 
+<hr>
+<%
+var imagePrefix=demodebriefimages.imageprefixwide;
+var graphWidth=800;
+if(global.isTouch)
+{https://app-prod-03.implicit.harvard.edu/implicit/user/andy/agetest//lastpage.jst
+    imagePrefix=demodebriefimages.imageprefix;
+    graphWidth=400;
+}
+global.imagePrefix=imagePrefix;
+
+%>
+
+
+<p class="toppadding"></p>
+<h2><b>Across our study of over fifty million people...</b></h2>
+<input type="radio" id='overallCheck' checked name="topCheck" value="igotnone" onclick="document.getElementById('feedbackGraph').src=<%=global.imagePrefix+global.imageId+demodebriefimages.overall%>" />
+Overall Findings &nbsp;<br/>
+<input type="radio" value="peo"  name="topCheck" onclick=";document.getElementById('feedbackGraph').src=<%=global.imagePrefix+global.imageId+demodebriefimages.age%>">
+Findings by Age &nbsp;<br/>
+<input type="radio" value="edu"  name="topCheck" onclick=";document.getElementById('feedbackGraph').src=<%=global.imagePrefix+global.imageId+demodebriefimages.edu%>">
+Findings by Education &nbsp;<br/>
+<input type="radio" value="country"  name="topCheck" onclick="document.getElementById('places').style.display ='block';document.getElementById('feedbackGraph').src=<%=global.imagePrefix+global.imageId+demodebriefimages.gender%>">
+Findings by Gender &nbsp;<br/>
+<input type="radio" value="country"  name="topCheck" onclick="document.getElementById('places').style.display ='block';document.getElementById('feedbackGraph').src=<%=global.imagePrefix+global.imageId+demodebriefimages.ide%>">
+Findings by Political Ideology &nbsp;<br/>
+</div>
+<br/>
+<img id='feedbackGraph' width="<%=graphWidth%>" src=<%=global.imagePrefix+global.imageId+demodebriefimages.overall%>' >
+<div id="places" style='display:display'>
+     <p><span style="color: orange">Orange</span> values indicate that participants were faster to sort  <%= global.groupB %> and <%= global.attributeA %>.<br/> 
+<span style="color:blue">Blue</span> values indicate that participants were faster to sort  <%= global.groupA %> and <%= global.attributeA %>. <br/>
+<span style="color:#3d3d3d">Grey</span> values indicate participants were about equally fast at sorting <%= global.groupA %>  and <%= global.groupB %>.</p>
+     </div>
+<hr>
+
+ <p><b>Disclaimer:</b> These IAT results are provided for educational purposes only.  
+The results may fluctuate and should not be used to make important decisions.  
+The results are influenced by variables related to the test  
+(e.g., the words or images used to represent categories)  
+and the person (e.g., being tired, what you were thinking about before the IAT).</p>
+<p><b>How does the IAT work?</b></p>
+<p>The IAT measures associations between concepts  
+(e.g., <%= global.groupA %> and <%= global.groupB %>)  
+and evaluations (e.g., <%= global.attributeA %>, <%= global.attributeB %>).  
+People are quicker to respond when items that are more closely related in their mind share the same button.  
+For example, an implicit preference for <%= global.groupA %> relative to <%= global.groupB %>  
+means that you are faster to sort words when '<%= global.groupA %>'  
+and '<%= global.attributeA %>' share a button  
+relative to when '<%= global.groupB %>' and '<%= global.attributeA %>' share a button.</p> 
+<p>Studies that summarize data across many people find that the IAT predicts discrimination  
+in hiring, education, healthcare, and law enforcement.  
+However, taking an IAT once (like you just did) is not likely to predict your future behavior well.</p> 
+
+<p><b>Does the order in which I took the IAT matter?</b></p>
+<p>The order in which you take the test can influence your results, but the effect is small.  
+We minimize this effect by giving practice trials after the categories switch sides.  
+We also randomly assign the order of the IAT so that some people get one order and other people get the reverse order.</p> 
+<p><b>I still have questions about the IAT.</b></p>
+<p>If you have questions about the IAT, please consult the links at the top of the page,  
+where you will find answers to frequently asked questions, links to related research,  
+and additional information about implicit associations.  
+You may also <a href="mailto:demofeedback@projectimplicit.net">email us</a>  with questions or comments.</p>
+
+<hr>
+ 
+ <div class="text-center" style="margin: 30px auto 10px;">
+         <a href="/implicit/Assign" target="_blank" class="btn btn-primary  btn-lg" style="width:100%;max-width:300px;">Participate in new research</a>
+            <a href="/implicit/selectatest.html" target="_blank" class="btn btn-default btn-lg" style="width:100%;max-width:300px;">Return and choose another IAT</a>
+ <hr>
+ <div class="jumbotron jumbotron-dark">
+<h1 align="center"><b>Thank you!</b></h1>
+      <h3><b>Help Keep Public Science Public</b> </h3>
+      <h4><span style="font-weight:normal">
+      Millions of people use Project Implicit every year to understand their own thinking a little better. Students rely on it. Reporters cite it. Researchers build on it. And none of that would exist without a tiny group of people who choose to chip in a few dollars to keep the lights on. 
+<br/><br/>
+
+<b>We run on small donations with most gifts under $5.</b> If you’re able, please donate $5 to keep the tests free, the data accessible, and the science public. A few dollars from enough people will keep a 20-year-old public resource available for anyone who wants to learn about implicit attitudes and stereotypes. 
+
+      </span></h4>
+<div class=" text-center" >
+         <a href="https://4agc.com/donate/implicit-2026" target="_blank" class="btn btn-primary  btn-lg" style="width:100%;max-width:300px;">Donate to Project Implicit</a>
+</div></div>
+        
+           
+        
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
